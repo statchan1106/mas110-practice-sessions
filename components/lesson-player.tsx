@@ -11,7 +11,20 @@ import type { Lesson } from '@/lib/lesson-data';
 import { cn } from '@/lib/utils';
 
 function formatNumber(value: number) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+  const normalized = Math.abs(value) < 1e-10 ? 0 : value;
+  return Number.isInteger(normalized) ? String(normalized) : String(Number(normalized.toFixed(2)));
+}
+
+function RowVector({ values }: { values: number[] }) {
+  return (
+    <span className="mini-row" aria-label={values.map(formatNumber).join(', ')}>
+      {values.map((value, index) => (
+        <span key={`${value}-${index}`} className={cn(index === values.length - 1 && 'mini-row-augmented')}>
+          {formatNumber(value)}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 export function LessonPlayer({ lesson }: { lesson: Lesson }) {
@@ -19,17 +32,37 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   const [choice, setChoice] = useState('');
   const [checked, setChecked] = useState(false);
   const [showMeaning, setShowMeaning] = useState(false);
+  const [executed, setExecuted] = useState(false);
 
   const step = lesson.steps[stepIndex];
   const isComplete = stepIndex === lesson.steps.length - 1;
   const isCorrect = checked && choice === step.answer;
-  const progress = (stepIndex / (lesson.steps.length - 1)) * 100;
-  const matrixLabel = useMemo(() => step.matrix.map((row) => row.join(', ')).join('; '), [step.matrix]);
+  const nextMatrix = isComplete ? step.matrix : lesson.steps[stepIndex + 1].matrix;
+  const visibleMatrix = executed ? nextMatrix : step.matrix;
+  const progress = ((stepIndex + (executed ? 1 : 0)) / (lesson.steps.length - 1)) * 100;
+  const matrixLabel = useMemo(
+    () => visibleMatrix.map((row) => row.join(', ')).join('; '),
+    [visibleMatrix],
+  );
+
+  const hasOperation =
+    !isComplete &&
+    step.pivotRow !== null &&
+    step.targetRow !== null &&
+    step.pivotColumn !== null;
+  const factor = hasOperation ? Number(step.answer) : 0;
+  const sourceRow = hasOperation ? step.matrix[step.pivotRow!] : [];
+  const targetRowBefore = hasOperation ? step.matrix[step.targetRow!] : [];
+  const targetRowAfter = hasOperation ? nextMatrix[step.targetRow!] : [];
+  const targetValue = hasOperation ? step.matrix[step.targetRow!][step.pivotColumn!] : 0;
+  const pivotValue = hasOperation ? step.matrix[step.pivotRow!][step.pivotColumn!] : 0;
+  const resultValue = hasOperation ? nextMatrix[step.targetRow!][step.pivotColumn!] : 0;
 
   function resetReflection() {
     setChoice('');
     setChecked(false);
     setShowMeaning(false);
+    setExecuted(false);
   }
 
   function goNext() {
@@ -49,6 +82,12 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
     resetReflection();
   }
 
+  function runOperation() {
+    if (!isCorrect) return;
+    setExecuted(true);
+    setShowMeaning(true);
+  }
+
   return (
     <Card className="lesson-shell bg-card/94 py-0 backdrop-blur-sm">
       <CardHeader className="border-b px-5 py-5 sm:px-7 sm:py-6">
@@ -56,7 +95,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
           <div>
             <p className="mb-1 font-mono text-xs uppercase tracking-[0.12em] text-primary">{lesson.eyebrow}</p>
             <CardTitle className="text-xl sm:text-2xl">{lesson.title}</CardTitle>
-            <CardDescription className="mt-1.5">코드를 실행하기 전에 값과 변화를 먼저 예상해 보세요.</CardDescription>
+            <CardDescription className="mt-1.5">Predict first. Then reveal exactly how one entry cancels to zero.</CardDescription>
           </div>
           <Badge variant="outline" className="font-mono">STEP {stepIndex + 1} / {lesson.steps.length}</Badge>
         </div>
@@ -66,8 +105,8 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
         </Progress>
       </CardHeader>
 
-      <CardContent className="grid gap-0 p-0 lg:grid-cols-[190px_minmax(300px,0.9fr)_minmax(360px,1.1fr)]">
-        <aside className="border-b bg-muted/42 p-4 lg:border-r lg:border-b-0" aria-label="실습 단계">
+      <CardContent className="grid gap-0 p-0 lg:grid-cols-[180px_minmax(360px,1.05fr)_minmax(340px,0.95fr)]">
+        <aside className="border-b bg-muted/42 p-4 lg:border-r lg:border-b-0" aria-label="Walkthrough steps">
           <p className="mb-3 px-2 text-xs font-medium uppercase tracking-[0.1em] text-muted-foreground">Learning path</p>
           <ol className="grid gap-1.5 sm:grid-cols-4 lg:grid-cols-1">
             {lesson.steps.map((item, index) => {
@@ -111,17 +150,24 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
         </aside>
 
         <section className="border-b p-5 sm:p-7 lg:border-r lg:border-b-0" aria-labelledby="matrix-heading">
-          <div className="mb-6 flex items-center justify-between gap-3">
+          <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs text-muted-foreground">현재 상태</p>
-              <h3 id="matrix-heading" className="mt-1 font-semibold">확대행렬 [A | b]</h3>
+              <p className="text-xs text-muted-foreground">{executed ? 'After the row operation' : 'Before the row operation'}</p>
+              <h3 id="matrix-heading" className="mt-1 font-semibold">Augmented matrix [A | b]</h3>
             </div>
-            {!isComplete && <Badge variant="secondary">pivot column {Number(step.pivotColumn) + 1}</Badge>}
+            {!isComplete && <Badge variant={executed ? 'default' : 'secondary'}>{executed ? 'entry cancelled' : `pivot column ${Number(step.pivotColumn) + 1}`}</Badge>}
           </div>
 
-          <div className="mx-auto max-w-sm py-5" role="img" aria-label={`현재 확대행렬: ${matrixLabel}`}>
+          {!isComplete && (
+            <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground" aria-label="Matrix color legend">
+              <span className="flex items-center gap-1.5"><span className="size-2.5 rounded-full bg-primary" />Pivot row stays fixed</span>
+              <span className="flex items-center gap-1.5"><span className={cn('size-2.5 rounded-full', executed ? 'bg-emerald-500' : 'bg-amber-500')} />Target row {executed ? 'updated' : 'will change'}</span>
+            </div>
+          )}
+
+          <div className="mx-auto max-w-sm py-4" role="img" aria-label={`Current augmented matrix: ${matrixLabel}`}>
             <div className="matrix-bracket">
-              {step.matrix.flatMap((row, rowIndex) =>
+              {visibleMatrix.flatMap((row, rowIndex) =>
                 row.map((value, columnIndex) => {
                   const pivot = rowIndex === step.pivotRow;
                   const target = rowIndex === step.targetRow;
@@ -131,10 +177,12 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
                       key={`${rowIndex}-${columnIndex}`}
                       className={cn(
                         'matrix-cell',
-                        columnIndex === 3 && 'matrix-cell-separator',
-                        pivot && 'bg-primary/12 text-primary',
-                        target && 'bg-accent/70 text-accent-foreground',
-                        eliminated && 'ring-2 ring-accent-foreground/30',
+                        columnIndex === row.length - 1 && 'matrix-cell-separator',
+                        pivot && 'matrix-cell-source',
+                        target && !executed && 'matrix-cell-target',
+                        target && executed && 'matrix-cell-result',
+                        eliminated && !executed && 'matrix-cell-to-cancel',
+                        eliminated && executed && 'elimination-zero',
                       )}
                     >
                       {formatNumber(value)}
@@ -145,65 +193,123 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
             </div>
           </div>
 
-          <div className="mt-7 rounded-xl border bg-muted/35 p-4">
-            <p className="text-xs text-muted-foreground">이번 단계의 행 연산</p>
-            <p className="mt-1.5 font-mono text-base font-semibold text-foreground">{step.operation}</p>
-          </div>
+          {hasOperation && (
+            <div className={cn('operation-stage', executed && 'is-executed')} aria-live="polite">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.1em] text-muted-foreground">The cancellation</p>
+                  <p className="mt-0.5 font-mono text-sm font-semibold">{step.operation}</p>
+                </div>
+                <Badge variant="outline" className="font-mono">factor = {formatNumber(factor)}</Badge>
+              </div>
+
+              <div className="cancellation-track" aria-label={`${targetValue} minus ${factor} times ${pivotValue} equals ${resultValue}`}>
+                <span className="cancellation-term is-target">{formatNumber(targetValue)}</span>
+                <span aria-hidden="true">−</span>
+                <span className="cancellation-term is-source">({formatNumber(factor)} × {formatNumber(pivotValue)})</span>
+                <span aria-hidden="true">=</span>
+                <span className={cn('cancellation-result', executed && 'is-zero')}>{executed ? formatNumber(resultValue) : '?'}</span>
+              </div>
+
+              <div className="mt-4 grid items-center gap-2 text-xs sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
+                <div className="row-chip is-target">
+                  <span>target R{Number(step.targetRow) + 1}</span>
+                  <RowVector values={targetRowBefore} />
+                </div>
+                <span className="hidden text-center text-muted-foreground sm:block">−</span>
+                <div className="row-chip is-source">
+                  <span>{formatNumber(factor)} × source R{Number(step.pivotRow) + 1}</span>
+                  <RowVector values={sourceRow} />
+                </div>
+                <span className="hidden text-center text-muted-foreground sm:block">=</span>
+                <div className={cn('row-chip is-result', !executed && 'is-pending')}>
+                  <span>new R{Number(step.targetRow) + 1}</span>
+                  {executed ? <RowVector values={targetRowAfter} /> : <span className="font-mono text-base">run to reveal</span>}
+                </div>
+              </div>
+
+              <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                {executed ? step.completion : 'Only the target row changes. The pivot row is the scaled source we subtract.'}
+              </p>
+            </div>
+          )}
+
+          {isComplete && (
+            <div className="rounded-xl border border-primary/25 bg-primary/8 p-4">
+              <p className="font-semibold">Upper triangular form reached</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">{step.meaning}</p>
+            </div>
+          )}
         </section>
 
         <section className="p-5 sm:p-7" aria-labelledby="code-heading">
           <div className="mb-4">
             <p className="text-xs text-muted-foreground">Python / NumPy</p>
-            <h3 id="code-heading" className="mt-1 font-semibold">{isComplete ? '소거 완료' : '다음에 실행할 코드'}</h3>
+            <h3 id="code-heading" className="mt-1 font-semibold">{isComplete ? 'Elimination complete' : executed ? 'The row has changed' : 'The next two lines'}</h3>
           </div>
 
-          <pre className="code-window overflow-x-auto rounded-xl p-4 text-[13px] leading-6 shadow-inner"><code>{step.code}</code></pre>
+          <pre className="code-window overflow-x-auto rounded-xl p-2 text-[13px] leading-6 shadow-inner"><code>
+            {step.code.split('\n').map((line, index) => (
+              <span key={`${line}-${index}`} className={cn('code-line', !isComplete && ((index === 0 && !checked) || (index === 1 && checked)) && 'is-active')}>
+                <span className="code-line-number" aria-hidden="true">{index + 1}</span>{line}
+              </span>
+            ))}
+          </code></pre>
 
           {!isComplete ? (
             <div className="mt-6">
-              <p className="text-sm font-medium">{step.prompt}</p>
-              <div className="mt-3 grid grid-cols-3 gap-2" role="group" aria-label="factor 값 선택">
-                {step.choices.map((option) => (
-                  <Button
-                    key={option}
-                    type="button"
-                    variant={choice === option ? 'secondary' : 'outline'}
-                    size="lg"
-                    aria-pressed={choice === option}
-                    onClick={() => {
-                      setChoice(option);
-                      setChecked(false);
-                    }}
-                    className="font-mono"
-                  >
-                    {option}
-                  </Button>
-                ))}
-              </div>
+              {!executed && (
+                <>
+                  <p className="text-sm font-medium">{step.prompt}</p>
+                  <div className="mt-3 grid grid-cols-3 gap-2" role="group" aria-label="Choose the elimination factor">
+                    {step.choices.map((option) => (
+                      <Button
+                        key={option}
+                        type="button"
+                        variant={choice === option ? 'secondary' : 'outline'}
+                        size="lg"
+                        aria-pressed={choice === option}
+                        onClick={() => {
+                          setChoice(option);
+                          setChecked(false);
+                        }}
+                        className="font-mono"
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
 
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button type="button" variant="outline" onClick={() => setChecked(true)} disabled={!choice}>
-                  <Check data-icon="inline-start" aria-hidden="true" />예상 확인
-                </Button>
-                <Button type="button" variant="ghost" onClick={() => setShowMeaning((current) => !current)} aria-expanded={showMeaning}>
-                  <Eye data-icon="inline-start" aria-hidden="true" />수학적 의미
-                </Button>
-              </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <Button type="button" variant="outline" onClick={() => setChecked(true)} disabled={!choice}>
+                      <Check data-icon="inline-start" aria-hidden="true" />Check prediction
+                    </Button>
+                    <Button type="button" variant="ghost" onClick={() => setShowMeaning((current) => !current)} aria-expanded={showMeaning}>
+                      <Eye data-icon="inline-start" aria-hidden="true" />Why this works
+                    </Button>
+                  </div>
+                </>
+              )}
 
               <div className="min-h-24 pt-4" aria-live="polite">
-                {checked && (
+                {checked && !executed && (
                   <div className={cn('rounded-lg border p-3 text-sm leading-6', isCorrect ? 'border-primary/25 bg-primary/8 text-foreground' : 'border-destructive/25 bg-destructive/6 text-destructive')}>
-                    {isCorrect ? '맞았습니다. 코드를 실행해 행렬의 변화를 확인하세요.' : '아직 아닙니다. 없애려는 원소를 pivot으로 나누어 보세요.'}
+                    {isCorrect ? 'Correct. Now run the row operation and watch the highlighted entry become zero.' : 'Not yet. Divide the target entry by the pivot entry, then try again.'}
                   </div>
                 )}
                 {showMeaning && <p className="mt-3 border-l-2 border-primary pl-3 text-sm leading-6 text-muted-foreground">{step.meaning}</p>}
+                {executed && (
+                  <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/8 p-3 text-sm leading-6">
+                    The target entry is now <strong className="font-mono text-emerald-700">0</strong>. Compare the full target row on the left before continuing.
+                  </div>
+                )}
               </div>
             </div>
           ) : (
             <div className="mt-6 rounded-xl border border-primary/25 bg-primary/8 p-5">
               <div className="flex gap-3">
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Check className="size-4" aria-hidden="true" /></span>
-                <div><p className="font-semibold">상삼각행렬 완성</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{step.meaning}</p></div>
+                <div><p className="font-semibold">Ready for back substitution</p><p className="mt-1 text-sm leading-6 text-muted-foreground">{step.completion}</p></div>
               </div>
             </div>
           )}
@@ -211,10 +317,12 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
           <div className="mt-6 flex items-center justify-between gap-3 border-t pt-5">
             <Button type="button" variant="ghost" onClick={isComplete ? restart : goPrevious} disabled={!isComplete && stepIndex === 0}>
               {isComplete ? <RotateCcw data-icon="inline-start" aria-hidden="true" /> : <ArrowLeft data-icon="inline-start" aria-hidden="true" />}
-              {isComplete ? '처음부터' : '이전'}
+              {isComplete ? 'Start over' : 'Previous'}
             </Button>
             {!isComplete && (
-              <Button type="button" size="lg" onClick={goNext}>이 코드 실행<ArrowRight data-icon="inline-end" aria-hidden="true" /></Button>
+              <Button type="button" size="lg" onClick={executed ? goNext : runOperation} disabled={!executed && !isCorrect}>
+                {executed ? 'Continue' : 'Run this row operation'}<ArrowRight data-icon="inline-end" aria-hidden="true" />
+              </Button>
             )}
           </div>
         </section>

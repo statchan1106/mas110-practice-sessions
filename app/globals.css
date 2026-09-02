@@ -152,15 +152,191 @@
   }
 
   .matrix-cell {
-    @apply grid aspect-square min-h-11 place-items-center rounded-md font-mono text-sm tabular-nums transition-colors sm:text-base;
+    @apply grid aspect-square min-h-11 place-items-center rounded-md font-mono text-sm tabular-nums transition-all sm:text-base;
   }
 
   .matrix-cell-separator {
     box-shadow: inset 2px 0 0 var(--border);
   }
 
+  .matrix-cell-source {
+    color: var(--primary);
+    background: color-mix(in oklch, var(--primary) 13%, transparent);
+  }
+
+  .matrix-cell-target {
+    color: oklch(0.43 0.105 55);
+    background: oklch(0.9 0.075 72 / 72%);
+  }
+
+  .matrix-cell-result {
+    color: oklch(0.38 0.105 158);
+    background: oklch(0.91 0.055 155 / 72%);
+  }
+
+  .matrix-cell-to-cancel {
+    box-shadow: inset 0 0 0 2px oklch(0.67 0.15 58), 0 0 0 4px oklch(0.76 0.12 66 / 18%);
+  }
+
+  .elimination-zero {
+    position: relative;
+    z-index: 1;
+    color: oklch(0.35 0.13 158);
+    background: oklch(0.88 0.085 156);
+    box-shadow: inset 0 0 0 2px oklch(0.58 0.135 158), 0 0 0 6px oklch(0.67 0.11 158 / 16%);
+    animation: cancel-to-zero 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .operation-stage {
+    @apply rounded-xl border p-4;
+    background: color-mix(in oklch, var(--muted) 58%, transparent);
+    transition: border-color 240ms ease, background-color 240ms ease;
+  }
+
+  .operation-stage.is-executed {
+    border-color: oklch(0.66 0.105 158 / 45%);
+    background: oklch(0.94 0.035 155 / 72%);
+  }
+
+  .cancellation-track {
+    display: grid;
+    grid-template-columns: minmax(2.7rem, auto) auto minmax(4.5rem, auto) auto minmax(2.7rem, auto);
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem;
+    border-radius: 0.7rem;
+    background: var(--background);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .cancellation-term,
+  .cancellation-result {
+    display: grid;
+    min-height: 2.5rem;
+    place-items: center;
+    border-radius: 0.55rem;
+    border: 1px solid var(--border);
+  }
+
+  .cancellation-term.is-target {
+    color: oklch(0.43 0.105 55);
+    border-color: oklch(0.72 0.12 67 / 55%);
+    background: oklch(0.91 0.06 75 / 75%);
+  }
+
+  .cancellation-term.is-source {
+    color: var(--primary);
+    border-color: color-mix(in oklch, var(--primary) 38%, transparent);
+    background: color-mix(in oklch, var(--primary) 10%, transparent);
+  }
+
+  .cancellation-result {
+    color: var(--muted-foreground);
+    border-style: dashed;
+  }
+
+  .cancellation-result.is-zero {
+    color: oklch(0.35 0.13 158);
+    border-color: oklch(0.6 0.13 158 / 55%);
+    border-style: solid;
+    background: oklch(0.88 0.085 156 / 75%);
+    font-weight: 700;
+    animation: cancel-to-zero 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .row-chip {
+    @apply flex min-h-20 flex-col justify-between gap-2 rounded-lg border p-2.5;
+    background: var(--background);
+  }
+
+  .row-chip > span:first-child {
+    color: var(--muted-foreground);
+  }
+
+  .row-chip.is-target {
+    border-color: oklch(0.72 0.12 67 / 42%);
+  }
+
+  .row-chip.is-source {
+    border-color: color-mix(in oklch, var(--primary) 34%, transparent);
+  }
+
+  .row-chip.is-result {
+    border-color: oklch(0.64 0.11 158 / 46%);
+    background: oklch(0.96 0.022 155);
+  }
+
+  .row-chip.is-pending {
+    opacity: 0.48;
+    border-style: dashed;
+  }
+
+  .mini-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mini-row > span {
+    min-width: 1.45rem;
+    text-align: center;
+  }
+
+  .mini-row-augmented {
+    border-left: 1px solid var(--border);
+    padding-left: 0.35rem;
+  }
+
   .code-window {
     background: var(--code-background);
     color: var(--code-foreground);
+  }
+
+  .code-line {
+    display: flex;
+    min-width: max-content;
+    border-radius: 0.45rem;
+    padding: 0.15rem 0.55rem 0.15rem 0;
+    transition: background-color 180ms ease;
+  }
+
+  .code-line.is-active {
+    background: oklch(0.7 0.11 187 / 13%);
+  }
+
+  .code-line-number {
+    width: 2rem;
+    flex: none;
+    color: oklch(0.7 0.025 244 / 54%);
+    text-align: center;
+    user-select: none;
+  }
+}
+
+@keyframes cancel-to-zero {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.3;
+  }
+  55% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .elimination-zero,
+  .cancellation-result.is-zero {
+    animation: none;
   }
 }
