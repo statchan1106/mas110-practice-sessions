@@ -13,12 +13,12 @@ export const gaussianEliminationSection: ChapterSection = {
     'Follow one system through row permutation, LDU factorization, forward substitution, diagonal scaling, and back substitution.',
   focus: 'Ax = b → LDUx = Qb → x',
   learningGoal:
-    'Read A and b as a system of equations, then use row reordering and the LDU factors to solve Ax = b by forward and back-substitution.',
+    'Read A and b as a system of equations, then use row reordering and the LDU factors to solve Ax = b by forward and back substitution.',
   lectureConcepts: [
     'Ax = b',
     'Permutation matrix',
-    'LDU-decomposition',
-    'Forward / back-substitution',
+    'LDU decomposition',
+    'Forward / back substitution',
   ],
   filename,
   ...links,
@@ -38,14 +38,14 @@ export const gaussianEliminationSection: ChapterSection = {
       watchFor: 'SciPy returns A = P L U; therefore Q A = L U.',
     },
     {
-      term: 'LDU-decomposition',
+      term: 'LDU decomposition',
       definition:
         'L stores lower-triangular elimination information, D stores pivots, and U is normalized to have diagonal ones.',
       relation: 'QA = LDU',
       watchFor: 'The diagonal values move out of U_raw and into D.',
     },
     {
-      term: 'Forward / back-substitution',
+      term: 'Forward / back substitution',
       definition:
         'Forward substitution moves top-to-bottom through L; back substitution moves bottom-to-top through U.',
       relation: 'Lv=y, Dz=v, Ux=z',
@@ -84,7 +84,7 @@ export const gaussianEliminationSection: ChapterSection = {
           title: 'A stores the left side of the equations',
           description:
             'Rows are equations and columns line up with x₁, x₂, and x₃.',
-          equation: 'A ∈ ℝ³ˣ³',
+          equation: 'A ∈ ℝ^(3×3)',
           matrices: [
             {
               label: 'A',
@@ -101,7 +101,16 @@ export const gaussianEliminationSection: ChapterSection = {
         },
       },
       {
-        code: 'b = np.array([7.,9.,11.])',
+        code: 'b = np.array([7.,9.,11.])\nAb = np.column_stack((A, b))',
+        lineNotes: [
+          {
+            action: 'Creates one right-hand-side value for each equation row.',
+          },
+          {
+            action:
+              'Places b beside A and stores the 3×4 augmented matrix as Ab.',
+          },
+        ],
         title: 'Create b and join the full system',
         explanation:
           'The vector b stores one right-hand-side value for each row of A. Placing it beside A gives the augmented matrix used in elimination.',
@@ -115,7 +124,7 @@ export const gaussianEliminationSection: ChapterSection = {
             meaning: 'One right-hand-side value per equation.',
           },
           {
-            name: '[A | b].shape',
+            name: 'Ab.shape',
             value: '(3, 4)',
             meaning: 'Three coefficient columns plus one right-hand side.',
           },
@@ -166,7 +175,7 @@ export const gaussianEliminationSection: ChapterSection = {
             meaning: 'A row-permutation matrix.',
           },
           {
-            name: 'diag(U_raw)',
+            name: 'np.diagonal(U_raw)',
             value: '[4, 2.5, 0.6]',
             meaning: 'The three pivots found by elimination.',
           },
@@ -274,29 +283,47 @@ export const gaussianEliminationSection: ChapterSection = {
         },
       },
       {
-        code: 'd = np.diag(U_raw)\nD = np.diag(d)\nU = U_raw / d[:, None]',
+        code: 'pivots = np.diagonal(U_raw).copy()\nD = np.diagflat(pivots)\nU = U_raw / pivots[:, None]\nassert np.allclose(Q @ A, L @ D @ U)',
+        lineNotes: [
+          {
+            action:
+              'Extracts the main diagonal of the 2-D matrix U_raw as the 1-D vector pivots.',
+          },
+          {
+            action: 'Builds a 3×3 diagonal matrix D from the 1-D pivot vector.',
+          },
+          {
+            action:
+              'Turns pivots into a column and divides row i of U_raw by pivots[i].',
+          },
+          {
+            action:
+              'Checks numerically that the normalized factors reconstruct the row-permuted matrix.',
+          },
+        ],
         title: 'Separate pivot scale from triangular shape',
         explanation:
-          'The diagonal pivots are extracted into D. Dividing every row of U_raw by its own pivot leaves a unit-diagonal U.',
+          'np.diagonal only extracts the three pivot values. np.diagflat then builds D from that vector, and row-wise division leaves U with diagonal ones.',
         drives:
           'The three pivot values move from U_raw into D while the diagonal of U becomes 1.',
         watchFor:
-          'd[:, None] changes d into a column so NumPy divides each row by the correct pivot.',
+          'All pivots must be nonzero. Here pivots[:, None] changes shape (3,) into (3,1), enabling row-wise broadcasting.',
         variables: [
           {
-            name: 'd',
+            name: 'pivots',
             value: '[4, 2.5, 0.6]',
             meaning: 'Pivot scale, one value per row.',
           },
           {
-            name: 'diag(U)',
+            name: 'np.diagonal(U)',
             value: '[1, 1, 1]',
             meaning: 'U is normalized row by row.',
           },
         ],
         after: {
           title: 'The pivot values are now stored in D',
-          description: 'Multiplying D and U reconstructs U_raw exactly.',
+          description:
+            'D @ U reconstructs U_raw; np.allclose can check the floating-point result.',
           equation: 'U_raw = D U    and    Q A = L D U',
           matrices: [
             {
@@ -367,8 +394,7 @@ export const gaussianEliminationSection: ChapterSection = {
               cellTones: toneCells([[0, 0]], 'result'),
             },
           ],
-          callout:
-            'The highlighted 9 follows the same row that moved to the top in line 3.',
+          callout: 'The highlighted 9 follows the row that Q moved to the top.',
         },
       },
       {
@@ -389,7 +415,7 @@ export const gaussianEliminationSection: ChapterSection = {
         after: {
           title: 'L and y are joined for elimination',
           description:
-            'Forward substitution will clear the entries below the diagonal while updating only the right-hand side.',
+            'Each stored multiplier updates the right-hand side, then the eliminated coefficient is recorded as zero.',
           equation: 'L v = y',
           matrices: [
             {
@@ -410,11 +436,27 @@ export const gaussianEliminationSection: ChapterSection = {
             },
           ],
           callout:
-            'The orange entries are exactly the multipliers that must be cleared.',
+            'The amber TARGET entries are exactly the multipliers that must be cleared.',
         },
       },
       {
         code: 'for piv in range(3):\n    for i in range(piv + 1, 3):\n        aug[i,-1] -= aug[i,piv] * aug[piv,-1]\n        aug[i,piv] = 0',
+        lineNotes: [
+          {
+            action: 'Visits pivot columns 0, 1, and 2 from left to right.',
+          },
+          {
+            action: 'Visits only rows below the current pivot row.',
+          },
+          {
+            action:
+              'Subtracts the stored multiplier times the solved pivot value from the target right-hand side.',
+          },
+          {
+            action:
+              'Records that the below-pivot coefficient has been eliminated.',
+          },
+        ],
         title: 'Carry out forward substitution',
         explanation:
           'Each multiplier tells how much of an already solved pivot row to subtract from a lower row.',
@@ -426,7 +468,8 @@ export const gaussianEliminationSection: ChapterSection = {
           {
             name: 'aug[:, -1]',
             value: '[9, 6.5, 1.8]',
-            meaning: 'The solved RHS column; line 8 will store it as v.',
+            meaning: 'The solved RHS column; the next step stores it as v.',
+            before: '[9, 11, 7]',
           },
         ],
         after: {
@@ -473,13 +516,23 @@ export const gaussianEliminationSection: ChapterSection = {
         },
       },
       {
-        code: 'v = aug[:, -1]\nz = v / d',
+        code: 'v = aug[:, -1]\nz = v / pivots',
+        lineNotes: [
+          {
+            action:
+              'Selects the final column of the augmented matrix and stores it as v.',
+          },
+          {
+            action:
+              'Solves Dz=v by dividing each entry of v by the matching diagonal pivot.',
+          },
+        ],
         title: 'Solve the diagonal system',
         explanation:
           'The last column is v. Since D is diagonal, solving Dz = v is three independent divisions.',
         drives: 'Three parallel divisions aligned with D’s diagonal.',
         watchFor:
-          'This is elementwise division because both v and d are one-dimensional arrays.',
+          'This is elementwise division because both v and pivots are one-dimensional arrays.',
         variables: [
           {
             name: 'v',
@@ -529,7 +582,25 @@ export const gaussianEliminationSection: ChapterSection = {
         },
       },
       {
-        code: 'x = np.zeros(3)\nfor i in range(2, -1, -1):\n    x[i] = (z[i] - sum(U[i,j]*x[j] for j in range(i+1,3))) / U[i,i]',
+        code: 'x = np.zeros(3)\nfor i in range(2, -1, -1):\n    x[i] = (z[i] - sum(U[i,j]*x[j] for j in range(i+1,3))) / U[i,i]\nassert np.allclose(A @ x, b)',
+        lineNotes: [
+          {
+            action:
+              'Creates space for the three unknown values, initially all zero.',
+          },
+          {
+            action:
+              'Visits rows 2, 1, and 0 so already-solved variables are available.',
+          },
+          {
+            action:
+              'Subtracts contributions from already-solved variables to the right, then divides by U[i,i].',
+          },
+          {
+            action:
+              'Checks numerically that the recovered x satisfies the original system Ax=b.',
+          },
+        ],
         title: 'Back-substitute from the bottom row',
         explanation:
           'Known variables are substituted upward: solve x₃ first, then x₂, then x₁.',
@@ -544,9 +615,9 @@ export const gaussianEliminationSection: ChapterSection = {
             meaning: 'The recovered unknown vector.',
           },
           {
-            name: '‖Ax-b‖',
-            value: '≈ 0',
-            meaning: 'Zero within floating-point tolerance.',
+            name: 'np.allclose(A @ x, b)',
+            value: 'True',
+            meaning: 'The recovered x passes the numerical solution check.',
           },
         ],
         after: {

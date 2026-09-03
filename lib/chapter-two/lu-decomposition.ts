@@ -17,7 +17,7 @@ export const luDecompositionSection: ChapterSection = {
   lectureConcepts: [
     'Matrix multiplication',
     'Permutation matrix',
-    'LU-decomposition',
+    'LU decomposition',
     'Lower / upper triangular matrices',
   ],
   codeExtension:
@@ -52,9 +52,9 @@ export const luDecompositionSection: ChapterSection = {
       term: 'Numerical rank',
       definition:
         'Matrix rank is estimated from singular values relative to a tolerance determined by scale and precision.',
-      relation: 'rank(U) = k',
+      relation: 'rank(A) = rank(U) ≤ k (exact arithmetic)',
       watchFor:
-        'L is 10×10 with unit diagonal and rank 10; it is not rank k in this experiment.',
+        'In the saved run, rank(A)=rank(U)=7; L has unit diagonal and rank 10.',
     },
   ],
   walkthrough: {
@@ -71,172 +71,77 @@ export const luDecompositionSection: ChapterSection = {
     },
     steps: [
       {
-        code: 'def create_random_matrix(m: int, n: int, k: int):',
+        code: 'def create_random_matrix(m: int, n: int, k: int):\n    if k > min(m, n): raise ValueError("k is too large")\n    left = np.random.randn(m, k)\n    right = np.random.randn(k, n)\n    return left @ right',
+        lineNotes: [
+          {
+            action:
+              'Defines the function and its three parameters; the body does not run yet.',
+          },
+          {
+            action:
+              'When called, rejects a hidden width larger than either outside dimension.',
+          },
+          {
+            action: 'When called, draws the m×k left random factor.',
+          },
+          {
+            action:
+              'When called, draws the compatible k×n right random factor.',
+          },
+          {
+            action:
+              'When called, returns their m×n product, whose rank is at most k.',
+          },
+        ],
         title: 'Define the matrix generator',
         explanation:
-          'The function accepts the desired outside shape m×n and an internal width k that controls the rank ceiling.',
-        drives: 'A dimension diagram with k placed between m and n.',
+          'This step stores a function. Its body will create two compatible random factors only when the function is called in the next step.',
+        drives: 'A function definition and its promised dimension flow.',
         watchFor:
-          'This line defines a function; it does not generate numbers yet.',
+          'Definition is not execution: no random matrix or parameter value exists yet.',
         variables: [
-          { name: 'm', value: '10', meaning: 'Number of output rows.' },
-          { name: 'n', value: '11', meaning: 'Number of output columns.' },
-          { name: 'k', value: '7', meaning: 'Maximum information width.' },
+          {
+            name: 'create_random_matrix',
+            value: 'function',
+            meaning: 'Stored code waiting to be called.',
+          },
         ],
         after: {
-          title: 'The function promises an m×n result',
+          title: 'The generator is defined, but has not run',
           description:
-            'Its internal construction will route all columns through only k intermediate directions.',
-          equation: '10×7  ·  7×11  →  10×11',
+            'On a future call, information will pass through k intermediate directions before producing an m×n result.',
+          equation: '(m×k) @ (k×n) → (m×n),  rank ≤ k',
           matrices: [
             {
               label: 'left shape',
-              values: [['10', '×', '7']],
+              values: [['m', '×', 'k']],
               cellTones: toneCells([[0, 2]], 'source'),
             },
             {
               label: 'right shape',
-              values: [['7', '×', '11']],
+              values: [['k', '×', 'n']],
               cellTones: toneCells([[0, 0]], 'source'),
             },
           ],
+          callout:
+            'The upper-bound check makes k feasible; it does not by itself prove that a particular product has rank exactly k.',
         },
       },
       {
-        code: '    if k > min(m, n): raise ValueError("k is too large")',
-        title: 'Reject an impossible requested rank',
-        explanation:
-          'No m×n matrix can have rank larger than min(m,n), so the function checks k before allocating arrays.',
-        drives: 'A validity gate comparing 7 with min(10,11)=10.',
-        watchFor:
-          'Passing this check makes k feasible, but does not prove the random product will have rank exactly k.',
-        variables: [
+        code: 'm, n, k = 10, 11, 7\nA = create_random_matrix(m, n, k)',
+        lineNotes: [
           {
-            name: '7 ≤ 10',
-            value: 'True',
-            meaning: 'The requested hidden width is valid.',
+            action:
+              'Stores the dimensions used by the generated matrix and the later tests.',
+          },
+          {
+            action:
+              'Calls the generator and stores the resulting 10×11 matrix as A.',
           },
         ],
-        after: {
-          title: 'The requested width is feasible',
-          description:
-            'The experiment proceeds because k does not exceed either outside dimension.',
-          equation: 'k = 7 ≤ min(10,11) = 10',
-          callout: 'A k of 12 would fail before any matrix was created.',
-        },
-      },
-      {
-        code: '    left = np.random.randn(m, k)',
-        title: 'Generate the left random factor',
+        title: 'Set the dimensions and build A',
         explanation:
-          'The source notebook names this function-local array A. The guide uses “left” so it cannot be confused with the final test matrix.',
-        drives: 'A dense 10×7 matrix appears.',
-        watchFor:
-          'The original notebook sets no random seed, so values change on every run.',
-        variables: [
-          {
-            name: 'left.shape',
-            value: '(10, 7)',
-            meaning: 'Maps seven internal coordinates to ten output rows.',
-          },
-        ],
-        after: {
-          title: 'The left factor spans at most seven directions',
-          description:
-            'A compact sample stands in for the larger unseeded random matrix.',
-          equation: 'left ∈ ℝ¹⁰ˣ⁷',
-          matrices: [
-            {
-              label: 'left (shape preview)',
-              values: [
-                ['•', '•', '•', '⋯'],
-                ['•', '•', '•', '⋯'],
-                ['⋮', '⋮', '⋮', ''],
-              ],
-              cellTones: toneBlock(0, 3, 0, 3, 'block-a'),
-            },
-          ],
-        },
-      },
-      {
-        code: '    right = np.random.randn(k, n)',
-        title: 'Generate the compatible right factor',
-        explanation:
-          'Its seven rows match the seven columns of the left factor, so matrix multiplication is defined.',
-        drives: 'A 7×11 factor appears beside the existing 10×7 factor.',
-        watchFor: 'The shared dimension must match exactly.',
-        variables: [
-          {
-            name: 'right.shape',
-            value: '(7, 11)',
-            meaning: 'Maps eleven inputs through seven internal coordinates.',
-          },
-        ],
-        after: {
-          title: 'The two random factors are multiplication-compatible',
-          description:
-            'The shared 7 is not part of the outside shape, but it still limits the rank.',
-          equation: '(10×7) @ (7×11)',
-          matrices: [
-            {
-              label: 'left',
-              values: [['10', '×', '7']],
-              cellTones: toneCells([[0, 2]], 'source'),
-            },
-            {
-              label: 'right',
-              values: [['7', '×', '11']],
-              cellTones: toneCells([[0, 0]], 'source'),
-            },
-          ],
-        },
-      },
-      {
-        code: '    return left @ right',
-        title: 'Create the rank-controlled product',
-        explanation:
-          'All information passes through a seven-dimensional middle space, so the product has rank at most seven.',
-        drives:
-          'The two factors merge into a 10×11 matrix with a visible rank ceiling.',
-        watchFor:
-          '“At most seven” is the theorem. Rank exactly seven is the typical random outcome checked later.',
-        variables: [
-          {
-            name: 'product.shape',
-            value: '(10, 11)',
-            meaning: 'The outside dimensions remain.',
-          },
-          {
-            name: 'rank ceiling',
-            value: '≤ 7',
-            meaning: 'The shared internal width.',
-          },
-        ],
-        after: {
-          title:
-            'The intermediate width limits the result to rank at most seven',
-          description:
-            'The result has 110 entries but no more than seven independent rows or columns.',
-          equation: 'rank(left @ right) ≤ min(rank(left), rank(right)) ≤ 7',
-          matrices: [
-            {
-              label: 'returned product: 10×11',
-              values: [
-                ['•', '•', '•', '•', '⋯'],
-                ['•', '•', '•', '•', '⋯'],
-                ['•', '•', '•', '•', '⋯'],
-                ['⋮', '⋮', '⋮', '⋮', ''],
-              ],
-              cellTones: toneBlock(0, 3, 0, 4, 'result'),
-            },
-          ],
-        },
-      },
-      {
-        code: 'A = create_random_matrix(m=10, n=11, k=7)',
-        title: 'Store the product as the test matrix',
-        explanation:
-          'The returned matrix becomes the outer variable A used by the LU experiment.',
+          'The dimensions are stored for later checks, and the returned product becomes the test matrix A.',
         drives:
           'The product receives its experiment label and measured numerical rank.',
         watchFor:
@@ -257,7 +162,7 @@ export const luDecompositionSection: ChapterSection = {
           title: 'The experiment now has a 10×11 matrix A',
           description:
             'Seven independent directions are embedded in a larger rectangular array.',
-          equation: 'A ∈ ℝ¹⁰ˣ¹¹,  rank(A)=7 in the saved output',
+          equation: 'A ∈ ℝ^(10×11),  rank(A)=7 in the saved output',
           callout:
             'Because the source run is unseeded, a fresh Colab run will produce different entries.',
         },
@@ -266,7 +171,7 @@ export const luDecompositionSection: ChapterSection = {
         code: 'P, L, U = sp.linalg.lu(A)',
         title: 'Factor A with partial pivoting',
         explanation:
-          'SciPy returns a 10×10 permutation P, a 10×10 unit-lower L, and a 10×11 upper-trapezoidal U.',
+          'SciPy returns a 10×10 permutation P, a 10×10 unit-lower L, and a 10×11 upper-trapezoidal U. This U is SciPy’s raw upper factor; Lab 2.1 calls the corresponding matrix U_raw before normalizing its diagonal.',
         drives:
           'A splits into row order, elimination multipliers, and echelon structure.',
         watchFor: 'SciPy’s documented identity is A = P @ L @ U.',
@@ -385,11 +290,11 @@ export const luDecompositionSection: ChapterSection = {
         drives:
           'The residual entries are compared, then summarized by one small norm.',
         watchFor:
-          'Tiny floating-point noise is normal; compare it with the notebook’s dimension-aware absolute threshold instead of demanding exact equality.',
+          'Tiny floating-point noise is normal. This notebook uses mnε as a simple absolute threshold; other matrix scales may need a relative residual or np.allclose.',
         variables: [
           { name: 'error', value: '2.685e−15', meaning: 'Saved notebook run.' },
           {
-            name: 'm*n*eps',
+            name: 'm*n*np.finfo(float).eps',
             value: '2.442e−14',
             meaning: 'Source notebook threshold.',
           },
@@ -416,6 +321,19 @@ export const luDecompositionSection: ChapterSection = {
       },
       {
         code: 'rank_a = np.linalg.matrix_rank(A)\nrank_l = np.linalg.matrix_rank(L)\nrank_u = np.linalg.matrix_rank(U)',
+        lineNotes: [
+          {
+            action: 'Estimates the numerical rank of the generated matrix A.',
+          },
+          {
+            action:
+              'Estimates the numerical rank of the square unit-lower factor L.',
+          },
+          {
+            action:
+              'Estimates the numerical rank of the upper-trapezoidal factor U.',
+          },
+        ],
         title: 'Measure the ranks of the factors',
         explanation:
           'Numerical rank counts singular values large enough relative to a floating-point tolerance.',
@@ -468,6 +386,16 @@ export const luDecompositionSection: ChapterSection = {
       },
       {
         code: 'assert rank_u == k\nassert error <= n * m * np.finfo(float).eps',
+        lineNotes: [
+          {
+            action:
+              'Stops the current trial unless U has the expected numerical rank k.',
+          },
+          {
+            action:
+              'Stops the current trial unless the absolute residual is below the notebook’s mnε threshold.',
+          },
+        ],
         title: 'Turn the claims into tests',
         explanation:
           'The assertions stop execution if U loses the expected rank or the factorization error exceeds the notebook’s tolerance.',
@@ -491,18 +419,33 @@ export const luDecompositionSection: ChapterSection = {
             'The experiment has verified its intended rank outcome and LU reconstruction accuracy for this draw.',
           equation: '7 = 7  ✓     2.685e−15 ≤ 2.442e−14  ✓',
           callout:
-            'A rare rank-deficient random draw could fail the first assertion because the product theorem promises rank ≤ k, not equality.',
+            'The dimension bound guarantees only rank ≤ k. Independent Gaussian factors have rank k almost surely in exact arithmetic; numerical rank still depends on a tolerance.',
         },
       },
       {
-        code: 'errors, ranks = [], []\nfor trial in range(10):\n    A = create_random_matrix(10, 11, 7)\n    P, L, U = sp.linalg.lu(A)\n    errors.append(np.linalg.norm(P.T @ A - L @ U))\n    ranks.append(np.linalg.matrix_rank(U))\nsns.histplot(errors)\nsns.histplot(ranks, discrete=True)',
-        title: 'Repeat the experiment ten times',
+        code: 'n_repeats = 10\nerrors, ranks = [], []\nfor trial in range(n_repeats):\n    A = create_random_matrix(m, n, k)\n    P, L, U = sp.linalg.lu(A)\n    errors.append(np.linalg.norm(P.T @ A - L @ U))\n    ranks.append(np.linalg.matrix_rank(U))\nfig, axes = plt.subplots(1, 2)\nsns.histplot(errors, ax=axes[0])\nsns.histplot(ranks, discrete=True, ax=axes[1])\nplt.tight_layout()',
+        lineNotes: [
+          { action: 'Sets the number of independent random trials.' },
+          { action: 'Creates empty lists for residuals and ranks.' },
+          { action: 'Repeats the experiment n_repeats times.' },
+          { action: 'Generates a fresh 10×11 rank-limited matrix.' },
+          { action: 'Computes its pivoted LU factors.' },
+          {
+            action: 'Stores the reconstruction residual for this trial.',
+          },
+          { action: 'Stores the numerical rank of U for this trial.' },
+          { action: 'Creates two separate plotting axes side by side.' },
+          { action: 'Plots the residual distribution on the left axis.' },
+          { action: 'Plots the discrete rank counts on the right axis.' },
+          { action: 'Adjusts spacing so the two plots do not overlap.' },
+        ],
+        title: 'Repeat the experiment and separate the plots',
         explanation:
           'Each unseeded run generates a new A, records one reconstruction error, and records the rank of U.',
         drives:
           'A ten-trial strip and distributions of tiny errors and integer ranks.',
         watchFor:
-          'The matrices printed by the notebook belong only to the final trial; the plots summarize all ten.',
+          'Each histogram has its own axis; otherwise the error and rank scales would be overlaid and unreadable.',
         variables: [
           {
             name: 'n_repeats',
@@ -512,13 +455,13 @@ export const luDecompositionSection: ChapterSection = {
           {
             name: 'ranks',
             value: '[7, …, 7]',
-            meaning: 'Discrete rank results, typically all seven.',
+            meaning: 'Saved notebook run: all ten ranks were seven.',
           },
         ],
         after: {
           title: 'Ten runs show the numerical pattern',
           description:
-            'All ten dots should stay beneath the error threshold, while the rank counts remain concentrated at seven.',
+            'The error values should remain near machine precision, while the rank observations should concentrate at seven.',
           equation: '10 trials → {errorₜ, rank(Uₜ)} for t=1,…,10',
           matrices: [
             {
@@ -527,7 +470,7 @@ export const luDecompositionSection: ChapterSection = {
               cellTones: toneBlock(0, 1, 0, 10, 'result'),
             },
             {
-              label: 'rank(U) frequency',
+              label: 'saved rank(U) frequency',
               values: [
                 ['rank', 7],
                 ['count', 10],

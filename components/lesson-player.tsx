@@ -101,7 +101,9 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
         </div>
         <Progress value={progress} className="mt-5">
           <ProgressLabel>{step.shortLabel}</ProgressLabel>
-          <ProgressValue>{Math.round(progress)}%</ProgressValue>
+          <ProgressValue>
+            {(_formattedValue, value) => `${Math.round(value ?? 0)}%`}
+          </ProgressValue>
         </Progress>
       </CardHeader>
 

@@ -125,7 +125,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
         after: {
           title: 'A fills the upper-left position',
           description: 'It has two rows and three columns.',
-          equation: 'A ∈ ℝ²ˣ³',
+          equation: 'A ∈ ℝ^(2×3)',
           matrices: [
             {
               label: 'Block A',
@@ -203,7 +203,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
           title: 'C fills the lower-left position',
           description:
             'Its width matches A, while its height starts a new row.',
-          equation: 'C ∈ ℝ¹ˣ³',
+          equation: 'C ∈ ℝ^(1×3)',
           matrices: [
             {
               label: 'Block C',
@@ -315,7 +315,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
         explanation:
           'Y has five rows so its leading dimension matches the five columns of X.',
         drives:
-          'A 5×4 grid with possible split lines after row 3 and column 2.',
+          'A 5×4 grid with split lines after the first three rows and first two columns.',
         watchFor: 'The shared inner dimension 5 is what makes X @ Y legal.',
         variables: [
           {
@@ -331,7 +331,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
           equation: '(3×5) @ (5×4) → (3×4)',
           matrices: [
             {
-              label: 'Y (cut after row 3, column 2)',
+              label: 'Y (cut after 3 rows and 2 columns)',
               values: [
                 [0.1, 0.2, 0.7, 0.8],
                 [0.3, 0.4, 0.9, 1],
@@ -347,6 +347,24 @@ export const blockMatricesGraphsSection: ChapterSection = {
       },
       {
         code: 'E = Y[:3, 0:2]\nF = Y[0:3, 2:]\nG = Y[3:5, :2]\nH = Y[3:, 2:4]',
+        lineNotes: [
+          {
+            action:
+              'Selects rows 0–2 and columns 0–1, producing the 3×2 block E.',
+          },
+          {
+            action:
+              'Selects rows 0–2 and columns 2–3, producing the 3×2 block F.',
+          },
+          {
+            action:
+              'Selects rows 3–4 and columns 0–1, producing the 2×2 block G.',
+          },
+          {
+            action:
+              'Selects rows 3–4 and columns 2–3, producing the 2×2 block H.',
+          },
+        ],
         title: 'Recover E, F, G, and H with slices',
         explanation:
           'Each half-open slice names one rectangle. The stop indices 3, 5, 2, and 4 are excluded.',
@@ -441,11 +459,29 @@ export const blockMatricesGraphsSection: ChapterSection = {
               cellTones: toneCells([[0, 0]], 'result'),
             },
           ],
-          callout: 'For the selected entry: row 1 of X · column 1 of Y = 23.3.',
+          callout: 'For the selected entry: X[0,:] · Y[:,0] = 23.3.',
         },
       },
       {
         code: 'TL = A@E + B@G\nTR = A@F + B@H\nBL = C@E + D@G\nBR = C@F + D@H',
+        lineNotes: [
+          {
+            action:
+              'Computes the top-left result block from the two routes through the shared block dimension.',
+          },
+          {
+            action:
+              'Computes the top-right result block while preserving factor order.',
+          },
+          {
+            action:
+              'Computes the bottom-left result block while preserving factor order.',
+          },
+          {
+            action:
+              'Computes the bottom-right result block while preserving factor order.',
+          },
+        ],
         title: 'Compute the same answer blockwise',
         explanation:
           'Each result quadrant receives two routes. For example, the top-left block combines A→E and B→G.',
@@ -503,6 +539,23 @@ export const blockMatricesGraphsSection: ChapterSection = {
       },
       {
         code: 'try:\n    E @ A + G @ B\nexcept ValueError as error:\n    print(error)',
+        lineNotes: [
+          {
+            action:
+              'Starts a protected block so the intentional shape error does not stop the lesson.',
+          },
+          {
+            action:
+              'Attempts to add a 3×3 product to a 2×2 product, which is invalid.',
+          },
+          {
+            action:
+              'Catches NumPy’s ValueError caused by the incompatible output shapes.',
+          },
+          {
+            action: 'Displays the captured shape-mismatch message.',
+          },
+        ],
         title: 'Test the tempting reversed order',
         explanation:
           'Reversing factors creates a 3×3 matrix and a 2×2 matrix. NumPy cannot add arrays with these incompatible shapes.',
@@ -550,7 +603,28 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'Z11 = np.array([[1.,2.,2.],[1.,4.,5.],[1.,2.,3.]])\nZ12 = np.array([[1.,3.],[0.,2.],[1.,1.]])\nZ21 = np.array([[2.,1.,1.],[1.,1.,1.]])\nZ22 = np.array([[1.,1.],[0.,1.]])\nZ = np.block([[Z11, Z12],[Z21, Z22]])\nZ11_inv = sp.linalg.inv(Z11)',
+        code: 'Z11 = np.array([[1.,2.,2.],[1.,4.,5.],[2.,7.,8.]])\nZ12 = np.array([[1.,3.],[0.,2.],[3.,7.]])\nZ21 = np.array([[5.,3.,0.],[2.,3.,1.]])\nZ22 = np.array([[4.,3.],[9.,7.]])\nZ = np.block([[Z11, Z12],[Z21, Z22]])\nZ11_inv = sp.linalg.inv(Z11)',
+        lineNotes: [
+          {
+            action: 'Creates the invertible 3×3 leading block Z11.',
+          },
+          {
+            action: 'Creates the 3×2 upper-right block Z12.',
+          },
+          {
+            action: 'Creates the 2×3 lower-left block Z21 to be eliminated.',
+          },
+          {
+            action: 'Creates the 2×2 lower-right block Z22.',
+          },
+          {
+            action: 'Combines the four blocks into the 5×5 matrix Z.',
+          },
+          {
+            action:
+              'Computes the inverse of Z11 for the first block row operation.',
+          },
+        ],
         title: 'Set up a block elimination problem',
         explanation:
           'Z is partitioned 3+2 in both directions. Inverting Z11 lets a block row operation normalize the upper-left block.',
@@ -592,6 +666,16 @@ export const blockMatricesGraphsSection: ChapterSection = {
       },
       {
         code: 'L1 = np.block([[Z11_inv, np.zeros((3,2))],[-Z21@Z11_inv, np.eye(2)]])\nR1 = L1 @ Z',
+        lineNotes: [
+          {
+            action:
+              'Builds one block row-operation matrix that normalizes Z11 and cancels Z21.',
+          },
+          {
+            action:
+              'Applies that operation to Z and stores the block-echelon result as R1.',
+          },
+        ],
         title: 'Eliminate an entire block at once',
         explanation:
           'Multiplication by L1 changes Z11 to identity and cancels every entry of Z21 simultaneously.',
@@ -634,7 +718,28 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'S22 = Z22 - Z21 @ Z11_inv @ Z12\nS_inv = sp.linalg.inv(S22)\nL2 = np.block([[np.eye(3), -Z11_inv@Z12@S_inv],[np.zeros((2,3)), S_inv]])\nZ_inv = L2 @ L1',
+        code: 'S22 = Z22 - Z21 @ Z11_inv @ Z12\nS_inv = sp.linalg.inv(S22)\nL2 = np.block([[np.eye(3), -Z11_inv@Z12@S_inv],[np.zeros((2,3)), S_inv]])\nZ_inv = L2 @ L1\ncheck = np.allclose(Z_inv @ Z, np.eye(5))',
+        lineNotes: [
+          {
+            action:
+              'Computes the lower-right block left after Z21 is eliminated.',
+          },
+          {
+            action: 'Inverts the 2×2 Schur complement.',
+          },
+          {
+            action:
+              'Builds the second block operation that clears the upper-right block and normalizes S22.',
+          },
+          {
+            action:
+              'Composes the two left operations in execution order to obtain Z inverse.',
+          },
+          {
+            action:
+              'Checks that multiplying the computed inverse by Z is numerically close to identity.',
+          },
+        ],
         title: 'Finish the block inverse',
         explanation:
           'L2 normalizes the Schur complement and clears the upper-right block. Because L2 @ L1 @ Z = I, their product is Z inverse.',
@@ -652,15 +757,20 @@ export const blockMatricesGraphsSection: ChapterSection = {
             value: 'L2 @ L1',
             meaning: 'The accumulated left operations.',
           },
+          {
+            name: 'check',
+            value: 'True',
+            meaning: 'Z_inv @ Z is numerically close to I₅.',
+          },
         ],
         after: {
           title: 'The block operations have built Z⁻¹',
           description:
-            'The identity result certifies that the accumulated left multiplier is the inverse.',
+            'The product is numerically close to identity, confirming that the accumulated left multiplier is the inverse.',
           equation: '(L2 L1) Z = I₅  →  Z⁻¹ = L2 L1',
           matrices: [
             {
-              label: 'L2 @ L1 @ Z',
+              label: 'Z_inv @ Z (rounded)',
               values: [
                 [1, 0, 0, 0, 0],
                 [0, 1, 0, 0, 0],
@@ -685,10 +795,29 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'edges = {1:[3,4,5], 2:[3,4,5], 3:[1,2,6,7], 4:[1,2,6,7], 5:[1,2,6,7], 6:[3,4,5,8], 7:[3,4,5,8], 8:[6,7]}\nA = np.zeros((8,8))\nfor i in range(1,9):\n    for j in edges[i]: A[i-1,j-1] = 1',
+        code: 'edges = {1:[3,4,5], 2:[3,4,5], 3:[1,2,6,7], 4:[1,2,6,7], 5:[1,2,6,7], 6:[3,4,5,8], 7:[3,4,5,8], 8:[6,7]}\nA = np.zeros((8,8))\nfor i in range(1,9):\n    for j in edges[i]:\n        A[i-1,j-1] = 1',
+        lineNotes: [
+          {
+            action:
+              'Stores each vertex’s neighbors; every undirected edge appears in both directions.',
+          },
+          {
+            action: 'Creates an empty 8×8 adjacency matrix.',
+          },
+          {
+            action: 'Visits vertex labels 1 through 8.',
+          },
+          {
+            action: 'Visits every neighbor j listed for the current vertex i.',
+          },
+          {
+            action:
+              'Writes one edge into row i−1, column j−1 after converting labels to zero-based indices.',
+          },
+        ],
         title: 'Turn an adjacency list into a matrix',
         explanation:
-          'Each listed neighbor writes a 1 into the corresponding row and column. The subtraction converts vertex labels 1–8 into Python indices 0–7.',
+          'Each listed neighbor writes a 1 into the cell at row i and column j. Reciprocal neighbor entries make the matrix symmetric; subtraction converts labels 1–8 to indices 0–7.',
         drives:
           'Graph edges and symmetric pairs of adjacency cells appear together.',
         watchFor:
@@ -698,11 +827,13 @@ export const blockMatricesGraphsSection: ChapterSection = {
             name: 'A.shape',
             value: '(8, 8)',
             meaning: 'One row and column per graph vertex.',
+            before: '(2, 3) for the earlier block A',
           },
           {
             name: 'A.sum()',
             value: '28',
             meaning: 'Fourteen undirected edges counted in both directions.',
+            before: '21 for the earlier block A',
           },
         ],
         after: {
@@ -751,7 +882,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
         after: {
           title: 'A³ turns repeated choices into walk counts',
           description:
-            'The graph highlights one representative walk; the matrix cell records all eight.',
+            'The graph highlights the edges used by one representative walk: 3—6 is traversed twice and 6—8 once. The matrix cell counts all eight walks.',
           equation: '6→3→6→8 is one of 8 length-three walks from 6 to 8',
           graph: {
             nodes: graphNodes.map((node) => ({
@@ -774,7 +905,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
           },
           matrices: [
             {
-              label: 'row 6 of A³',
+              label: 'vertex-6 row of A³ (index 5)',
               values: [[0, 0, 14, 14, 14, 0, 0, 8]],
               cellTones: toneCells([[0, 7]], 'result'),
             },
@@ -784,34 +915,56 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'v_order = [3,4,5,8,1,2,6,7]\norder = np.array(v_order) - 1\nB = A[np.ix_(order, order)]\nB2 = B @ B',
+        code: 'v_order = [3,4,5,8,1,2,6,7]\norder = np.array(v_order) - 1\nB = A[np.ix_(order, order)]\nK = B[:4, 4:]\nB2 = B @ B',
+        lineNotes: [
+          {
+            action:
+              'Lists the first bipartition group followed by the second group.',
+          },
+          {
+            action:
+              'Converts the one-based vertex labels into zero-based NumPy indices.',
+          },
+          {
+            action:
+              'Applies the same new order to both rows and columns of the adjacency matrix.',
+          },
+          {
+            action:
+              'Extracts the upper-right block K containing all cross-group edges.',
+          },
+          {
+            action:
+              'Squares the reordered adjacency matrix using matrix multiplication.',
+          },
+        ],
         title: 'Reorder the bipartition and square it',
         explanation:
           'Putting the two vertex groups together exposes zero diagonal blocks in B. Squaring then moves two-step connections onto the diagonal blocks.',
         drives:
           'Rows and columns slide into bipartite order; off-diagonal structure in B becomes diagonal structure in B².',
         watchFor:
-          'B @ B is matrix multiplication; B ** 2 would only square entries elementwise.',
+          'Here B is the reordered adjacency matrix, not the earlier block B. B @ B is matrix multiplication; B ** 2 only squares entries elementwise.',
         variables: [
           {
-            name: 'V1',
-            value: '{3,4,5,8}',
-            meaning: 'First side of the bipartition.',
+            name: 'v_order[:4]',
+            value: '[3,4,5,8]',
+            meaning: 'First side of the bipartition in the stored order.',
           },
           {
-            name: 'V2',
-            value: '{1,2,6,7}',
-            meaning: 'Second side of the bipartition.',
+            name: 'v_order[4:]',
+            value: '[1,2,6,7]',
+            meaning: 'Second side of the bipartition in the stored order.',
           },
         ],
         after: {
           title: 'Reordering reveals the graph’s block structure',
           description:
             'Edges cross between the two groups, so B has zero diagonal blocks. Two-step walks return to the same group, so B² has zero off-diagonal blocks.',
-          equation: 'B=[0 Q; Qᵀ 0]  →  B²=[QQᵀ 0; 0 QᵀQ]',
+          equation: 'B=[0 K; Kᵀ 0]  →  B²=[KKᵀ 0; 0 KᵀK]',
           matrices: [
             {
-              label: 'Q',
+              label: 'K',
               values: [
                 [1, 1, 1, 1],
                 [1, 1, 1, 1],
@@ -821,7 +974,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
               cellTones: toneBlock(0, 4, 0, 4, 'block-a'),
             },
             {
-              label: 'QQᵀ',
+              label: 'KKᵀ',
               values: [
                 [4, 4, 4, 2],
                 [4, 4, 4, 2],
@@ -831,7 +984,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
               cellTones: toneBlock(0, 4, 0, 4, 'result'),
             },
             {
-              label: 'QᵀQ',
+              label: 'KᵀK',
               values: [
                 [3, 3, 3, 3],
                 [3, 3, 3, 3],

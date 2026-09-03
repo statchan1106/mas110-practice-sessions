@@ -65,7 +65,7 @@ export const gaussianDetailSection: ChapterSection = {
     initial: {
       title: 'An elimination algorithm needs both data and a cursor',
       description:
-        'The matrix will change in place while row_to_check marks where the next pivot must land.',
+        'The matrix changes in its working copy while r marks where the next pivot must land.',
       equation: 'search → swap → eliminate → advance',
       callout:
         'Think first: why is the top-left zero a problem for the first division?',
@@ -111,10 +111,24 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'A_original = A.copy()\nA = A.copy()\nn, m = A.shape\nr = 0\neps = 1e-12\nQ_list, L_list = [], []',
+        code: 'A_original = A.copy()\nA = A.copy()\nn, m = A.shape\nr = 0\neps = 1e-12\nQ_list, E_list = [], []',
+        lineNotes: [
+          {
+            action:
+              'Saves the input matrix for the final reconstruction check.',
+          },
+          { action: 'Creates the working copy that elimination may change.' },
+          { action: 'Stores the number of rows n and columns m.' },
+          { action: 'Places the active pivot-row cursor at row 0.' },
+          { action: 'Defines the threshold used to treat a pivot as zero.' },
+          {
+            action:
+              'Creates lists for the row-permutation matrices Qj and elimination matrices Ej.',
+          },
+        ],
         title: 'Protect the input and initialize algorithm state',
         explanation:
-          'copy preserves the caller’s matrix. n and m store dimensions, r marks the active pivot row, and eps defines numerical zero.',
+          'A_original stays unchanged while the second copy becomes the working matrix. n and m store dimensions, r marks the active pivot row, and eps defines numerical zero.',
         drives:
           'An original/working distinction, a row cursor, and a tolerance marker.',
         watchFor: 'Only the working copy changes during elimination.',
@@ -154,7 +168,14 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'for j in range(m):',
+        code: 'for j in range(m):\n    if r >= n: break',
+        lineNotes: [
+          { action: 'Scans candidate pivot columns from left to right.' },
+          {
+            action:
+              'Stops before indexing an empty row range once every row already has a pivot.',
+          },
+        ],
         title: 'Scan columns from left to right',
         explanation:
           'On the first pass j=0. Only rows r through n−1 are eligible because earlier pivot rows, if any, are already finished.',
@@ -195,11 +216,18 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'pivot = r + np.argmax(np.abs(A[r:, j]))',
+        code: '    pivot = r + np.argmax(np.abs(A[r:, j]))',
+        lineNotes: [
+          {
+            action:
+              'Finds the largest candidate magnitude below the cursor and converts its local index to a row index.',
+          },
+        ],
         title: 'Choose the largest absolute candidate',
         explanation:
           'abs removes signs, argmax returns the local winning index, and adding r converts it back to a matrix row index.',
-        drives: 'Magnitude bars compare 0, 4, and 2; row 1 wins.',
+        drives:
+          'Magnitude bars compare 0, 4, and 2; row index 1 (the second row) wins.',
         watchFor:
           'The source notebook spells this search out with a loop; this line is an equivalent compact form.',
         variables: [
@@ -210,10 +238,10 @@ export const gaussianDetailSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'Row 1 wins the first pivot search',
+          title: 'The second row wins the first pivot search',
           description:
             'Its entry 4 is the largest absolute candidate in the active column.',
-          equation: 'arg max [|0|, |4|, |2|] = row 1',
+          equation: 'arg max [|0|, |4|, |2|] = index 1 (second row)',
           matrices: [
             {
               label: 'pivot winner',
@@ -230,13 +258,19 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'A[[r, pivot], :] = A[[pivot, r], :]',
+        code: '    A[[r, pivot], :] = A[[pivot, r], :]',
+        lineNotes: [
+          {
+            action:
+              'Swaps the full pivot row with row r using one advanced-indexing assignment.',
+          },
+        ],
         title: 'Move the winning row into pivot position',
         explanation:
           'Advanced indexing swaps the two complete rows in one assignment.',
         drives: 'Rows 0 and 1 cross while retaining their contents.',
         watchFor:
-          'The operation changes row order, not the equations’ solution set.',
+          'The swap only reorders rows. In Ax=b, apply the same swap to b so the solution set is unchanged.',
         variables: [
           {
             name: 'A[r,j]',
@@ -278,14 +312,25 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'Qj = np.eye(n)\nQj[[r,pivot],:] = Qj[[pivot,r],:]\nQ_list.append(Qj.copy())',
+        code: '    Qj = np.eye(n)\n    Qj[[r,pivot],:] = Qj[[pivot,r],:]\n    Q_list.append(Qj.copy())',
+        lineNotes: [
+          { action: 'Starts the current row permutation from identity.' },
+          {
+            action:
+              'Applies the same row swap to identity, producing the permutation matrix Qj.',
+          },
+          {
+            action:
+              'Stores an independent snapshot of this row permutation for reconstruction.',
+          },
+        ],
         title: 'Record the row swap as a matrix',
         explanation:
           'Applying the same row swap to identity creates a permutation matrix. Saving it lets the algorithm reconstruct every reordering later.',
         drives:
           'Identity changes into Q₀, and Q₀ @ A_before reproduces A_after.',
         watchFor:
-          'copy saves this step; otherwise later edits could change the stored operation matrix.',
+          'copy stores an independent snapshot of this operation matrix.',
         variables: [
           {
             name: 'Q₀',
@@ -296,7 +341,7 @@ export const gaussianDetailSection: ChapterSection = {
         after: {
           title: 'Q₀ records the row swap',
           description:
-            'Left-multiplying by Q₀ performs exactly the row exchange seen in line 5.',
+            'Left-multiplying by Q₀ performs exactly the row exchange shown above.',
           equation: 'Q₀ A_before = A_after',
           matrices: [
             {
@@ -326,10 +371,26 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'if abs(A[r, j]) < eps: continue',
-        title: 'Guard against an effectively zero pivot',
+        code: '    Ej = np.eye(n)\n    if abs(A[r, j]) < eps:\n        E_list.append(Ej.copy())\n        continue',
+        lineNotes: [
+          {
+            action: 'Starts the current elimination operation from identity.',
+          },
+          {
+            action: 'Checks whether the largest remaining candidate is tiny.',
+          },
+          {
+            action:
+              'Stores an identity elimination step so E_list stays aligned with Q_list.',
+          },
+          {
+            action:
+              'Skips division and moves to the next column without advancing r.',
+          },
+        ],
+        title: 'Create the operation matrix and guard the pivot',
         explanation:
-          'The branch skips an unsafe column instead of dividing by a value smaller than the numerical tolerance.',
+          'Ej begins as identity. If the best pivot is still tiny, the code records that no elimination occurred and skips the unsafe division.',
         drives: 'The pivot magnitude is compared directly with eps.',
         watchFor:
           'Here |4| is much larger than 1e−12, so elimination continues.',
@@ -358,16 +419,29 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'k = r + 1  # first target row in this 3×3 trace\nu = A[k, j] / A[r, j]\nEj = np.eye(n)',
+        code: '    for k in range(r + 1, n):\n        u = A[k, j] / A[r, j]',
+        lineNotes: [
+          {
+            action: 'Visits every row below the active pivot row.',
+          },
+          {
+            action:
+              'Divides the current target entry by the pivot to obtain its elimination multiplier.',
+          },
+        ],
         title: 'Compute the elimination multiplier',
         explanation:
-          'For target row k=2, divide the target entry 2 by pivot 4. The result 0.5 is exactly how much pivot row to subtract.',
+          'The loop first sees k=1, where the target is already zero and u=0. The visual focuses on k=2, where 2/4=0.5.',
         drives:
           'Target ÷ pivot becomes a multiplier displayed between the two rows.',
         watchFor:
-          'The already-zero target in row 1 has multiplier 0 and needs no visible change.',
+          'The target at row index 1 (the second row) is already zero, so its multiplier is 0.',
         variables: [
-          { name: 'k', value: '2', meaning: 'Current target row.' },
+          {
+            name: 'k (shown iteration)',
+            value: '2',
+            meaning: 'Row index 2, the third row, is highlighted below.',
+          },
           { name: 'u', value: '0.5', meaning: 'Target-to-pivot ratio.' },
         ],
         after: {
@@ -391,14 +465,24 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'A[k, j:] -= u * A[r, j:]\nEj[k, r] = -u',
+        code: '        A[k, j:] -= u * A[r, j:]\n        Ej[k, r] = -u',
+        lineNotes: [
+          {
+            action:
+              'Subtracts u times the pivot row from the current target row, starting at column j.',
+          },
+          {
+            action:
+              'Stores −u in the elementary matrix so left multiplication performs the same row operation.',
+          },
+        ],
         title: 'Create the zero and record the operation',
         explanation:
           'The target row changes component by component. The elimination matrix stores −0.5 because left multiplication adds −0.5 times the pivot row.',
         drives:
           '2 becomes zero; the rest of its row becomes [2.5, 0.5]; −0.5 is stored in the operation matrix.',
         watchFor:
-          'The generalized teaching code uses r in A[r,j:] and Ej[k,r], which remains correct even if an earlier column was skipped.',
+          'Using row r—not column j—for the pivot row and Ej column keeps the code correct even after a skipped column.',
         variables: [
           {
             name: 'Ej[2,0]',
@@ -436,14 +520,50 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'L_list.append(Ej.copy())\nr += 1  # repeat search, swap, elimination\nU = np.array([[4.,1.,1.],[0.,2.5,.5],[0.,0.,.6]])\nQ = np.array([[0.,1.,0.],[0.,0.,1.],[1.,0.,0.]])\nLprime = np.array([[1.,0.,0.],[-.5,1.,0.],[.4,-.8,1.]])\nL = np.linalg.inv(Lprime)\nassert np.allclose(Q @ A_original, L @ U)',
-        title: 'Advance the pivot staircase and finish',
+        code: '    E_list.append(Ej.copy())\n    r += 1\nU = A.copy()\nE = E_list[-1]\nQ = np.eye(n)\nfor i in range(len(E_list) - 1, 0, -1):\n    Q = Q @ Q_list[i]\n    E = E @ Q @ E_list[i - 1] @ Q.T\nQ = Q @ Q_list[0]\nL = np.linalg.inv(E)\nassert np.allclose(Q @ A_original, L @ U)',
+        lineNotes: [
+          {
+            action:
+              'Stores the completed elimination matrix for the current column.',
+          },
+          { action: 'Advances the pivot-row cursor after a pivot is used.' },
+          {
+            action:
+              'Copies the final row-echelon working matrix into the upper factor U.',
+          },
+          {
+            action:
+              'Starts the accumulated elimination matrix with the final recorded step.',
+          },
+          { action: 'Starts the accumulated row permutation from identity.' },
+          {
+            action: 'Walks backward through the earlier recorded steps.',
+          },
+          {
+            action:
+              'Accumulates the row swaps that occur after the earlier elimination step.',
+          },
+          {
+            action:
+              'Reorders that earlier elimination matrix into the final row order, then multiplies it into E.',
+          },
+          { action: 'Includes the first recorded row swap in Q.' },
+          {
+            action:
+              'Inverts the accumulated elimination matrix to obtain the usual lower factor L.',
+          },
+          {
+            action:
+              'Checks numerically that the reconstructed factors satisfy Q @ A_original = L @ U.',
+          },
+        ],
+        title: 'Finish elimination and reconstruct the factors',
         explanation:
-          'The next search compares 2 and 2.5 in column 1, swaps the 2.5 row upward, uses multiplier 0.8, and creates the final zero below the diagonal.',
+          'The loop repeats the same search–swap–eliminate cycle. The recorded matrices are then combined in reverse order to recover Q, E, and the usual lower factor L=E⁻¹.',
         drives:
           'The cursor moves down-right and zeros accumulate below the diagonal.',
         watchFor:
-          'The usual L factor is the inverse of the accumulated elimination matrix E; E itself stores negative multipliers.',
+          'The entry E[2,0]=0.4 is the product (−0.8)(−0.5) created while the reordered elimination matrices are multiplied.',
         variables: [
           {
             name: 'second pivot',
@@ -452,16 +572,21 @@ export const gaussianDetailSection: ChapterSection = {
           },
           { name: 'second u', value: '0.8', meaning: '2 / 2.5.' },
           {
+            name: 'E[2,0]',
+            value: '0.4',
+            meaning: 'Product term (−0.8)(−0.5) in accumulated E.',
+          },
+          {
             name: 'final pivot',
             value: '0.6',
             meaning: 'Last diagonal entry of U.',
           },
         ],
         after: {
-          title: 'The algorithm has produced U and the operation matrices',
+          title: 'The recorded operations reconstruct the LU factors',
           description:
-            'The pivot searches, swaps, and cancellations create the same triangular factors used in Section 2.1.',
-          equation: 'A_original = Qᵀ E⁻¹ U',
+            'The pivot searches, swaps, and cancellations produce the same triangular factors used in Section 2.1.',
+          equation: 'E Q A_original = U  →  Q A_original = L U,  L=E⁻¹',
           matrices: [
             {
               label: 'U',
@@ -506,7 +631,7 @@ export const gaussianDetailSection: ChapterSection = {
               ),
             },
             {
-              label: 'E (Lprime)',
+              label: 'E (called Lprime in the source)',
               values: [
                 [1, 0, 0],
                 [-0.5, 1, 0],
@@ -538,7 +663,7 @@ export const gaussianDetailSection: ChapterSection = {
             },
           ],
           callout:
-            'The source names E “Lprime.” It is an accumulated elimination matrix, while the usual LU lower factor is E inverse.',
+            'E stores the accumulated row eliminations. The usual LU lower factor is its inverse, not E itself.',
         },
       },
     ],

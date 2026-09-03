@@ -80,6 +80,35 @@ const toneClass: Record<CellTone, string> = {
   muted: 'walk-cell-muted',
 };
 
+const toneLabel: Record<CellTone, string> = {
+  source: 'SOURCE',
+  target: 'TARGET',
+  result: 'NEW',
+  'block-a': 'BLOCK A',
+  'block-b': 'BLOCK B',
+  muted: 'INACTIVE',
+};
+
+const toneOrder: CellTone[] = [
+  'source',
+  'target',
+  'result',
+  'block-a',
+  'block-b',
+  'muted',
+];
+
+function collectVisualTones(visual: WalkthroughVisual) {
+  const tones = new Set<CellTone>();
+  visual.matrices?.forEach((matrix) => {
+    Object.values(matrix.cellTones ?? {}).forEach((tone) => tones.add(tone));
+  });
+  visual.graph?.nodes.forEach((node) => {
+    if (node.tone) tones.add(node.tone);
+  });
+  return tones;
+}
+
 function MatrixView({ matrix }: { matrix: WalkthroughMatrix }) {
   const columnCount = matrix.values[0]?.length ?? 1;
   const spokenValues = matrix.values.map((row) => row.join(', ')).join('; ');
@@ -235,7 +264,7 @@ function inferLineMeaning(
   lineIndex: number,
 ): LineMeaning {
   const supplied = step.lineNotes?.[lineIndex];
-  if (supplied) return { kind: 'notebook line', action: supplied.action };
+  if (supplied) return { kind: 'line action', action: supplied.action };
   const line = source.trim();
   if (line.startsWith('#'))
     return {
@@ -420,6 +449,12 @@ function StateComparison({
   revealed: boolean;
   stepNumber: number;
 }) {
+  const usedTones = new Set([
+    ...collectVisualTones(before),
+    ...collectVisualTones(after),
+  ]);
+  const legendTones = toneOrder.filter((tone) => usedTones.has(tone));
+
   return (
     <div className="state-compare-grid">
       <section className="state-sheet" aria-label={`Before step ${stepNumber}`}>
@@ -444,20 +479,14 @@ function StateComparison({
           </div>
         )}
       </section>
-      {(before.matrices || before.graph || after.matrices || after.graph) && (
+      {legendTones.length > 0 && (
         <div className="walk-legend-row" aria-label="Visual state legend">
-          <span className="walk-legend">
-            <i className="walk-legend-source" />
-            SOURCE
-          </span>
-          <span className="walk-legend">
-            <i className="walk-legend-target" />
-            TARGET
-          </span>
-          <span className="walk-legend">
-            <i className="walk-legend-result" />
-            NEW
-          </span>
+          {legendTones.map((tone) => (
+            <span className="walk-legend" key={tone}>
+              <i className={toneClass[tone]} />
+              {toneLabel[tone]}
+            </span>
+          ))}
         </div>
       )}
     </div>
@@ -588,7 +617,8 @@ export function CodeWalkthrough({
 
           <details className="trace-mobile-source min-[1680px]:hidden">
             <summary>
-              Full code <ChevronDown className="size-4" aria-hidden="true" />
+              All traced lines{' '}
+              <ChevronDown className="size-4" aria-hidden="true" />
             </summary>
             <SourceList
               steps={walkthrough.steps}
