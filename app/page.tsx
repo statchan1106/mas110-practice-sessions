@@ -1,182 +1,227 @@
 import {
+  ArrowRight,
   BookOpenText,
   Code2,
   ExternalLink,
-  GraduationCap,
-  Grid3X3,
   Play,
 } from 'lucide-react';
 
 import { CourseLibrary } from '@/components/course-library';
-import { LessonPlayer } from '@/components/lesson-player';
+import { SiteHeader } from '@/components/site-header';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
-import { gaussianPrimer, repositoryBase } from '@/lib/course-data';
-import { gaussianLesson } from '@/lib/lesson-data';
+import { chapterTwoSections } from '@/lib/chapter-two-data';
+import { repositoryBase } from '@/lib/course-data';
+import { sitePath } from '@/lib/site-path';
 import { cn } from '@/lib/utils';
 
-export default function Home() {
+const learningLoop = [
+  {
+    number: '01',
+    title: 'Prime',
+    text: 'Start with the few concepts and symbols that the code assumes.',
+  },
+  {
+    number: '02',
+    title: 'Read',
+    text: 'Select one line and identify the variables it controls.',
+  },
+  {
+    number: '03',
+    title: 'Run',
+    text: 'Execute only that line—never skip ahead automatically.',
+  },
+  {
+    number: '04',
+    title: 'See',
+    text: 'Compare the matrix, graph, or factorization before and after.',
+  },
+  {
+    number: '05',
+    title: 'Explain',
+    text: 'State why the visible change is mathematically valid.',
+  },
+];
+
+export const dynamic = 'force-static';
+
+export default function CourseHome() {
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-40 border-b bg-background/88 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a className="flex items-center gap-3" href="#top" aria-label="Foundations of LADS home">
-            <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <Grid3X3 className="size-4" aria-hidden="true" />
-            </span>
-            <span>
-              <span className="block text-sm font-semibold tracking-tight">Foundations of LADS</span>
-              <span className="hidden text-xs text-muted-foreground sm:block">KAIST MAS110 · Interactive course companion</span>
-            </span>
-          </a>
-
-          <nav className="flex items-center gap-1" aria-label="Main navigation">
-            <a className={cn(buttonVariants({ variant: 'ghost' }), 'hidden md:inline-flex')} href="#primer">Primer</a>
-            <a className={buttonVariants({ variant: 'ghost' })} href="#lab">Walkthrough</a>
-            <a className={cn(buttonVariants({ variant: 'ghost' }), 'hidden sm:inline-flex')} href="#roadmap">Course library</a>
-            <a
-              className={buttonVariants({ variant: 'outline', size: 'icon' })}
-              href="https://github.com/kyunghyuncho/Foundations_of_LADS"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Open the original GitHub repository"
-            >
-              <Code2 aria-hidden="true" />
-            </a>
-          </nav>
-        </div>
-      </header>
-
-      <main id="top" className="mx-auto max-w-7xl px-4 pb-20 pt-9 sm:px-6 sm:pt-12 lg:px-8">
-        <section className="mb-8 grid gap-7 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
+      <SiteHeader />
+      <main
+        id="main-content"
+        className="mx-auto max-w-7xl px-4 pb-20 pt-9 sm:px-6 sm:pt-12 lg:px-8"
+      >
+        <section className="grid gap-8 lg:grid-cols-[1.18fr_0.82fr] lg:items-end">
           <div>
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <Badge>KAIST MAS110</Badge>
-              <Badge variant="secondary">Week 01</Badge>
-              <span className="text-sm text-muted-foreground">Orientation · Ch 2.1 Gaussian Elimination</span>
+              <Badge variant="secondary">Independent TA companion</Badge>
             </div>
-            <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-[-0.035em] text-balance sm:text-5xl">
-              Make every cancellation
-              <br />visible.
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Predict the multiplier, run one line, and watch a chosen entry become zero. You control every step—nothing auto-plays past the idea.
+            <p className="font-mono text-xs uppercase tracking-[0.12em] text-primary">
+              Linear Algebra for Data Science
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <a className={buttonVariants({ size: 'lg' })} href="#primer">
-                <Play data-icon="inline-start" aria-hidden="true" />Start with the concepts
+            <h1 className="mt-2 max-w-4xl text-3xl font-semibold leading-tight tracking-[-0.04em] text-balance sm:text-5xl lg:text-6xl">
+              Choose a section.
+              <br />
+              Run the idea, not just the code.
+            </h1>
+            <p className="mt-5 max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg">
+              A course home for moving from a short concept primer to a
+              line-by-line code walkthrough, a visible mathematical change, and
+              finally the original Colab notebook.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-2">
+              <a
+                className={buttonVariants({ size: 'lg' })}
+                href={sitePath('/chapter-2')}
+              >
+                <Play data-icon="inline-start" aria-hidden="true" />
+                Enter Chapter 2
               </a>
-              <a className={buttonVariants({ variant: 'outline', size: 'lg' })} href={gaussianLesson.colabUrl} target="_blank" rel="noreferrer">
-                Open the full notebook<ExternalLink data-icon="inline-end" aria-hidden="true" />
+              <a
+                className={buttonVariants({ variant: 'outline', size: 'lg' })}
+                href="#course-library"
+              >
+                Browse the full course
               </a>
             </div>
           </div>
 
-          <div className="rounded-2xl border bg-card/88 p-5 shadow-sm backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-xl bg-accent text-accent-foreground">
-                <GraduationCap className="size-5" aria-hidden="true" />
-              </span>
+          <article className="rounded-2xl border bg-card/90 p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold">By the end of today</p>
-                <p className="text-xs text-muted-foreground">KAIST MAS110 · Linear Algebra for Data Science</p>
+                <p className="text-xs uppercase tracking-[0.1em] text-primary">
+                  Now ready
+                </p>
+                <h2 className="mt-1 text-xl font-semibold">Chapter 2</h2>
               </div>
+              <Badge variant="outline">4 sections</Badge>
             </div>
-            <ul className="mt-4 space-y-3 text-sm leading-6">
-              <li className="flex gap-3"><span className="font-mono text-primary">01</span>Which entry we cancel—and why</li>
-              <li className="flex gap-3"><span className="font-mono text-primary">02</span>What one line of NumPy does to a row</li>
-              <li className="flex gap-3"><span className="font-mono text-primary">03</span>Why triangular form makes solving easier</li>
-            </ul>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Matrices, Gaussian elimination, blocks and graphs, LU
+              decomposition, and the complete elimination algorithm.
+            </p>
+            <div className="mt-5 space-y-2 border-t pt-4">
+              {chapterTwoSections.map((section) => (
+                <a
+                  key={section.slug}
+                  href={sitePath(`/chapter-2/${section.slug}`)}
+                  className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-muted"
+                >
+                  <span>
+                    <span className="mr-3 font-mono text-xs text-primary">
+                      {section.number}
+                    </span>
+                    {section.shortTitle}
+                  </span>
+                  <ArrowRight
+                    className="size-3.5 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                </a>
+              ))}
+            </div>
+          </article>
+        </section>
+
+        <section
+          className="py-16 sm:py-20"
+          aria-labelledby="learning-loop-heading"
+        >
+          <div className="mb-7">
+            <p className="text-sm font-medium text-primary">
+              A repeatable learning loop
+            </p>
+            <h2
+              id="learning-loop-heading"
+              className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl"
+            >
+              What happens inside every guided section
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {learningLoop.map((item) => (
+              <article
+                key={item.number}
+                className="rounded-2xl border bg-card/84 p-5"
+              >
+                <span className="font-mono text-xs text-primary">
+                  {item.number}
+                </span>
+                <h3 className="mt-7 font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {item.text}
+                </p>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section className="mb-8 rounded-2xl border bg-card/88 p-5 shadow-sm backdrop-blur-sm sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
+        <section className="mb-16 rounded-2xl border bg-card/88 p-5 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
           <div className="flex gap-4">
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary text-secondary-foreground">
               <BookOpenText className="size-5" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-xs font-medium uppercase tracking-[0.12em] text-primary">Source acknowledgment</p>
-              <h2 className="mt-1 font-semibold">An independent teaching companion to the original notebooks</h2>
+              <p className="text-xs font-medium uppercase tracking-[0.12em] text-primary">
+                Source acknowledgment
+              </p>
+              <h2 className="mt-1 font-semibold">
+                Built beside the original notebooks
+              </h2>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
-                This independent TA companion uses the course sequence and examples from <em>Foundations of Linear Algebra for Data Science</em> by Wanmo Kang and Kyunghyun Cho, released under the{' '}
-                <a className="underline decoration-border underline-offset-4 hover:text-foreground" href="https://github.com/kyunghyuncho/Foundations_of_LADS/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT License</a>.
+                This independent companion follows{' '}
+                <em>Foundations of Linear Algebra for Data Science</em> by Wanmo
+                Kang and Kyunghyun Cho, released under the{' '}
+                <a
+                  className="underline decoration-border underline-offset-4 hover:text-foreground"
+                  href={`${repositoryBase}/blob/main/LICENSE`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  MIT License
+                </a>
+                .
               </p>
             </div>
           </div>
-          <a className={cn(buttonVariants({ variant: 'outline' }), 'mt-4 shrink-0 sm:mt-0')} href={repositoryBase} target="_blank" rel="noreferrer">
-            Original GitHub repository<ExternalLink data-icon="inline-end" aria-hidden="true" />
+          <a
+            className={cn(
+              buttonVariants({ variant: 'outline' }),
+              'mt-4 shrink-0 sm:mt-0',
+            )}
+            href={repositoryBase}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Code2 data-icon="inline-start" aria-hidden="true" />
+            Original repository
+            <ExternalLink data-icon="inline-end" aria-hidden="true" />
           </a>
         </section>
 
-        <section id="primer" className="scroll-mt-24 py-12 sm:py-16">
-          <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="mb-2 text-sm font-medium text-primary">Before the walkthrough · 2 min</p>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Four ideas to carry into elimination</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-                You do not need to memorize the full algorithm yet. Follow one target entry and see how the pivot row turns it into zero without changing the solutions.
-              </p>
-              <p className="mt-2 max-w-3xl text-xs leading-5 text-muted-foreground">
-                The source collection begins with Chapter 2, so this Week 01 primer establishes the shared notation and learning routine first.
-              </p>
-            </div>
-            <Badge variant="outline" className="w-fit">Concept primer</Badge>
+        <section
+          id="course-library"
+          className="scroll-mt-24"
+          aria-labelledby="course-library-heading"
+        >
+          <div className="mb-7">
+            <p className="text-sm font-medium text-primary">Course home</p>
+            <h2
+              id="course-library-heading"
+              className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl"
+            >
+              All notebooks, grouped by teaching purpose
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
+              Chapter 2 now has its own guided section menu. The remaining
+              original notebooks stay organized here with concept primers and
+              direct Colab access.
+            </p>
           </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {gaussianPrimer.map((item, index) => (
-              <article key={item.term} className="flex min-h-64 flex-col rounded-2xl border bg-card/86 p-5 shadow-sm backdrop-blur-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="font-mono text-xs text-primary">0{index + 1}</span>
-                  <code className="rounded-md bg-muted px-2 py-1 text-[11px] text-primary">{item.relation}</code>
-                </div>
-                <h3 className="mt-8 text-lg font-semibold">{item.term}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.definition}</p>
-                <p className="mt-auto border-t pt-4 text-xs leading-5 text-muted-foreground"><strong className="text-foreground">Watch for:</strong> {item.watchFor}</p>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/8 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <div>
-              <p className="font-semibold">The whole strategy in one sentence</p>
-              <p className="mt-1 text-sm leading-6 text-muted-foreground">Cancel entries below each pivot until the matrix is upper triangular, then solve from the bottom row upward.</p>
-            </div>
-            <a className={cn(buttonVariants({ size: 'lg' }), 'shrink-0')} href="#lab">I’m ready—start the walkthrough</a>
-          </div>
-        </section>
-
-        <section id="lab" className="scroll-mt-24"><LessonPlayer lesson={gaussianLesson} /></section>
-
-        <section id="roadmap" className="scroll-mt-24 pt-20">
-          <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="mb-2 text-sm font-medium text-primary">KAIST MAS110 course library</p>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">The complete notebook sequence, in six teaching modules</h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                All 25 source notebooks are mapped below with a short concept primer and direct GitHub and Colab access. Full interactive walkthroughs use the same learning loop and will be added one at a time.
-              </p>
-            </div>
-            <a className={buttonVariants({ variant: 'outline' })} href={repositoryBase} target="_blank" rel="noreferrer">
-              Browse the source collection<ExternalLink data-icon="inline-end" aria-hidden="true" />
-            </a>
-          </div>
-
           <CourseLibrary />
-        </section>
-
-        <section className="mt-20 flex flex-col gap-5 rounded-2xl bg-primary px-6 py-7 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <div className="flex gap-4">
-            <BookOpenText className="mt-1 size-5 shrink-0" aria-hidden="true" />
-            <div>
-              <h2 className="font-semibold">This page is the shared thinking space—not a notebook replacement.</h2>
-              <p className="mt-1 max-w-2xl text-sm leading-6 opacity-80">Use it to reason through the operation together, then change the code and try larger matrices in Colab.</p>
-            </div>
-          </div>
-          <a className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }), 'shrink-0')} href={gaussianLesson.colabUrl} target="_blank" rel="noreferrer">
-            Continue in Colab<ExternalLink data-icon="inline-end" aria-hidden="true" />
-          </a>
         </section>
       </main>
 
