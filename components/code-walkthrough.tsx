@@ -48,6 +48,8 @@ export type WalkthroughVisual = {
 };
 
 export type WalkthroughStep = {
+  sourceCell?: string;
+  sourceKind?: 'source' | 'correction';
   code: string;
   lineNotes?: Array<{ action: string }>;
   title: string;
@@ -67,6 +69,11 @@ export type CodeWalkthroughData = {
   title: string;
   eyebrow: string;
   objective: string;
+  source?: {
+    filename: string;
+    url: string;
+    note: string;
+  };
   initial: WalkthroughVisual;
   steps: WalkthroughStep[];
 };
@@ -291,10 +298,36 @@ function inferLineMeaning(
       kind: 'condition',
       action: 'Checks the condition and chooses a branch.',
     };
-  if (/^(else|elif|try|except)/.test(line))
+  if (line === 'try:')
     return {
       kind: 'control',
-      action: 'Chooses the next block without changing a value.',
+      action: 'Runs the following block and watches for an exception.',
+    };
+  if (line.startsWith('except'))
+    return {
+      kind: 'error handler',
+      action:
+        'Catches the matching exception and stores it under the stated name.',
+    };
+  if (/^(else|elif)/.test(line))
+    return {
+      kind: 'control',
+      action: 'Chooses the next branch without changing a value itself.',
+    };
+  if (line === 'break')
+    return {
+      kind: 'control',
+      action: 'Stops the current loop immediately.',
+    };
+  if (line === 'pass')
+    return {
+      kind: 'control',
+      action: 'Intentionally makes no data change in this branch.',
+    };
+  if (line.startsWith('raise '))
+    return {
+      kind: 'error',
+      action: 'Stops this function call with the stated error.',
     };
   if (line.startsWith('return '))
     return {
@@ -308,16 +341,29 @@ function inferLineMeaning(
         ? 'Checks the condition without changing the data.'
         : 'Shows a value without changing it.',
     };
+  const closingExpression = line.replace(/[,;]$/, '');
+  let onlyClosingCharacters = closingExpression.length > 0;
+  for (const character of closingExpression) {
+    if (!']})'.includes(character)) onlyClosingCharacters = false;
+  }
+  if ('[({'.includes(line.charAt(0)) || onlyClosingCharacters)
+    return {
+      kind: 'continue',
+      action:
+        'Continues or closes the multi-line array or function call started above.',
+    };
 
   const assignment = line.match(/^(.+?)\s*(\+=|-=|\*=|\/=|=)\s*(.+)$/);
   if (assignment) {
-    const [, left, operator] = assignment;
+    const [, left, operator, right] = assignment;
     const mutates = operator !== '=' || left.includes('[');
     return {
       kind: mutates ? 'update' : 'store',
       action:
         operator === '='
-          ? `Evaluates the right side and stores it as ${left.trim()}.`
+          ? /^[A-Za-z_]\w*\s*=/.test(right)
+            ? 'Evaluates the rightmost expression and stores that value in each name.'
+            : `Evaluates the right side and stores it as ${left.trim()}.`
           : `Applies “${operator}” and updates ${left.trim()}.`,
     };
   }
@@ -366,7 +412,15 @@ function SourceList({
         return (
           <li key={`${currentStep}-${currentLine}`}>
             {currentLine === 0 && (
-              <span className="trace-block-label">{step.title}</span>
+              <span
+                className={cn(
+                  'trace-block-label',
+                  step.sourceKind === 'correction' && 'is-correction',
+                )}
+              >
+                {step.sourceCell ? `${step.sourceCell} · ` : ''}
+                {step.title}
+              </span>
             )}
             <button
               type="button"
@@ -571,6 +625,17 @@ export function CodeWalkthrough({
         <div>
           <p className="section-kicker">{walkthrough.eyebrow}</p>
           <h2>{walkthrough.title}</h2>
+          <p className="trace-objective">{walkthrough.objective}</p>
+          {walkthrough.source && (
+            <p className="trace-source-meta">
+              <strong>Notebook-led trace</strong>
+              <span aria-hidden="true">·</span>
+              <a href={walkthrough.source.url} target="_blank" rel="noreferrer">
+                {walkthrough.source.filename} ↗
+              </a>
+              <span>{walkthrough.source.note}</span>
+            </p>
+          )}
         </div>
       </header>
 
@@ -587,7 +652,10 @@ export function CodeWalkthrough({
         <span>
           L{String(globalLine).padStart(2, '0')} / {totalLines}
         </span>
-        <strong>{revealed ? step.after.title : step.title}</strong>
+        <strong>
+          {step.sourceCell ? `${step.sourceCell} · ` : ''}
+          {revealed ? step.after.title : step.title}
+        </strong>
       </div>
 
       <div className="trace-grid">
@@ -607,6 +675,18 @@ export function CodeWalkthrough({
 
           <div className="active-line-card">
             <div>
+              {step.sourceCell && (
+                <b
+                  className={cn(
+                    'trace-source-kind',
+                    step.sourceKind === 'correction' && 'is-correction',
+                  )}
+                >
+                  {step.sourceKind === 'correction'
+                    ? 'corrected variant'
+                    : 'source notebook'}
+                </b>
+              )}
               <b>{meaning.kind}</b>
             </div>
             <pre>

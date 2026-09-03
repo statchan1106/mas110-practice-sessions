@@ -1001,6 +1001,35 @@
     font-size: clamp(1.5rem, 3vw, 2.15rem);
     line-height: 1.1;
   }
+
+  .trace-objective {
+    margin-top: 0.65rem;
+    max-width: 76ch;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .trace-source-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3rem 0.55rem;
+    margin-top: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .trace-source-meta strong {
+    color: var(--foreground);
+  }
+
+  .trace-source-meta a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
   .trace-causal-bar {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -1055,6 +1084,9 @@
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.02em;
+  }
+  .trace-block-label.is-correction {
+    color: oklch(0.83 0.12 80);
   }
   .trace-source > li:first-child .trace-block-label {
     margin-top: 0;
@@ -1126,6 +1158,13 @@
     font-size: 0.78rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+  .active-line-card .trace-source-kind {
+    margin-right: auto;
+    color: var(--code-subtle);
+  }
+  .active-line-card .trace-source-kind.is-correction {
+    color: oklch(0.83 0.12 80);
   }
   .active-line-card pre {
     margin-top: 0.65rem;

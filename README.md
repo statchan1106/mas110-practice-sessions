@@ -24,12 +24,12 @@ Each lab contains:
 
 - a clear learning goal;
 - lecture-note concepts and a short reference;
-- a line-by-line code trace using plain language;
+- a line-by-line trace of the corresponding upstream notebook;
 - one short prediction prompt;
 - a persistent before-and-after visualization; and
 - links to the original source and a runnable Colab notebook.
 
-The browser walkthroughs use small, fixed teaching examples. They explain how the code works but do not execute Python. The live chapter index always reflects the materials currently available.
+For available Chapter 2 labs, the source notebook's cell order, variable names, and saved outputs form the primary walkthrough. Large matrices are summarized with clearly labeled excerpts so the page remains readable; the complete outputs remain available in Colab. Any teaching-only addition or correction to upstream code is labeled explicitly. The browser explains prepared states and does not execute Python.
 
 ## Maintainer and questions
 

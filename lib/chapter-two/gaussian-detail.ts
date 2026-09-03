@@ -4,366 +4,390 @@ import { sourceLinks, toneCells, toneRow } from './shared';
 const filename = 'Ch2-4 Gaussian elimination in detail (Optional).ipynb';
 const links = sourceLinks(filename);
 
+const source = {
+  filename,
+  url: links.githubUrl,
+  note: 'Executable source lines remain in order; long comments are compacted and one correction is labeled.',
+};
+
 export const gaussianDetailSection: ChapterSection = {
   slug: 'gaussian-detail',
   number: '2.4',
-  title: 'Gaussian Elimination Step by Step',
+  title: 'Gaussian Elimination in Detail',
   shortTitle: 'Elimination in detail',
   summary:
-    'Choose pivots, swap rows, compute multipliers, and record each row operation as a matrix.',
-  focus: 'search → swap → multiply → cancel → record',
+    'Expose the pivot search, row swaps, elimination matrices, ten saved states, and LU reconstruction for the same seeded 10×10 A used in Lab 2.1.',
+  focus: 'pivot search → row swap → elimination → reconstruction',
   learningGoal:
-    'Follow Gaussian elimination step by step: choose a pivot, exchange rows, subtract row multiples, and record the operations that create an upper-triangular matrix.',
+    'Connect every part of the source elimination function to the matrix change it creates, while recognizing the source code’s stated scope and corrected general form.',
   lectureConcepts: [
-    'Gaussian elimination',
-    'Pivot and multiplier',
-    'Row exchange',
+    'Partial pivoting',
     'Elementary matrices',
+    'Gaussian elimination',
+    'LU reconstruction',
   ],
-  codeExtension:
-    'Partial pivoting and a numerical tolerance are implementation details added to the lecture’s elimination steps.',
+  codeExtension: 'Explicit loops illustrate the elimination behind pivoted LU.',
   filename,
   ...links,
   optional: true,
   primer: [
     {
-      term: 'Pivot',
-      definition:
-        'The pivot is the active nonzero entry used to eliminate values below it.',
-      relation: 'aᵣⱼ',
-      watchFor:
-        'The active pivot row r may differ from the current column j if a column is skipped.',
-    },
-    {
       term: 'Partial pivoting',
       definition:
-        'Choose the largest absolute entry in the active column among rows not yet processed.',
-      relation: 'arg maxᵢ≥ᵣ |aᵢⱼ|',
-      watchFor: 'Absolute magnitude, not signed value, determines the winner.',
+        'Search the active column and move the largest absolute candidate into the pivot row.',
+      relation: 'pivot = arg max |Aᵢⱼ|',
+      watchFor: 'The source implements the search with an explicit loop.',
     },
     {
-      term: 'Multiplier',
-      definition:
-        'The target divided by the pivot gives the amount of pivot row to subtract.',
-      relation: 'u = aₖⱼ / aᵣⱼ',
+      term: 'Permutation matrix',
+      definition: 'Each Q records one row exchange.',
+      relation: 'QⱼA = row-swapped A',
       watchFor:
-        'The elimination matrix stores −u, while the usual LU lower factor stores the inverse operation.',
+        'The same row exchange must be reflected during factor reconstruction.',
     },
     {
-      term: 'Tolerance',
+      term: 'Elimination matrix',
       definition:
-        'A small threshold treats numerically tiny values as zero and avoids unstable division.',
-      relation: '|pivot| < ε',
-      watchFor: 'A skipped column does not advance the active pivot row.',
+        'Each L in L_list records negative multipliers that create zeros below a pivot.',
+      relation: 'LⱼQⱼAⱼ → Aⱼ₊₁',
+      watchFor: 'The notebook later combines these matrices as Lprime.',
     },
   ],
   walkthrough: {
-    eyebrow: 'Lab 2.4 · Optional trace',
-    title: 'See how every zero is deliberately created',
+    eyebrow: 'Lab 2.4 · Source trace · Optional',
+    title: 'Open the elimination function',
     objective:
-      'Use the same 3×3 matrix as Section 2.1, but expose the control flow that produced its row order and triangular factors.',
+      'The source function is split into readable sections without renaming its variables. Comments are compacted; executable lines remain in notebook order.',
+    source,
     initial: {
-      title: 'An elimination algorithm needs both data and a cursor',
+      title: 'Continue from the same seeded matrix as Lab 2.1',
       description:
-        'The matrix changes in its working copy while r marks where the next pivot must land.',
-      equation: 'search → swap → eliminate → advance',
-      callout:
-        'Think first: why is the top-left zero a problem for the first division?',
+        'The optional notebook recreates the identical 10×10 A, converts it to floating point, and then exposes every elimination step.',
+      equation: 'same RandomState(0) → same A',
     },
     steps: [
       {
-        code: 'A = np.array([[0.,2.,1.],[4.,1.,1.],[2.,3.,1.]], dtype=float)',
-        title: 'Create a floating-point working matrix',
+        sourceCell: 'Code cells 1–2',
+        code: 'import numpy as np\nimport scipy as sp\nimport matplotlib as mpl\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nnp.set_printoptions(4, linewidth=100, suppress=True)',
+        title: 'Prepare the notebook',
         explanation:
-          'The algorithm will subtract fractional multiples of rows, so the array uses floating-point values from the start.',
-        drives: 'The initial matrix and the first active column.',
-        watchFor:
-          'The entry at (0,0) is zero, but two candidates below it are nonzero.',
+          'These are the source imports and display settings with comments and blank lines compacted.',
+        drives: 'Numerical aliases and compact printed arrays.',
+        watchFor: 'Only NumPy and SciPy are used in the elimination cells.',
+        after: {
+          title: 'The source environment is ready',
+          description: 'The 10×10 input is created next.',
+          equation: 'np → arrays · sp → comparison LU',
+        },
+      },
+      {
+        sourceCell: 'Code cell 3',
+        code: 'n = m = 10\nrng = np.random.RandomState(0)\nA = rng.randint(10, size=(n, m))\nA = A.astype(np.float64)\nprint(A)',
+        title: 'Recreate the source matrix as floats',
+        explanation:
+          'The fixed seed reproduces Lab 2.1’s A. astype changes the data type so row operations can store fractional values.',
+        drives: 'A 10×10 float matrix.',
+        watchFor: 'The entries are unchanged; only their storage type changes.',
         variables: [
           {
             name: 'A.shape',
-            value: '(3, 3)',
-            meaning: 'Three rows and three columns.',
+            value: '(10, 10)',
+            meaning: 'The same square example as the source Ch2-1 notebook.',
+          },
+          {
+            name: 'A.dtype',
+            value: 'float64',
+            meaning: 'Supports fractional elimination results.',
           },
         ],
         after: {
-          title: 'Column 0 is ready for pivot search',
-          description: 'The active candidates are 0, 4, and 2.',
-          equation: 'candidate magnitudes = [0, 4, 2]',
+          title: 'A is ready for in-place row arithmetic',
+          description: 'The first two source rows are shown.',
           matrices: [
             {
-              label: 'A',
+              label: 'A · saved rows 1–2',
               values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
+                [5, 0, 3, 3, 7, 9, 3, 5, 2, 4],
+                [7, 6, 8, 8, 1, 6, 7, 7, 8, 1],
               ],
-              cellTones: toneCells(
-                [
-                  [0, 0],
-                  [1, 0],
-                  [2, 0],
-                ],
-                'source',
-              ),
             },
           ],
         },
       },
       {
-        code: 'A_original = A.copy()\nA = A.copy()\nn, m = A.shape\nr = 0\neps = 1e-12\nQ_list, E_list = [], []',
-        lineNotes: [
-          {
-            action:
-              'Saves the input matrix for the final reconstruction check.',
-          },
-          { action: 'Creates the working copy that elimination may change.' },
-          { action: 'Stores the number of rows n and columns m.' },
-          { action: 'Places the active pivot-row cursor at row 0.' },
-          { action: 'Defines the threshold used to treat a pivot as zero.' },
-          {
-            action:
-              'Creates lists for the row-permutation matrices Qj and elimination matrices Ej.',
-          },
-        ],
-        title: 'Protect the input and initialize algorithm state',
+        sourceCell: 'Code cell 4 · setup',
+        code: 'def elimination(A, eps, verbose):\n    A = A.copy()\n    n, m = A.shape\n    Q_list = []\n    L_list = []\n    row_to_check = 0',
+        title: 'Initialize the elimination state',
         explanation:
-          'A_original stays unchanged while the second copy becomes the working matrix. n and m store dimensions, r marks the active pivot row, and eps defines numerical zero.',
-        drives:
-          'An original/working distinction, a row cursor, and a tolerance marker.',
-        watchFor: 'Only the working copy changes during elimination.',
-        variables: [
-          { name: 'n, m', value: '3, 3', meaning: 'Working dimensions.' },
-          { name: 'r', value: '0', meaning: 'First pivot must land in row 0.' },
-          {
-            name: 'eps',
-            value: '1e−12',
-            meaning: 'Threshold for an unusably small pivot.',
-          },
-        ],
-        after: {
-          title: 'The control state is initialized',
-          description:
-            'The cursor points to row 0, and A is a safe working copy.',
-          equation: 'r = 0,  j has not started yet',
-          matrices: [
-            {
-              label: 'original A',
-              values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
-            },
-            {
-              label: 'working A',
-              values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
-              cellTones: toneRow(0, 3, 'target'),
-            },
-          ],
-        },
-      },
-      {
-        code: 'for j in range(m):\n    if r >= n: break',
-        lineNotes: [
-          { action: 'Scans candidate pivot columns from left to right.' },
-          {
-            action:
-              'Stops before indexing an empty row range once every row already has a pivot.',
-          },
-        ],
-        title: 'Scan columns from left to right',
-        explanation:
-          'On the first pass j=0. Only rows r through n−1 are eligible because earlier pivot rows, if any, are already finished.',
-        drives:
-          'The active column is highlighted while completed columns are muted.',
+          'The function protects the caller’s A, records its dimensions, creates two empty operation lists, and starts with pivot row 0.',
+        drives: 'A working copy, two lists, and a row cursor.',
         watchFor:
-          'j selects a column; r selects where the pivot row should be placed.',
+          'A.copy() prevents the original matrix outside the function from changing.',
         variables: [
-          { name: 'j', value: '0', meaning: 'Current search column.' },
           {
-            name: 'eligible rows',
-            value: '0:3',
-            meaning: 'Rows not yet assigned a pivot.',
+            name: 'Q_list / L_list',
+            value: '[] / []',
+            meaning: 'No row operations have been recorded yet.',
+          },
+          {
+            name: 'row_to_check',
+            value: '0',
+            meaning: 'The next pivot belongs in the first row.',
           },
         ],
         after: {
-          title: 'The first search examines column 0',
-          description: 'All three rows are currently eligible.',
-          equation: 'A[r:, j] = A[0:, 0] = [0,4,2]',
-          matrices: [
-            {
-              label: 'active column j=0',
-              values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
-              cellTones: toneCells(
-                [
-                  [0, 0],
-                  [1, 0],
-                  [2, 0],
-                ],
-                'source',
-              ),
-            },
-          ],
+          title: 'The function has data and a cursor',
+          description: 'The scan begins at column 0 and active row 0.',
+          equation: 'j=0 · row_to_check=0',
         },
       },
       {
-        code: '    pivot = r + np.argmax(np.abs(A[r:, j]))',
-        lineNotes: [
-          {
-            action:
-              'Finds the largest candidate magnitude below the cursor and converts its local index to a row index.',
-          },
-        ],
-        title: 'Choose the largest absolute candidate',
+        sourceCell: 'Code cell 4 · pivot search',
+        code: '    for j in range(m):\n        if row_to_check >= n :\n            break\n        pivot = row_to_check\n        for i in range(row_to_check+1, n):\n            if abs(A[i, j]) > abs(A[pivot, j]) :\n                pivot = i',
+        title: 'Find the largest active-column entry',
         explanation:
-          'abs removes signs, argmax returns the local winning index, and adding r converts it back to a matrix row index.',
-        drives:
-          'Magnitude bars compare 0, 4, and 2; row index 1 (the second row) wins.',
-        watchFor:
-          'The source notebook spells this search out with a loop; this line is an equivalent compact form.',
+          'For each column, the inner loop compares absolute values from the active row downward and keeps the best row index.',
+        drives: 'The source pivot index for the current column.',
+        watchFor: 'In column 0, row index 4 wins with value 9.',
         variables: [
+          {
+            name: 'j / row_to_check',
+            value: '0 / 0',
+            meaning: 'First source iteration.',
+          },
           {
             name: 'pivot',
-            value: '1',
-            meaning: 'Zero-based row index containing magnitude 4.',
-          },
-        ],
-        after: {
-          title: 'The second row wins the first pivot search',
-          description:
-            'Its entry 4 is the largest absolute candidate in the active column.',
-          equation: 'arg max [|0|, |4|, |2|] = index 1 (second row)',
-          matrices: [
-            {
-              label: 'pivot winner',
-              values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
-              cellTones: toneRow(1, 3, 'result'),
-            },
-          ],
-          callout:
-            'Partial pivoting reduces the danger of dividing by a tiny value.',
-        },
-      },
-      {
-        code: '    A[[r, pivot], :] = A[[pivot, r], :]',
-        lineNotes: [
-          {
-            action:
-              'Swaps the full pivot row with row r using one advanced-indexing assignment.',
-          },
-        ],
-        title: 'Move the winning row into pivot position',
-        explanation:
-          'Advanced indexing swaps the two complete rows in one assignment.',
-        drives: 'Rows 0 and 1 cross while retaining their contents.',
-        watchFor:
-          'The swap only reorders rows. In Ax=b, apply the same swap to b so the solution set is unchanged.',
-        variables: [
-          {
-            name: 'A[r,j]',
             value: '4',
-            meaning:
-              'The active pivot is now nonzero and largest in magnitude.',
+            meaning: 'Zero-based row index of the largest candidate.',
           },
         ],
         after: {
-          title: 'The pivot 4 reaches the top-left corner',
-          description: 'The original second row is now the first working row.',
-          equation: 'R₁ ↔ R₂',
+          title: 'Source row 5 wins the first pivot search',
+          description:
+            'The complete first-column candidates are highlighted by role.',
           matrices: [
             {
-              label: 'before swap',
-              values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
+              label: 'A[:, 0] · first pivot column',
+              values: [[5], [7], [5], [2], [9], [0], [8], [0], [4], [5]],
               cellTones: {
-                ...toneRow(0, 3, 'target'),
-                ...toneRow(1, 3, 'source'),
-              },
-            },
-            {
-              label: 'after swap',
-              values: [
-                [4, 1, 1],
-                [0, 2, 1],
-                [2, 3, 1],
-              ],
-              cellTones: {
-                ...toneRow(0, 3, 'result'),
-                ...toneRow(1, 3, 'target'),
+                ...toneCells([[0, 0]], 'target'),
+                ...toneCells([[4, 0]], 'source'),
               },
             },
           ],
         },
       },
       {
-        code: '    Qj = np.eye(n)\n    Qj[[r,pivot],:] = Qj[[pivot,r],:]\n    Q_list.append(Qj.copy())',
-        lineNotes: [
-          { action: 'Starts the current row permutation from identity.' },
-          {
-            action:
-              'Applies the same row swap to identity, producing the permutation matrix Qj.',
-          },
-          {
-            action:
-              'Stores an independent snapshot of this row permutation for reconstruction.',
-          },
-        ],
-        title: 'Record the row swap as a matrix',
+        sourceCell: 'Code cell 4 · row swap',
+        code: '        A[[row_to_check, pivot], :] = A[[pivot, row_to_check], :]\n        r = row_to_check\n        Q = np.eye(n)\n        Q[r, r] = 0.\n        Q[pivot, pivot] = 0.\n        Q[r, pivot] = 1.\n        Q[pivot, r] = 1.\n        Q_list.append(Q.copy())\n        L = np.eye(n)',
+        title: 'Swap rows and record Q',
         explanation:
-          'Applying the same row swap to identity creates a permutation matrix. Saving it lets the algorithm reconstruct every reordering later.',
-        drives:
-          'Identity changes into Q₀, and Q₀ @ A_before reproduces A_after.',
+          'Advanced indexing exchanges the two rows. Four assignments turn identity into the matching permutation matrix; a fresh identity L will record eliminations.',
+        drives: 'A swapped working matrix, one Q in Q_list, and identity L.',
         watchFor:
-          'copy stores an independent snapshot of this operation matrix.',
+          'Q is copied before a later iteration reuses the variable name.',
         variables: [
           {
-            name: 'Q₀',
-            value: '[[0,1,0],[1,0,0],[0,0,1]]',
-            meaning: 'First swap matrix.',
+            name: 'r / pivot',
+            value: '0 / 4',
+            meaning: 'Destination and source row in the first iteration.',
+          },
+          {
+            name: 'len(Q_list)',
+            value: '1',
+            meaning: 'One row permutation has been stored.',
           },
         ],
         after: {
-          title: 'Q₀ records the row swap',
-          description:
-            'Left-multiplying by Q₀ performs exactly the row exchange shown above.',
-          equation: 'Q₀ A_before = A_after',
+          title: 'The row beginning with 9 moves to the top',
+          description: 'No entry inside either row changes during the swap.',
           matrices: [
             {
-              label: 'I₃',
+              label: 'A · rows at positions 0 and 4 after swap',
               values: [
-                [1, 0, 0],
-                [0, 1, 0],
-                [0, 0, 1],
+                [9, 9, 0, 4, 7, 3, 2, 7, 2, 0],
+                [5, 0, 3, 3, 7, 9, 3, 5, 2, 4],
               ],
+              cellTones: toneRow(0, 10, 'result'),
+            },
+          ],
+        },
+      },
+      {
+        sourceCell: 'Code cell 4 · source elimination',
+        code: '        if abs(A[r, j]) < eps :\n            pass\n        else :\n            for k in range(r+1, n):\n                u = A[k, j] / A[r, j]\n                A[k, j:] -= u * A[j, j:]\n                L[k, j] = -u\n            row_to_check += 1',
+        title: 'Create zeros below the pivot',
+        explanation:
+          'For the saved full-rank 10×10 run, r equals j in every step. The source line therefore subtracts the active pivot row and produces the saved U correctly.',
+        drives: 'Zeros below the active pivot and negative multipliers in L.',
+        watchFor:
+          'If an earlier column were skipped, r could differ from j; the source indices would then be too specific.',
+        variables: [
+          {
+            name: 'first u for original row 2 (index 1)',
+            value: '7/9',
+            meaning: 'Multiplier used to clear its first entry.',
+          },
+          {
+            name: 'row_to_check',
+            value: '1',
+            meaning: 'Moves down after a usable pivot.',
+          },
+        ],
+        after: {
+          title: 'The first saved elimination creates column zeros',
+          description: 'This is a direct excerpt from “After step 1.”',
+          equation: 'row₂ ← row₂ − (7/9)row₁',
+          matrices: [
+            {
+              label: 'saved rows 1–2 after step 1',
+              values: [
+                [9, 9, 0, 4, 7, 3, 2, 7, 2, 0],
+                [0, -1, 8, 4.8889, -4.4444, 3.6667, 5.4444, 1.5556, 6.4444, 1],
+              ],
+              cellTones: {
+                ...toneCells([[0, 0]], 'source'),
+                ...toneCells([[1, 0]], 'result'),
+              },
+            },
+          ],
+        },
+      },
+      {
+        sourceCell: 'Corrected general form · code cell 4',
+        sourceKind: 'correction',
+        code: '                A[k, j:] -= u * A[r, j:]\n                L[k, r] = -u',
+        title: 'Use r when a prior column may be skipped',
+        explanation:
+          'This teaching correction uses the active pivot row r and its position in L. It is identical to the source on the saved run because r=j there.',
+        drives:
+          'The correct elimination update when active row r differs from column j.',
+        watchFor:
+          'This snippet is not a verbatim source line; it is the corrected general form.',
+        after: {
+          title: 'The distinction matters only when r ≠ j',
+          description:
+            'With an all-zero first column, the source leaves the next pivot-column entry nonzero; the corrected row clears it.',
+          equation: 'source uses row j · correction uses active pivot row r',
+          matrices: [
+            {
+              label: 'pivot row r=0',
+              values: [[0, 4, 1]],
+              cellTones: toneCells([[0, 1]], 'source'),
             },
             {
-              label: 'Q₀',
+              label: 'target before · u=2/4',
+              values: [[0, 2, 1]],
+              cellTones: toneCells([[0, 1]], 'target'),
+            },
+            {
+              label: 'source result when r=0, j=1',
+              values: [[0, 1, 0.5]],
+              cellTones: toneCells([[0, 1]], 'target'),
+            },
+            {
+              label: 'corrected target row',
+              values: [[0, 0, 0.5]],
+              cellTones: toneCells([[0, 1]], 'result'),
+            },
+          ],
+          callout:
+            'For the notebook’s saved matrix, no column is skipped and both lines give the same values.',
+        },
+      },
+      {
+        sourceCell: 'Code cells 4–5 · finish and run',
+        code: '        L_list.append(L.copy())\n        if verbose :\n            print("After step", j+1, ":")\n            print(A)\n            print()\n    return A, Q_list, L_list\nU, Q_list, L_list = elimination(A, eps=1e-12, verbose=True)',
+        title: 'Store every operation and print ten states',
+        explanation:
+          'Each column iteration appends L and optionally prints the working matrix. The source call runs with verbose=True and returns the final U plus both lists.',
+        drives: 'Ten saved “After step” matrices, U, Q_list, and L_list.',
+        watchFor:
+          'The source notebook prints complete 10×10 matrices for steps 1 through 10.',
+        variables: [
+          {
+            name: 'len(Q_list)',
+            value: '10',
+            meaning: 'One saved permutation per source step.',
+          },
+          {
+            name: 'len(L_list)',
+            value: '10',
+            meaning: 'One saved elimination matrix per source step.',
+          },
+          {
+            name: 'U.shape',
+            value: '(10, 10)',
+            meaning: 'The final upper-triangular result.',
+          },
+        ],
+        after: {
+          title: 'The saved run reaches upper-triangular U',
+          description: 'Its diagonal matches the raw U pivots from Lab 2.1.',
+          matrices: [
+            {
+              label: 'diag(U) · saved output',
               values: [
-                [0, 1, 0],
-                [1, 0, 0],
-                [0, 0, 1],
+                [9, -7, 8.5714, -7.7056, 6.5213],
+                [7.0469, 8.887, -5.0091, -5.6224, 1.2171],
               ],
               cellTones: toneCells(
-                [
-                  [0, 1],
-                  [1, 0],
-                ],
+                Array.from({ length: 10 }, (_, index) => [
+                  Math.floor(index / 5),
+                  index % 5,
+                ]),
+                'result',
+              ),
+            },
+          ],
+          callout: 'Open Colab to step through all ten full saved states.',
+        },
+      },
+      {
+        sourceCell: 'Code cell 6',
+        code: `Lprime = L_list[n-1]
+Q = np.eye(n)
+for i in range(n-1, 0, -1) :
+    Q = Q @ Q_list[i]
+    Lprime_i = Q @ L_list[i-1] @ Q.T
+    Lprime = Lprime @ Lprime_i
+Q = Q @ Q_list[0]
+print('A = ')
+print(A)
+print('Q.T @ L\\'^{-1} @ U = ')
+print(Q.T @ np.linalg.inv(Lprime) @ U)
+print('Q = ')
+print(Q)
+print('L\\' = ')
+print(Lprime)`,
+        title: 'Reconstruct the combined Q and Lprime',
+        explanation:
+          'The reverse loop transports each elimination matrix through later row permutations, then multiplies the operations together.',
+        drives: 'The saved Q, Lprime, and a reconstruction of A.',
+        watchFor:
+          'Using n here assumes this full-rank square run has exactly n recorded steps.',
+        variables: [
+          {
+            name: 'Q row order',
+            value: '[5, 7, 3, 4, 6, 2, 8, 10, 9, 1]',
+            meaning: 'One-based original rows.',
+          },
+          {
+            name: 'Q.T @ inv(Lprime) @ U',
+            value: 'A',
+            meaning: 'Matches A to saved print precision.',
+          },
+        ],
+        after: {
+          title: 'The recorded operations rebuild A',
+          description: 'Q and Lprime summarize all ten swaps and eliminations.',
+          equation: 'A = Qᵀ Lprime⁻¹ U',
+          matrices: [
+            {
+              label: 'source row order encoded by Q',
+              values: [[5, 7, 3, 4, 6, 2, 8, 10, 9, 1]],
+              cellTones: toneCells(
+                Array.from({ length: 10 }, (_, index) => [0, index]),
                 'result',
               ),
             },
@@ -371,299 +395,37 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: '    Ej = np.eye(n)\n    if abs(A[r, j]) < eps:\n        E_list.append(Ej.copy())\n        continue',
-        lineNotes: [
-          {
-            action: 'Starts the current elimination operation from identity.',
-          },
-          {
-            action: 'Checks whether the largest remaining candidate is tiny.',
-          },
-          {
-            action:
-              'Stores an identity elimination step so E_list stays aligned with Q_list.',
-          },
-          {
-            action:
-              'Skips division and moves to the next column without advancing r.',
-          },
-        ],
-        title: 'Create the operation matrix and guard the pivot',
+        sourceCell: 'Code cell 7',
+        code: `Q1, L1, U1 = sp.linalg.lu(A)
+print('Q from numpy.linalg.lu = ')
+print(Q1.T)
+print('L\\' from numpy.linalg.lu = ')
+print(np.linalg.inv(L1))`,
+        title: 'Compare with SciPy LU',
         explanation:
-          'Ej begins as identity. If the best pivot is still tiny, the code records that no elimination occurred and skips the unsafe division.',
-        drives: 'The pivot magnitude is compared directly with eps.',
+          'The executable call is scipy.linalg.lu. The two source print labels incorrectly say NumPy; the saved Q1.T and inv(L1) match the reconstructed Q and Lprime.',
+        drives: 'A direct library comparison for Q and Lprime.',
         watchFor:
-          'Here |4| is much larger than 1e−12, so elimination continues.',
+          'U1 is assigned but not printed or explicitly compared in the source notebook.',
         variables: [
           {
-            name: '|4| < 1e−12',
-            value: 'False',
-            meaning: 'The pivot is safe to use.',
+            name: 'Q1.T',
+            value: 'matches Q',
+            meaning: 'Same saved row permutation.',
+          },
+          {
+            name: 'inv(L1)',
+            value: 'matches Lprime',
+            meaning: 'Same accumulated elimination operation.',
           },
         ],
         after: {
-          title: 'The pivot passes the tolerance check',
-          description: 'Division by 4 is numerically safe at this scale.',
-          equation: '4 ≫ 10⁻¹²  →  do not skip',
-          matrices: [
-            {
-              label: 'safe pivot',
-              values: [
-                [4, 1, 1],
-                [0, 2, 1],
-                [2, 3, 1],
-              ],
-              cellTones: toneCells([[0, 0]], 'result'),
-            },
-          ],
-        },
-      },
-      {
-        code: '    for k in range(r + 1, n):\n        u = A[k, j] / A[r, j]',
-        lineNotes: [
-          {
-            action: 'Visits every row below the active pivot row.',
-          },
-          {
-            action:
-              'Divides the current target entry by the pivot to obtain its elimination multiplier.',
-          },
-        ],
-        title: 'Compute the elimination multiplier',
-        explanation:
-          'The loop first sees k=1, where the target is already zero and u=0. The visual focuses on k=2, where 2/4=0.5.',
-        drives:
-          'Target ÷ pivot becomes a multiplier displayed between the two rows.',
-        watchFor:
-          'The target at row index 1 (the second row) is already zero, so its multiplier is 0.',
-        variables: [
-          {
-            name: 'k (shown iteration)',
-            value: '2',
-            meaning: 'Row index 2, the third row, is highlighted below.',
-          },
-          { name: 'u', value: '0.5', meaning: 'Target-to-pivot ratio.' },
-        ],
-        after: {
-          title: 'The cancellation amount is 0.5',
+          title: 'The displayed Q and Lprime agree',
           description:
-            'Subtracting half of the pivot row will turn the target 2 into zero.',
-          equation: 'u = target / pivot = 2 / 4 = 0.5',
-          matrices: [
-            {
-              label: 'pivot and target rows',
-              values: [
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
-              cellTones: {
-                ...toneRow(0, 3, 'source'),
-                ...toneRow(1, 3, 'target'),
-              },
-            },
-          ],
-        },
-      },
-      {
-        code: '        A[k, j:] -= u * A[r, j:]\n        Ej[k, r] = -u',
-        lineNotes: [
-          {
-            action:
-              'Subtracts u times the pivot row from the current target row, starting at column j.',
-          },
-          {
-            action:
-              'Stores −u in the elementary matrix so left multiplication performs the same row operation.',
-          },
-        ],
-        title: 'Create the zero and record the operation',
-        explanation:
-          'The target row changes component by component. The elimination matrix stores −0.5 because left multiplication adds −0.5 times the pivot row.',
-        drives:
-          '2 becomes zero; the rest of its row becomes [2.5, 0.5]; −0.5 is stored in the operation matrix.',
-        watchFor:
-          'Using row r—not column j—for the pivot row and Ej column keeps the code correct even after a skipped column.',
-        variables: [
-          {
-            name: 'Ej[2,0]',
-            value: '−0.5',
-            meaning: 'Stored row-operation coefficient.',
-          },
-        ],
-        after: {
-          title: 'The first below-pivot entry has been eliminated',
-          description:
-            'Every component uses the same multiplier, so the whole row operation stays algebraically valid.',
-          equation: '[2,3,1] − 0.5·[4,1,1] = [0,2.5,0.5]',
-          matrices: [
-            {
-              label: 'working A',
-              values: [
-                [4, 1, 1],
-                [0, 2, 1],
-                [0, 2.5, 0.5],
-              ],
-              cellTones: toneRow(2, 3, 'result'),
-            },
-            {
-              label: 'operation matrix E₀',
-              values: [
-                [1, 0, 0],
-                [0, 1, 0],
-                [-0.5, 0, 1],
-              ],
-              cellTones: toneCells([[2, 0]], 'source'),
-            },
-          ],
+            'The source output visually compares the two operation matrices.',
+          equation: 'Q1ᵀ = Q  and  L1⁻¹ = Lprime',
           callout:
-            'The key change is 2→0, but 3→2.5 and 1→0.5 are also part of the same row operation.',
-        },
-      },
-      {
-        code: '    E_list.append(Ej.copy())\n    r += 1\nU = A.copy()\nE = E_list[-1]\nQ = np.eye(n)\nfor i in range(len(E_list) - 1, 0, -1):\n    Q = Q @ Q_list[i]\n    E = E @ Q @ E_list[i - 1] @ Q.T\nQ = Q @ Q_list[0]\nL = np.linalg.inv(E)\nassert np.allclose(Q @ A_original, L @ U)',
-        lineNotes: [
-          {
-            action:
-              'Stores the completed elimination matrix for the current column.',
-          },
-          { action: 'Advances the pivot-row cursor after a pivot is used.' },
-          {
-            action:
-              'Copies the final row-echelon working matrix into the upper factor U.',
-          },
-          {
-            action:
-              'Starts the accumulated elimination matrix with the final recorded step.',
-          },
-          { action: 'Starts the accumulated row permutation from identity.' },
-          {
-            action: 'Walks backward through the earlier recorded steps.',
-          },
-          {
-            action:
-              'Accumulates the row swaps that occur after the earlier elimination step.',
-          },
-          {
-            action:
-              'Reorders that earlier elimination matrix into the final row order, then multiplies it into E.',
-          },
-          { action: 'Includes the first recorded row swap in Q.' },
-          {
-            action:
-              'Inverts the accumulated elimination matrix to obtain the usual lower factor L.',
-          },
-          {
-            action:
-              'Checks numerically that the reconstructed factors satisfy Q @ A_original = L @ U.',
-          },
-        ],
-        title: 'Finish elimination and reconstruct the factors',
-        explanation:
-          'The loop repeats the same search–swap–eliminate cycle. The recorded matrices are then combined in reverse order to recover Q, E, and the usual lower factor L=E⁻¹.',
-        drives:
-          'The cursor moves down-right and zeros accumulate below the diagonal.',
-        watchFor:
-          'The entry E[2,0]=0.4 is the product (−0.8)(−0.5) created while the reordered elimination matrices are multiplied.',
-        variables: [
-          {
-            name: 'second pivot',
-            value: '2.5',
-            meaning: 'Largest active magnitude in column 1.',
-          },
-          { name: 'second u', value: '0.8', meaning: '2 / 2.5.' },
-          {
-            name: 'E[2,0]',
-            value: '0.4',
-            meaning: 'Product term (−0.8)(−0.5) in accumulated E.',
-          },
-          {
-            name: 'final pivot',
-            value: '0.6',
-            meaning: 'Last diagonal entry of U.',
-          },
-        ],
-        after: {
-          title: 'The recorded operations reconstruct the LU factors',
-          description:
-            'The pivot searches, swaps, and cancellations produce the same triangular factors used in Section 2.1.',
-          equation: 'E Q A_original = U  →  Q A_original = L U,  L=E⁻¹',
-          matrices: [
-            {
-              label: 'U',
-              values: [
-                [4, 1, 1],
-                [0, 2.5, 0.5],
-                [0, 0, 0.6],
-              ],
-              cellTones: {
-                ...toneCells(
-                  [
-                    [1, 0],
-                    [2, 0],
-                    [2, 1],
-                  ],
-                  'result',
-                ),
-                ...toneCells(
-                  [
-                    [0, 0],
-                    [1, 1],
-                    [2, 2],
-                  ],
-                  'source',
-                ),
-              },
-            },
-            {
-              label: 'Q',
-              values: [
-                [0, 1, 0],
-                [0, 0, 1],
-                [1, 0, 0],
-              ],
-              cellTones: toneCells(
-                [
-                  [0, 1],
-                  [1, 2],
-                  [2, 0],
-                ],
-                'block-a',
-              ),
-            },
-            {
-              label: 'E (called Lprime in the source)',
-              values: [
-                [1, 0, 0],
-                [-0.5, 1, 0],
-                [0.4, -0.8, 1],
-              ],
-              cellTones: toneCells(
-                [
-                  [1, 0],
-                  [2, 0],
-                  [2, 1],
-                ],
-                'block-b',
-              ),
-            },
-            {
-              label: 'E⁻¹ (usual L)',
-              values: [
-                [1, 0, 0],
-                [0.5, 1, 0],
-                [0, 0.8, 1],
-              ],
-              cellTones: toneCells(
-                [
-                  [1, 0],
-                  [2, 1],
-                ],
-                'result',
-              ),
-            },
-          ],
-          callout:
-            'E stores the accumulated row eliminations. The usual LU lower factor is its inverse, not E itself.',
+            'Source wording corrected: scipy.linalg.lu, not numpy.linalg.lu.',
         },
       },
     ],

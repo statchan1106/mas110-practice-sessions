@@ -1,19 +1,25 @@
 import type { ChapterSection } from './shared';
-import { sourceLinks, toneCells, toneRow } from './shared';
+import { sourceLinks, toneCells } from './shared';
 
 const filename = 'Ch2-1 Gaussian Elimination.ipynb';
 const links = sourceLinks(filename);
 
+const source = {
+  filename,
+  url: links.githubUrl,
+  note: 'Cells and saved values follow the upstream notebook on GitHub.',
+};
+
 export const gaussianEliminationSection: ChapterSection = {
   slug: 'gaussian-elimination',
   number: '2.1',
-  title: 'From a Linear System to a Solution',
+  title: 'Gaussian Elimination',
   shortTitle: 'Gaussian elimination',
   summary:
-    'Follow one system through row permutation, LDU factorization, forward substitution, diagonal scaling, and back substitution.',
+    'Run the original seeded 10×10 system through pivoted LU, LDU normalization, and triangular solves.',
   focus: 'Ax = b → LDUx = Qb → x',
   learningGoal:
-    'Read A and b as a system of equations, then use row reordering and the LDU factors to solve Ax = b by forward and back substitution.',
+    'Connect each line of the source notebook to the matrix or vector it changes, then verify the computed solution.',
   lectureConcepts: [
     'Ax = b',
     'Permutation matrix',
@@ -24,651 +30,449 @@ export const gaussianEliminationSection: ChapterSection = {
   ...links,
   primer: [
     {
-      term: 'Linear system',
+      term: 'Pivoted LU',
       definition:
-        'The matrix equation Ax = b stores several equations that share the same unknown vector x.',
-      relation: 'Ax = b',
-      watchFor: 'Every row operation applied to A must also be applied to b.',
+        'SciPy separates row order, elimination multipliers, and the upper-triangular result.',
+      relation: 'A = PLU  ⇒  QA = LU',
+      watchFor: 'Q=Pᵀ because a permutation matrix is orthogonal.',
     },
     {
-      term: 'Permutation matrix',
+      term: 'LDU',
       definition:
-        'A permutation matrix changes row order so a safe nonzero pivot reaches the active position.',
-      relation: 'Q = Pᵀ',
-      watchFor: 'SciPy returns A = P L U; therefore Q A = L U.',
-    },
-    {
-      term: 'LDU decomposition',
-      definition:
-        'L stores lower-triangular elimination information, D stores pivots, and U is normalized to have diagonal ones.',
+        'The notebook copies the raw U into V, moves its diagonal into d and D, then normalizes each row of U.',
       relation: 'QA = LDU',
-      watchFor: 'The diagonal values move out of U_raw and into D.',
+      watchFor: 'd is a 1-D vector; D=np.diag(d) is the diagonal matrix.',
     },
     {
-      term: 'Forward / back substitution',
+      term: 'Triangular solves',
       definition:
-        'Forward substitution moves top-to-bottom through L; back substitution moves bottom-to-top through U.',
-      relation: 'Lv=y, Dz=v, Ux=z',
-      watchFor: 'No matrix inverse is needed to recover x.',
+        'Forward substitution solves with L; diagonal scaling solves with D; back substitution solves with U.',
+      relation: 'LDUx = Qb',
+      watchFor: 'The solve itself never forms the inverse of A.',
     },
   ],
   walkthrough: {
-    eyebrow: 'Lab 2.1 · Code trace',
-    title: 'Solve Ax = b, one state change at a time',
+    eyebrow: 'Lab 2.1 · Source trace',
+    title: 'Follow the original notebook, line by line',
     objective:
-      'Before showing each result, identify the row, pivot, or variable that should change. The small example follows the same operations as the original notebook.',
+      'The code, variable names, order, and displayed values below come from the upstream notebook. Large 10×10 outputs are summarized visually; open Colab for every printed entry.',
+    source,
     initial: {
-      title: 'No variables exist yet',
+      title: 'Start before notebook cell 1',
       description:
-        'The program state is empty. The first two steps will create A and b, then join them as the augmented matrix [A | b].',
-      equation: 'Ax = b',
-      callout: 'Think first: what shape must x have if A is 3 × 3?',
+        'No Python names or matrices exist yet. The notebook first loads its libraries, then creates a reproducible system.',
+      equation: 'Goal: solve Ax = b',
     },
     steps: [
       {
-        code: 'A = np.array([[0.,2.,1.],[4.,1.,1.],[2.,3.,1.]])',
-        title: 'Create the coefficient matrix A',
+        sourceCell: 'Code cells 1–2',
+        code: '# numerical and scientific computing libraries\nimport numpy as np\nimport scipy as sp\n# plotting libraries\nimport matplotlib as mpl\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# for pretty printing\nnp.set_printoptions(4, linewidth=100, suppress=True)',
+        title: 'Prepare the notebook',
         explanation:
-          'Each row stores the coefficients of one equation. The three columns match the three unknown entries of x.',
-        drives: 'A visible 3×3 coefficient matrix.',
+          'The imports create short module names. The print option changes only how NumPy arrays appear, not their values.',
+        drives: 'Library aliases and compact array printing.',
+        watchFor: 'No matrix computation happens in these lines.',
+        variables: [
+          {
+            name: 'np / sp',
+            value: 'ready',
+            meaning: 'NumPy arrays and SciPy linear algebra are available.',
+          },
+        ],
+        after: {
+          title: 'The notebook environment is ready',
+          description:
+            'Floating output uses precision 4, lines wrap at 100 characters, and tiny values print as zero.',
+          equation: 'precision=4 · linewidth=100 · suppress=True',
+        },
+      },
+      {
+        sourceCell: 'Code cell 3',
+        code: 'm = n = 10\nrng = np.random.RandomState(0)\nA = rng.randint(10, size=(m, n))\nb = rng.randint(10, size=m)\nprint("A =")\nprint(A)\nprint("b = ", b)',
+        title: 'Create the exact 10×10 example',
+        explanation:
+          'A fixed random seed makes the integer matrix and right-hand side reproducible. This saved matrix is invertible, as assumed by the notebook.',
+        drives: 'A 10×10 matrix A and a length-10 vector b.',
         watchFor:
-          'A[0,0] is zero, so using it immediately as a pivot would fail.',
+          'Random integer matrices are not always invertible; this particular seeded draw is.',
         variables: [
           {
             name: 'A.shape',
-            value: '(3, 3)',
-            meaning: 'Three equations and three unknowns.',
+            value: '(10, 10)',
+            meaning: 'Ten equations and ten unknowns.',
+          },
+          {
+            name: 'b.shape',
+            value: '(10,)',
+            meaning: 'One right-hand-side value per row.',
           },
         ],
         after: {
-          title: 'A stores the left side of the equations',
+          title: 'The saved source inputs are fixed',
           description:
-            'Rows are equations and columns line up with x₁, x₂, and x₃.',
-          equation: 'A ∈ ℝ^(3×3)',
+            'The first two rows are shown as an excerpt. The b row is the complete saved vector.',
           matrices: [
             {
-              label: 'A',
+              label: 'A · saved rows 1–2 of 10',
               values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
+                [5, 0, 3, 3, 7, 9, 3, 5, 2, 4],
+                [7, 6, 8, 8, 1, 6, 7, 7, 8, 1],
               ],
-              cellTones: toneCells([[0, 0]], 'target'),
+            },
+            {
+              label: 'b · complete saved output',
+              values: [[0, 3, 2, 0, 7, 5, 9, 0, 2, 7]],
             },
           ],
-          callout:
-            'The highlighted zero is the first pivot position. A row exchange will be needed later.',
+          callout: 'Open Colab to inspect all ten rows of A.',
         },
       },
       {
-        code: 'b = np.array([7.,9.,11.])\nAb = np.column_stack((A, b))',
-        lineNotes: [
-          {
-            action: 'Creates one right-hand-side value for each equation row.',
-          },
-          {
-            action:
-              'Places b beside A and stores the 3×4 augmented matrix as Ab.',
-          },
-        ],
-        title: 'Create b and join the full system',
+        sourceCell: 'Code cells 4–5',
+        code: 'P, L, U = sp.linalg.lu(A)\nQ = P.T\nprint("Q =")\nprint(Q)\nprint()\nprint("L =")\nprint(L)\nprint()\nprint("U =")\nprint(U)\n# sanity check\nnp.allclose(Q@A, L@U)',
+        title: 'Factor A and verify the convention',
         explanation:
-          'The vector b stores one right-hand-side value for each row of A. Placing it beside A gives the augmented matrix used in elimination.',
-        drives: 'A, b, and their combined form [A | b].',
-        watchFor:
-          'Row i of A must stay paired with entry i of b during every row operation.',
-        variables: [
-          {
-            name: 'b',
-            value: '[7, 9, 11]',
-            meaning: 'One right-hand-side value per equation.',
-          },
-          {
-            name: 'Ab.shape',
-            value: '(3, 4)',
-            meaning: 'Three coefficient columns plus one right-hand side.',
-          },
-        ],
-        after: {
-          title: 'A and b now form one augmented matrix',
-          description:
-            'The separate definitions are kept visible, then combined so each equation can be read across one row.',
-          equation: '[A | b]  ↔  0x₁+2x₂+x₃=7,  4x₁+x₂+x₃=9,  2x₁+3x₂+x₃=11',
-          matrices: [
-            {
-              label: 'A · coefficients',
-              values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
-              cellTones: toneCells([[0, 0]], 'target'),
-            },
-            { label: 'b · right side', values: [[7], [9], [11]] },
-            {
-              label: 'combined [ A | b ]',
-              values: [
-                [0, 2, 1, 7],
-                [4, 1, 1, 9],
-                [2, 3, 1, 11],
-              ],
-              dividerBefore: 3,
-              cellTones: toneCells([[0, 0]], 'target'),
-            },
-          ],
-          callout:
-            'Elimination changes complete rows of [A | b], so coefficients and right-hand sides remain paired.',
-        },
-      },
-      {
-        code: 'P, L, U_raw = sp.linalg.lu(A)',
-        title: 'Ask SciPy for a pivoted LU factorization',
-        explanation:
-          'SciPy chooses a stable row order and returns factors satisfying A = P @ L @ U_raw.',
+          'SciPy returns A=P@L@U. Transposing P moves the permutation to the left, so the check compares Q@A with L@U.',
         drives:
-          'Three factor cards: the row permutation P, lower factor L, and unnormalized upper factor U_raw.',
-        watchFor: 'This is scipy.linalg.lu—not numpy.linalg.lu.',
+          'Permutation Q, lower factor L, upper factor U, and a True check.',
+        watchFor: 'This function belongs to scipy.linalg, not numpy.linalg.',
         variables: [
           {
-            name: 'P.shape',
-            value: '(3, 3)',
-            meaning: 'A row-permutation matrix.',
+            name: 'Q row order',
+            value: '[5, 7, 3, 4, 6, 2, 8, 10, 9, 1]',
+            meaning: 'One-based source row order after permutation.',
           },
           {
-            name: 'np.diagonal(U_raw)',
-            value: '[4, 2.5, 0.6]',
-            meaning: 'The three pivots found by elimination.',
+            name: 'np.allclose(Q@A, L@U)',
+            value: 'True',
+            meaning: 'The saved factors reconstruct the permuted matrix.',
           },
         ],
         after: {
-          title: 'A has been split into reusable operations',
+          title: 'Pivoted LU passes its first check',
           description:
-            'P records row order, L records multipliers, and U_raw is upper triangular.',
-          equation: 'A = P · L · U_raw',
+            'The diagonal below is taken from the saved raw U output and will become d in the next cell.',
+          equation: 'A = PLU  ⇔  QA = LU',
           matrices: [
             {
-              label: 'P',
+              label: 'diag(U) · saved raw pivots',
               values: [
-                [0, 0, 1],
-                [1, 0, 0],
-                [0, 1, 0],
-              ],
-            },
-            {
-              label: 'L',
-              values: [
-                [1, 0, 0],
-                [0.5, 1, 0],
-                [0, 0.8, 1],
+                [9, -7, 8.5714, -7.7056, 6.5213],
+                [7.0469, 8.887, -5.0091, -5.6224, 1.2171],
               ],
               cellTones: toneCells(
+                Array.from({ length: 10 }, (_, index) => [
+                  Math.floor(index / 5),
+                  index % 5,
+                ]),
+                'source',
+              ),
+            },
+          ],
+          callout:
+            'Q changes row order; it does not change values inside a row.',
+        },
+      },
+      {
+        sourceCell: 'Code cells 6–7',
+        code: '# for simplicity, let us assume that A is invertible.\nV = np.copy(U)\nd = np.zeros(m)\nfor i in range(m):\n    d[i] = V[i, i]\n    U[i, :] = V[i, :] / d[i]\nD = np.diag(d)\nprint("D =")\nprint(D)\nprint()\nprint("New U =")\nprint(U)\n# sanity check\nnp.allclose(Q @ A, L @ D @ U)',
+        title: 'Move pivot scale from U into D',
+        explanation:
+          'V preserves the raw upper factor. The loop first stores pivot V[i,i] in the vector d, then divides the whole row by that pivot. D is built only after d is complete.',
+        drives:
+          'The vector d, diagonal matrix D, normalized U, and a True LDU check.',
+        watchFor:
+          'd is a vector. D is the matrix made from d. The code also overwrites U.',
+        variables: [
+          {
+            name: 'd.shape',
+            value: '(10,)',
+            meaning: 'Ten saved pivot values.',
+          },
+          {
+            name: 'D.shape',
+            value: '(10, 10)',
+            meaning: 'The same values placed on a diagonal.',
+          },
+          {
+            name: 'diag(U)',
+            value: '[1, …, 1]',
+            meaning: 'Every row was normalized by its own pivot.',
+          },
+          {
+            name: 'np.allclose(Q@A, L@D@U)',
+            value: 'True',
+            meaning: 'The LDU factors reconstruct Q@A.',
+          },
+        ],
+        after: {
+          title: 'One vector becomes a diagonal matrix',
+          description:
+            'The first four pivots are shown in D. The matching normalized U excerpt has ones on its diagonal.',
+          equation: 'raw U = D · normalized U',
+          matrices: [
+            {
+              label: 'd · 1-D vector',
+              values: [[9, -7, 8.5714, -7.7056]],
+              cellTones: toneCells(
                 [
-                  [1, 0],
-                  [2, 1],
+                  [0, 0],
+                  [0, 1],
+                  [0, 2],
+                  [0, 3],
                 ],
                 'source',
               ),
             },
             {
-              label: 'U_raw',
+              label: 'D · upper-left 4×4',
               values: [
-                [4, 1, 1],
-                [0, 2.5, 0.5],
-                [0, 0, 0.6],
+                [9, 0, 0, 0],
+                [0, -7, 0, 0],
+                [0, 0, 8.5714, 0],
+                [0, 0, 0, -7.7056],
               ],
               cellTones: toneCells(
                 [
                   [0, 0],
                   [1, 1],
                   [2, 2],
+                  [3, 3],
+                ],
+                'result',
+              ),
+            },
+            {
+              label: 'normalized U · upper-left 4×4',
+              values: [
+                [1, 1, 0, 0.4444],
+                [0, 1, -0.1429, -0.4921],
+                [0, 0, 1, 1.0204],
+                [0, 0, 0, 1],
+              ],
+              cellTones: toneCells(
+                [
+                  [0, 0],
+                  [1, 1],
+                  [2, 2],
+                  [3, 3],
                 ],
                 'result',
               ),
             },
           ],
           callout:
-            'The colored entries in L are the stored elimination multipliers; the green diagonal entries are pivots.',
+            'If you rerun cell 9 alone, U is already normalized. Rerun cell 6 first.',
         },
       },
       {
-        code: 'Q = P.T',
-        title: 'Reverse SciPy’s permutation convention',
-        explanation:
-          'The transpose of a permutation matrix is its inverse. Multiplying by Q moves A into the row order used by L and U_raw.',
-        drives: 'A visible row reorder from [R₁,R₂,R₃] to [R₂,R₃,R₁].',
-        watchFor: 'The right-hand side must later undergo the same reorder.',
-        variables: [
-          { name: 'Q', value: 'P.T', meaning: 'The inverse row permutation.' },
-          {
-            name: 'Q @ A',
-            value: 'rows 2, 3, 1',
-            meaning: 'A in elimination order.',
-          },
-        ],
-        after: {
-          title: 'The largest available first pivot moves to the top',
-          description:
-            'Q does not change any row internally; it only changes row order.',
-          equation: 'Q A = L U_raw',
-          matrices: [
-            {
-              label: 'A before',
-              values: [
-                [0, 2, 1],
-                [4, 1, 1],
-                [2, 3, 1],
-              ],
-              cellTones: toneRow(1, 3, 'source'),
-            },
-            {
-              label: 'Q @ A',
-              values: [
-                [4, 1, 1],
-                [2, 3, 1],
-                [0, 2, 1],
-              ],
-              cellTones: toneRow(0, 3, 'result'),
-            },
-            {
-              label: 'Q',
-              values: [
-                [0, 1, 0],
-                [0, 0, 1],
-                [1, 0, 0],
-              ],
-            },
-          ],
-          callout:
-            'The highlighted original second row becomes the first row after multiplication by Q.',
-        },
-      },
-      {
-        code: 'pivots = np.diagonal(U_raw).copy()\nD = np.diagflat(pivots)\nU = U_raw / pivots[:, None]\nassert np.allclose(Q @ A, L @ D @ U)',
-        lineNotes: [
-          {
-            action:
-              'Extracts the main diagonal of the 2-D matrix U_raw as the 1-D vector pivots.',
-          },
-          {
-            action: 'Builds a 3×3 diagonal matrix D from the 1-D pivot vector.',
-          },
-          {
-            action:
-              'Turns pivots into a column and divides row i of U_raw by pivots[i].',
-          },
-          {
-            action:
-              'Checks numerically that the normalized factors reconstruct the row-permuted matrix.',
-          },
-        ],
-        title: 'Separate pivot scale from triangular shape',
-        explanation:
-          'np.diagonal only extracts the three pivot values. np.diagflat then builds D from that vector, and row-wise division leaves U with diagonal ones.',
-        drives:
-          'The three pivot values move from U_raw into D while the diagonal of U becomes 1.',
-        watchFor:
-          'All pivots must be nonzero. Here pivots[:, None] changes shape (3,) into (3,1), enabling row-wise broadcasting.',
-        variables: [
-          {
-            name: 'pivots',
-            value: '[4, 2.5, 0.6]',
-            meaning: 'Pivot scale, one value per row.',
-          },
-          {
-            name: 'np.diagonal(U)',
-            value: '[1, 1, 1]',
-            meaning: 'U is normalized row by row.',
-          },
-        ],
-        after: {
-          title: 'The pivot values are now stored in D',
-          description:
-            'D @ U reconstructs U_raw; np.allclose can check the floating-point result.',
-          equation: 'U_raw = D U    and    Q A = L D U',
-          matrices: [
-            {
-              label: 'D',
-              values: [
-                [4, 0, 0],
-                [0, 2.5, 0],
-                [0, 0, 0.6],
-              ],
-              cellTones: toneCells(
-                [
-                  [0, 0],
-                  [1, 1],
-                  [2, 2],
-                ],
-                'source',
-              ),
-            },
-            {
-              label: 'U',
-              values: [
-                [1, 0.25, 0.25],
-                [0, 1, 0.2],
-                [0, 0, 1],
-              ],
-              cellTones: toneCells(
-                [
-                  [0, 0],
-                  [1, 1],
-                  [2, 2],
-                ],
-                'result',
-              ),
-            },
-          ],
-          callout:
-            'D controls scale; U keeps the dependency pattern needed for back substitution.',
-        },
-      },
-      {
+        sourceCell: 'Code cell 8',
         code: 'y = Q @ b',
-        title: 'Apply the same row order to b',
+        title: 'Apply the row permutation to b',
         explanation:
-          'Reordering only A would describe a different system. Q must act on b as well.',
-        drives: 'The values of b move in the identical R₂, R₃, R₁ order.',
-        watchFor: 'Values move; they are not recomputed.',
+          'Q must reorder the right-hand side in exactly the same way that it reorders the rows of A.',
+        drives: 'The length-10 vector y.',
+        watchFor: 'The values move; they are not recomputed.',
         variables: [
           {
             name: 'y',
-            value: '[9, 11, 7]',
-            meaning: 'The right-hand side in elimination order.',
+            value: '[7, 9, 2, 0, 5, 3, 0, 7, 2, 0]',
+            meaning: 'b in elimination row order.',
           },
         ],
         after: {
-          title: 'The equations and constants still match',
+          title: 'The equations and right-hand sides still match',
           description:
-            'The second, third, and first right-hand-side entries now align with the reordered rows of A.',
-          equation: 'QAx = Qb  →  LDUx = y',
+            'The computed y for the saved inputs follows Q’s row order.',
+          equation: 'LDUx = Qb = y',
           matrices: [
-            {
-              label: 'b before',
-              values: [[7], [9], [11]],
-              cellTones: toneCells([[1, 0]], 'source'),
-            },
+            { label: 'b', values: [[0, 3, 2, 0, 7, 5, 9, 0, 2, 7]] },
             {
               label: 'y = Q @ b',
-              values: [[9], [11], [7]],
-              cellTones: toneCells([[0, 0]], 'result'),
-            },
-          ],
-          callout: 'The highlighted 9 follows the row that Q moved to the top.',
-        },
-      },
-      {
-        code: 'aug = np.hstack((L, y.reshape(-1, 1)))',
-        title: 'Prepare the forward solve',
-        explanation:
-          'reshape turns y into a column, and hstack attaches it to L as an augmented matrix.',
-        drives:
-          'A new right-most column separated from the coefficients by a divider.',
-        watchFor: 'reshape(-1, 1) means “infer the row count, use one column.”',
-        variables: [
-          {
-            name: 'aug.shape',
-            value: '(3, 4)',
-            meaning: 'Three coefficient columns plus one RHS column.',
-          },
-        ],
-        after: {
-          title: 'L and y are joined for elimination',
-          description:
-            'Each stored multiplier updates the right-hand side, then the eliminated coefficient is recorded as zero.',
-          equation: 'L v = y',
-          matrices: [
-            {
-              label: '[ L | y ]',
-              values: [
-                [1, 0, 0, 9],
-                [0.5, 1, 0, 11],
-                [0, 0.8, 1, 7],
-              ],
-              dividerBefore: 3,
+              values: [[7, 9, 2, 0, 5, 3, 0, 7, 2, 0]],
               cellTones: toneCells(
-                [
-                  [1, 0],
-                  [2, 1],
-                ],
-                'target',
+                Array.from({ length: 10 }, (_, index) => [0, index]),
+                'result',
               ),
             },
           ],
-          callout:
-            'The amber TARGET entries are exactly the multipliers that must be cleared.',
         },
       },
       {
-        code: 'for piv in range(3):\n    for i in range(piv + 1, 3):\n        aug[i,-1] -= aug[i,piv] * aug[piv,-1]\n        aug[i,piv] = 0',
-        lineNotes: [
-          {
-            action: 'Visits pivot columns 0, 1, and 2 from left to right.',
-          },
-          {
-            action: 'Visits only rows below the current pivot row.',
-          },
-          {
-            action:
-              'Subtracts the stored multiplier times the solved pivot value from the target right-hand side.',
-          },
-          {
-            action:
-              'Records that the below-pivot coefficient has been eliminated.',
-          },
-        ],
-        title: 'Carry out forward substitution',
+        sourceCell: 'Code cells 9–11',
+        code: 'aug = np.hstack((L, y.reshape(-1, 1)))\nfor piv in range(m):\n    for i in range(piv+1, m):\n        aug[i, -1] = aug[i, -1] - aug[i, piv] * aug[piv, -1]\n        aug[i, piv] = 0\nL_inv_y = aug[:, -1]\n# sanity check 1 : is Gaussian elimination correctly done?\nprint(aug)\n# sanity check 2 : is L^(-1) y computed correctly?\nnp.allclose(L_inv_y, np.linalg.inv(L)@y)',
+        title: 'Run forward substitution on L',
         explanation:
-          'Each multiplier tells how much of an already solved pivot row to subtract from a lower row.',
-        drives:
-          '0.5 and 0.8 become zero, while the RHS changes 11 → 6.5 and 7 → 1.8.',
+          'The nested loops clear entries below each pivot while updating the final column. The result column is stored as L_inv_y.',
+        drives: 'An augmented [I | L_inv_y] matrix and a True verification.',
         watchFor:
-          'The code updates the last column directly because L has ones on its diagonal.',
+          'The inverse appears only in the sanity check; the solve itself uses elimination.',
         variables: [
           {
-            name: 'aug[:, -1]',
-            value: '[9, 6.5, 1.8]',
-            meaning: 'The solved RHS column; the next step stores it as v.',
-            before: '[9, 11, 7]',
+            name: 'L_inv_y',
+            value:
+              '[7, 2.7778, −0.3016, −0.8722, 6.6381, 4.4667, −1.809, 4.4331, −2.0608, −6.3442]',
+            meaning: 'The saved forward-solve result.',
+          },
+          {
+            name: 'sanity check',
+            value: 'True',
+            meaning: 'It matches inv(L)@y numerically.',
           },
         ],
         after: {
-          title: 'Forward substitution has produced v',
+          title: 'Forward substitution produces L⁻¹y',
           description:
-            'The lower-triangular system is reduced to identity with the solved values on the right.',
-          equation: '11 − 0.5·9 = 6.5    ·    7 − 0.8·6.5 = 1.8',
+            'The complete saved result is split across two short rows for legibility.',
           matrices: [
             {
-              label: 'after first cancellation',
-              values: [
-                [1, 0, 0, 9],
-                [0, 1, 0, 6.5],
-                [0, 0.8, 1, 7],
-              ],
-              dividerBefore: 3,
+              label: 'L_inv_y · entries 1–5',
+              values: [[7, 2.7778, -0.3016, -0.8722, 6.6381]],
               cellTones: toneCells(
                 [
-                  [1, 0],
-                  [1, 3],
+                  [0, 0],
+                  [0, 1],
+                  [0, 2],
+                  [0, 3],
+                  [0, 4],
                 ],
                 'result',
               ),
             },
             {
-              label: 'final [ I | v ]',
-              values: [
-                [1, 0, 0, 9],
-                [0, 1, 0, 6.5],
-                [0, 0, 1, 1.8],
-              ],
-              dividerBefore: 3,
+              label: 'L_inv_y · entries 6–10',
+              values: [[4.4667, -1.809, 4.4331, -2.0608, -6.3442]],
               cellTones: toneCells(
                 [
-                  [2, 1],
-                  [2, 3],
+                  [0, 0],
+                  [0, 1],
+                  [0, 2],
+                  [0, 3],
+                  [0, 4],
                 ],
                 'result',
               ),
             },
           ],
           callout:
-            'The zero is the structural result; the changed RHS is the numerical result of the same row operation.',
+            'Each zero below the diagonal and each changed RHS value come from the same row operation.',
         },
       },
       {
-        code: 'v = aug[:, -1]\nz = v / pivots',
-        lineNotes: [
-          {
-            action:
-              'Selects the final column of the augmented matrix and stores it as v.',
-          },
-          {
-            action:
-              'Solves Dz=v by dividing each entry of v by the matching diagonal pivot.',
-          },
-        ],
+        sourceCell: 'Code cell 12',
+        code: 'D_inv_L_inv_y = np.zeros(m)\nfor i in range(m):\n    D_inv_L_inv_y[i] = 1.0 / D[i, i] * L_inv_y[i]',
         title: 'Solve the diagonal system',
         explanation:
-          'The last column is v. Since D is diagonal, solving Dz = v is three independent divisions.',
-        drives: 'Three parallel divisions aligned with D’s diagonal.',
-        watchFor:
-          'This is elementwise division because both v and pivots are one-dimensional arrays.',
+          'Because D is diagonal, entry i is solved independently by dividing L_inv_y[i] by D[i,i].',
+        drives: 'The vector D_inv_L_inv_y.',
+        watchFor: 'The correct notation is 1/D[i,i], or equivalently 1/d[i].',
         variables: [
           {
-            name: 'v',
-            value: '[9, 6.5, 1.8]',
-            meaning: 'Forward-solve result.',
-          },
-          {
-            name: 'z',
-            value: '[2.25, 2.6, 3]',
-            meaning: 'Solution after removing pivot scale.',
+            name: 'D_inv_L_inv_y.shape',
+            value: '(10,)',
+            meaning: 'One scaled value per equation.',
           },
         ],
         after: {
-          title: 'Solve Dz = v one row at a time',
-          description: 'Each pivot controls only the value in its own row.',
-          equation: 'z = [9/4, 6.5/2.5, 1.8/0.6] = [2.25, 2.6, 3]',
-          matrices: [
-            {
-              label: 'D',
-              values: [
-                [4, 0, 0],
-                [0, 2.5, 0],
-                [0, 0, 0.6],
-              ],
-              cellTones: toneCells(
-                [
-                  [0, 0],
-                  [1, 1],
-                  [2, 2],
-                ],
-                'source',
-              ),
-            },
-            {
-              label: 'z',
-              values: [[2.25], [2.6], [3]],
-              cellTones: toneCells(
-                [
-                  [0, 0],
-                  [1, 0],
-                  [2, 0],
-                ],
-                'result',
-              ),
-            },
-          ],
+          title: 'Ten independent divisions remove D',
+          description:
+            'There is no interaction between rows in a diagonal solve.',
+          equation: '(D⁻¹L⁻¹y)ᵢ = (L⁻¹y)ᵢ / Dᵢᵢ',
+          callout:
+            'The notebook prose writes dᵢᵢ, but d is 1-D; Dᵢᵢ is the matrix notation.',
         },
       },
       {
-        code: 'x = np.zeros(3)\nfor i in range(2, -1, -1):\n    x[i] = (z[i] - sum(U[i,j]*x[j] for j in range(i+1,3))) / U[i,i]\nassert np.allclose(A @ x, b)',
-        lineNotes: [
-          {
-            action:
-              'Creates space for the three unknown values, initially all zero.',
-          },
-          {
-            action:
-              'Visits rows 2, 1, and 0 so already-solved variables are available.',
-          },
-          {
-            action:
-              'Subtracts contributions from already-solved variables to the right, then divides by U[i,i].',
-          },
-          {
-            action:
-              'Checks numerically that the recovered x satisfies the original system Ax=b.',
-          },
-        ],
-        title: 'Back-substitute from the bottom row',
+        sourceCell: 'Code cell 13',
+        code: "z = D_inv_L_inv_y\nx = np.zeros(n)\nfor i in range(n-1, -1, -1):\n    x[i] = (z[i] - sum(U[i, j] * x[j] for j in range(i+1, n))) / U[i, i]\nprint('x = ', x)",
+        title: 'Back-substitute from the last row',
         explanation:
-          'Known variables are substituted upward: solve x₃ first, then x₂, then x₁.',
-        drives:
-          'The solution is filled from bottom to top, and the final residual is zero within floating-point tolerance.',
+          'The descending loop ensures that every x[j] used on the right has already been solved.',
+        drives: 'The source notebook’s length-10 solution x.',
         watchFor:
-          'range(i+1, 3) uses only values of x that have already been solved.',
+          'U[i,i] is one after normalization, but keeping the division makes the formula general.',
         variables: [
           {
             name: 'x',
-            value: '[1, 2, 3]',
-            meaning: 'The recovered unknown vector.',
-          },
-          {
-            name: 'np.allclose(A @ x, b)',
-            value: 'True',
-            meaning: 'The recovered x passes the numerical solution check.',
+            value:
+              '[−6.2381, 4.187, −2.4684, −2.8606, 0.4127, 5.8132, −0.6281, 1.563, 3.4439, −5.2124]',
+            meaning: 'The saved notebook solution.',
           },
         ],
         after: {
-          title: 'The original system is solved',
-          description:
-            'Bottom-to-top substitution recovers x, and substituting it into the original A reproduces b.',
-          equation: 'x₃=3  →  x₂=2.6−0.2·3=2  →  x₁=2.25−0.25·2−0.25·3=1',
+          title: 'All ten unknowns are solved',
+          description: 'The loop fills x from entry 10 back to entry 1.',
+          equation: 'i = 9, 8, …, 0',
           matrices: [
             {
-              label: 'U',
-              values: [
-                [1, 0.25, 0.25],
-                [0, 1, 0.2],
-                [0, 0, 1],
-              ],
-              cellTones: toneCells(
-                [
-                  [2, 2],
-                  [1, 1],
-                  [0, 0],
-                ],
-                'source',
-              ),
-            },
-            {
-              label: 'x',
-              values: [[1], [2], [3]],
+              label: 'x · entries 1–5',
+              values: [[-6.2381, 4.187, -2.4684, -2.8606, 0.4127]],
               cellTones: toneCells(
                 [
                   [0, 0],
-                  [1, 0],
-                  [2, 0],
+                  [0, 1],
+                  [0, 2],
+                  [0, 3],
+                  [0, 4],
                 ],
                 'result',
               ),
             },
             {
-              label: 'A @ x = b',
-              values: [[7], [9], [11]],
+              label: 'x · entries 6–10',
+              values: [[5.8132, -0.6281, 1.563, 3.4439, -5.2124]],
               cellTones: toneCells(
                 [
                   [0, 0],
-                  [1, 0],
-                  [2, 0],
+                  [0, 1],
+                  [0, 2],
+                  [0, 3],
+                  [0, 4],
                 ],
                 'result',
               ),
             },
           ],
+        },
+      },
+      {
+        sourceCell: 'Code cell 14',
+        code: '# Final check\nprint("Ax = ", A @ x)\nprint()\nprint("b = ", b)',
+        title: 'Compare Ax with b',
+        explanation:
+          'The source prints both vectors. With the notebook’s four-decimal display, the computed product matches b.',
+        drives: 'Two matching length-10 rows.',
+        watchFor:
+          'Printing rounded values is visual evidence; np.allclose is a useful extra numerical check in Colab.',
+        variables: [
+          {
+            name: 'Ax',
+            value: '[0, 3, 2, 0, 7, 5, 9, 0, 2, 7]',
+            meaning: 'The saved product A@x.',
+          },
+          {
+            name: 'b',
+            value: '[0, 3, 2, 0, 7, 5, 9, 0, 2, 7]',
+            meaning: 'The original right-hand side.',
+          },
+        ],
+        after: {
+          title: 'The source output reproduces b',
+          description: 'Every displayed entry agrees.',
+          equation: 'Ax = b',
+          matrices: [
+            {
+              label: 'A @ x',
+              values: [[0, 3, 2, 0, 7, 5, 9, 0, 2, 7]],
+              cellTones: toneCells(
+                Array.from({ length: 10 }, (_, index) => [0, index]),
+                'result',
+              ),
+            },
+            { label: 'b', values: [[0, 3, 2, 0, 7, 5, 9, 0, 2, 7]] },
+          ],
           callout:
-            'Completion checks: np.allclose(Q@A, L@D@U) and np.allclose(A@x, b) are both true.',
+            'Optional teaching check: np.allclose(A @ x, b) returns True.',
         },
       },
     ],
