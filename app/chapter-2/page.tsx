@@ -77,7 +77,8 @@ export default function ChapterTwoHome() {
             </div>
             <p className="max-w-md text-base leading-7 text-muted-foreground">
               Chapter 2 turns hand calculations into an algorithm. Every visual
-              below answers: what did this line use, do, and update?
+              below answers: what did this line read, which action did it take,
+              and what changed?
             </p>
           </div>
           <dl className="concept-ledger mt-8">

@@ -16,7 +16,7 @@ const pageFunctions = [
   [
     '02',
     'Next line',
-    'Moves to the next Python line and explains what it uses, does, and updates.',
+    'Moves to the next Python line and explains what it reads, which action it takes, and what changes.',
   ],
   [
     '03',
@@ -96,9 +96,9 @@ export default function CourseHome() {
               </p>
               <p className="session-contact">
                 Questions about the materials or code?{' '}
-                <a href="mailto:statchan1106@kaist.ac.kr">
-                  statchan1106@kaist.ac.kr
-                </a>
+                <span className="email-address">
+                  statchan1106 [at] kaist.ac.kr
+                </span>
               </p>
             </aside>
           </div>

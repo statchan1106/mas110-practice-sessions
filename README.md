@@ -33,7 +33,7 @@ The browser walkthroughs use small, fixed teaching examples. They explain how th
 
 ## Maintainer and questions
 
-Practice materials are prepared and maintained by **Seongchan Lee**. Questions about the materials or code can be sent to `statchan1106@kaist.ac.kr`.
+Practice materials are prepared and maintained by **Seongchan Lee**. Questions about the materials or code can be sent to `statchan1106 [at] kaist.ac.kr`.
 
 ## Content structure
 

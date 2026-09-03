@@ -379,9 +379,7 @@ function SourceList({
         return (
           <li key={`${currentStep}-${currentLine}`}>
             {currentLine === 0 && (
-              <span className="trace-block-label">
-                Step {currentStep + 1} · {step.title}
-              </span>
+              <span className="trace-block-label">{step.title}</span>
             )}
             <button
               type="button"
@@ -407,21 +405,17 @@ function SourceList({
 function MeaningLedger({ meaning }: { meaning: LineMeaning }) {
   return (
     <div>
-      <p className="line-meaning-key">
-        <strong>What this line does</strong> · Uses = values it looks at · Does
-        = its operation · Updates = what changes
-      </p>
       <dl className="line-meaning">
         <div>
-          <dt>Uses</dt>
+          <dt>Reads</dt>
           <dd>{meaning.uses}</dd>
         </div>
         <div>
-          <dt>Does</dt>
+          <dt>Action</dt>
           <dd>{meaning.does}</dd>
         </div>
         <div>
-          <dt>Updates</dt>
+          <dt>Changes</dt>
           <dd>{meaning.updates}</dd>
         </div>
       </dl>
@@ -585,9 +579,9 @@ export function CodeWalkthrough({
       </header>
 
       <p className="trace-mode-note">
-        <strong>How it works:</strong> choose a line, see what it uses, does,
-        and updates, think about the result, then show the expected change. The
-        full Python code runs in Colab.
+        <strong>How it works:</strong> choose a line, see what it reads, which
+        action it takes, and what changes. Think about the result, then show the
+        expected change. The full Python code runs in Colab.
       </p>
 
       <output className="sr-only" aria-live="polite">
@@ -630,12 +624,8 @@ export function CodeWalkthrough({
           <MeaningLedger meaning={meaning} />
 
           <div className="trace-teaching-note">
-            <span>Step {stepIndex + 1} · why it matters</span>
             <h3>{step.title}</h3>
             <p>{step.explanation}</p>
-            <small>
-              <strong>Think first:</strong> {step.watchFor}
-            </small>
           </div>
 
           <details className="trace-mobile-source min-[1680px]:hidden">
