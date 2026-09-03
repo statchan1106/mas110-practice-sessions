@@ -47,9 +47,10 @@ export default function CourseHome() {
                 and visible mathematical change.
               </p>
               <p className="mt-7 max-w-3xl border-l-2 border-primary pl-5 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
-                These materials review class content and implement key concepts
-                in code, following <em>Foundations of LADS</em>. They are
-                learning aids—not a homework-solution bank.
+                This course-wide project supports the practice sessions by
+                reviewing lecture concepts and implementing them in code,
+                following <em>Foundations of LADS</em>. It is a learning aid—not
+                a homework-solution bank.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
                 <a className="course-button" href="#chapters">
@@ -117,8 +118,9 @@ export default function CourseHome() {
                 </h2>
               </div>
               <p className="max-w-xl text-base leading-7 text-muted-foreground">
-                Chapter 2 is available now. Later guided chapters are listed in
-                course order and clearly marked while they are being prepared.
+                Open any available chapter. Upcoming guided chapters remain in
+                course order and are clearly marked while they are being
+                prepared.
               </p>
             </div>
 
@@ -203,17 +205,29 @@ export default function CourseHome() {
             </ol>
           </section>
 
-          <aside className="home-source-note mt-14">
-            <p>
-              The chapter order follows the Fall 2026 course coverage. The
-              syllabus is a working guide, so this library will grow as the
-              semester progresses.
-            </p>
-            <p>
-              No previous linear algebra is assumed. Familiarity with Python is
-              helpful, but the walkthroughs explain each line before Colab is
-              needed.
-            </p>
+          <aside
+            className="home-source-note mt-14"
+            aria-labelledby="about-project-title"
+          >
+            <div>
+              <p className="section-kicker">About this project</p>
+              <h2 id="about-project-title" className="section-title mt-2">
+                One place for every practice lab
+              </h2>
+            </div>
+            <div>
+              <p>
+                The project page grows with the Fall 2026 course. Completed
+                chapters open into guided labs, while upcoming materials stay
+                visible in course order.
+              </p>
+              <p className="mt-3">
+                Each lab connects lecture terms, line-by-line code, visible
+                state changes, and the complete Colab notebook. No previous
+                linear algebra is assumed; Python familiarity is helpful but not
+                required to begin.
+              </p>
+            </div>
           </aside>
         </div>
       </main>

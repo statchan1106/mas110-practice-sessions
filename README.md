@@ -1,34 +1,56 @@
 # KAIST MAS110 Practice Sessions
 
-Interactive practice materials for **MAS110: Linear Algebra for Data Science** at KAIST (Fall 2026).
+A course companion and project page for **MAS110: Linear Algebra for Data Science** at KAIST (Fall 2026).
 
-- Purpose: review lecture material and implement key ideas in code; these are not problem-solving sessions
-- Attendance: not recorded for the practice sessions
-- Questions about the materials or code: `statchan1106@kaist.ac.kr`
-- Practice materials: Seongchan Lee
+**[Open the project page](https://statchan1106.github.io/mas110-practice-sessions/)**
 
-## Practice library
+## Purpose
 
-The homepage is the course-wide chapter index. Chapter 2 is available now, and Chapters 3–11 are visibly marked **In preparation** until their guided materials are ready.
+The Friday practice sessions support students as they move from lecture concepts to readable code. The materials are designed to help students:
 
-## Available now · Chapter 2
+- reconnect each lab with the mathematical ideas introduced in class;
+- read Python code one line at a time;
+- see how matrices, vectors, and intermediate states change;
+- think about an expected result before revealing it; and
+- continue with the complete notebook in Google Colab.
 
-Chapter 2 is organized as four guided labs:
+The sessions review class material and implement key ideas in code rather than focus on problem solving. They are learning aids, not a homework-solution bank. Attendance is not recorded.
 
-1. Gaussian elimination and solving `Ax = b`
-2. Block matrices, Schur complements, and graph matrices
-3. Numerical tests for pivoted LU decomposition
-4. A detailed elimination trace
+## Project page
 
-The browser walkthroughs use small, fixed teaching examples. They do not execute Python. Each source line is paired with:
+The project page is the course-wide home for the practice materials. Students can browse chapters in course order, open any available lab, and see which materials are still in preparation.
 
-- the values it uses;
-- the operation it does;
-- the variable or matrix region it updates;
-- a “Think first” prompt; and
-- a persistent before/after visualization.
+Each guided lab contains:
 
-Every lab links to the complete source notebook in Colab for real Python execution.
+- a clear learning goal;
+- lecture-note concepts and a short reference;
+- a line-by-line code trace using plain language;
+- a “Think first” prompt;
+- a persistent before-and-after visualization; and
+- links to the original source and a runnable Colab notebook.
+
+The browser walkthroughs use small, fixed teaching examples. They explain how the code works but do not execute Python. The live chapter index always reflects the materials currently available.
+
+## Maintainer and questions
+
+Practice materials are prepared and maintained by **Seongchan Lee**. Questions about the materials or code can be sent to `statchan1106@kaist.ac.kr`.
+
+## Content structure
+
+- `app/page.tsx` — course-wide project page and chapter index
+- `app/chapter-*` — chapter overview and lab routes
+- `lib/chapter-*` — lab goals, explanations, code traces, and visual states
+- `components/code-walkthrough.tsx` — shared line-by-line learning interface
+- `components/chapter-section-page.tsx` — shared lab-page structure
+
+When adding or updating a lab:
+
+1. Use the same core terms as the lecture notes in the learning goal and concept tags.
+2. Keep each source line, plain-English explanation, and resulting visual state together.
+3. Show matrices separately before combining them when that order helps students understand the construction.
+4. Use `Uses / Does / Updates` to explain what a line reads, computes, and changes.
+5. Keep the visualization responsive; do not add fixed matrix widths or horizontal-scroll wrappers.
+6. Link the guided page to both the exact source notebook and Colab.
 
 ## Local development
 
@@ -45,28 +67,9 @@ Create a production build with:
 npm run build
 ```
 
-## Content maintenance
-
-- `app/page.tsx` — course-wide chapter hub and session guidance
-- `app/chapter-2/page.tsx` — Chapter 2 concept map and lab index
-- `lib/chapter-two/*.ts` — lesson copy, code traces, and visual states
-- `components/code-walkthrough.tsx` — shared line-by-line learning interface
-- `components/chapter-section-page.tsx` — shared lab-page structure
-
-Each lab object keeps its `learningGoal`, `lectureConcepts`, key ideas, code, and visual states together. When changing a trace:
-
-1. Use the same terms as the lecture notes in `learningGoal` and `lectureConcepts`.
-2. Keep each source line, plain-English explanation, and resulting visual in one `WalkthroughStep`.
-3. Give separate matrix-definition lines separate steps when students need to see the matrices before they are combined.
-4. Use `lineNotes` only when the automatic Uses / Does / Updates explanation needs a more precise description.
-
-The shared matrix component automatically fits its cells to the available panel width. Avoid adding fixed matrix widths or horizontal-scroll wrappers to individual labs.
-
 ## Deployment
 
-`.github/workflows/pages.yml` builds a static export and deploys it to GitHub Pages after every push to `main`. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
-
-The project can also be deployed through OpenAI Sites because `.openai/hosting.json` remains part of the workspace.
+The public project page is deployed through GitHub Pages after every push to `main`. The same source can also be published through OpenAI Sites using the existing hosting configuration.
 
 ## Acknowledgment
 
