@@ -44,7 +44,7 @@ export default function ChapterTwoHome() {
       <SiteHeader />
       <main
         id="main-content"
-        className="mx-auto max-w-[108rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
+        className="mx-auto max-w-[108rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-10 lg:px-8"
       >
         <nav className="course-breadcrumb" aria-label="Breadcrumb">
           <a href={sitePath('/')}>Practice sessions</a>

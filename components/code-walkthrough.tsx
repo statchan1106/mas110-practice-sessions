@@ -608,7 +608,7 @@ export function CodeWalkthrough({
           className="trace-code-pane"
           aria-label="Python source and line explanation"
         >
-          <div className="hidden lg:block">
+          <div className="hidden min-[1680px]:block">
             <SourceList
               steps={walkthrough.steps}
               stepIndex={stepIndex}
@@ -638,7 +638,7 @@ export function CodeWalkthrough({
             </small>
           </div>
 
-          <details className="trace-mobile-source lg:hidden">
+          <details className="trace-mobile-source min-[1680px]:hidden">
             <summary>
               View every source line{' '}
               <ChevronDown className="size-4" aria-hidden="true" />
@@ -657,7 +657,7 @@ export function CodeWalkthrough({
           className="trace-state-pane"
           aria-label="Before and after visualization"
         >
-          <div className="lg:sticky lg:top-24">
+          <div className="xl:sticky xl:top-20">
             <div className="trace-prediction">
               <span>Think first</span>
               <p>{step.watchFor}</p>

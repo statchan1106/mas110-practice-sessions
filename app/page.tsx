@@ -36,7 +36,7 @@ export default function CourseHome() {
       <SiteHeader />
       <main id="main-content">
         <section className="course-hero">
-          <div className="mx-auto grid max-w-[108rem] gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.65fr)] lg:px-8 lg:py-20">
+          <div className="mx-auto grid max-w-[108rem] gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.65fr)] lg:px-8 lg:py-14 2xl:gap-10 2xl:py-20">
             <div>
               <p className="section-kicker">
                 KAIST MAS110 · Linear Algebra for Data Science · Fall 2026

@@ -25,7 +25,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
       <SiteHeader />
       <main
         id="main-content"
-        className="mx-auto max-w-[108rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
+        className="mx-auto max-w-[108rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-10 lg:px-8"
       >
         <nav className="course-breadcrumb" aria-label="Breadcrumb">
           <a href={sitePath('/')}>Practice sessions</a>
@@ -41,7 +41,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
               Lab {section.number}
               {section.optional ? ' · Optional' : ''}
             </p>
-            <h1 className="section-title mt-4 max-w-5xl sm:text-[3.7rem]">
+            <h1 className="section-title mt-4 max-w-5xl sm:text-[3.2rem] min-[1680px]:text-[3.7rem]">
               {section.title}
             </h1>
             <p className="mt-5 max-w-4xl text-lg leading-8 text-muted-foreground">
