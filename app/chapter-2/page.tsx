@@ -1,43 +1,41 @@
 import type { Metadata } from 'next';
-import { ArrowRight, BookOpenText, ExternalLink } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
+import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
-import { Badge } from '@/components/ui/badge';
-import { buttonVariants } from '@/components/ui/button';
 import { chapterTwoSections } from '@/lib/chapter-two-data';
-import { repositoryBase } from '@/lib/course-data';
 import { sitePath } from '@/lib/site-path';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'Chapter 2 — Matrices and Gaussian Elimination · KAIST MAS110',
+  title: 'Chapter 2 · KAIST MAS110 Practice Sessions',
   description:
-    'Choose a Chapter 2 section and connect each Python line to a visible matrix or graph change.',
+    'Matrices and Gaussian elimination, traced from each Python line to a visible mathematical change.',
 };
 
 export const dynamic = 'force-static';
 
-const chapterIdeas = [
-  {
-    label: 'Systems',
-    relation: 'Ax = b',
-    text: 'A matrix is a compact representation of coupled linear equations.',
-  },
-  {
-    label: 'Structure',
-    relation: 'A = [Aᵢⱼ]',
-    text: 'Blocks expose meaningful subproblems and graph relationships.',
-  },
-  {
-    label: 'Factorization',
-    relation: 'A = LU',
-    text: 'Elimination can be stored and reused as two triangular matrices.',
-  },
-  {
-    label: 'Algorithm',
-    relation: 'for j → for i',
-    text: 'Nested loops repeat one cancellation below every pivot.',
-  },
+const concepts = [
+  [
+    'System',
+    'Ax = b',
+    'Rows are equations; columns are the directions combined by x.',
+  ],
+  [
+    'Product',
+    'AB = [Ab₁ | ··· | Abₗ]',
+    'Matrix multiplication repeats one matrix–vector product by columns.',
+  ],
+  [
+    'Elimination',
+    'Rᵢ ← Rᵢ − mRⱼ',
+    'Choose m so one target entry becomes exactly zero.',
+  ],
+  [
+    'Factorization',
+    'QA = LU',
+    'A row order and all elimination multipliers can be stored and reused.',
+  ],
 ];
 
 export default function ChapterTwoHome() {
@@ -46,179 +44,189 @@ export default function ChapterTwoHome() {
       <SiteHeader />
       <main
         id="main-content"
-        className="mx-auto max-w-7xl px-4 pb-20 pt-9 sm:px-6 sm:pt-12 lg:px-8"
+        className="mx-auto max-w-7xl px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
       >
-        <nav
-          className="mb-7 flex items-center gap-2 text-xs text-muted-foreground"
-          aria-label="Breadcrumb"
-        >
-          <a className="hover:text-foreground" href={sitePath('/')}>
-            Course home
-          </a>
+        <nav className="course-breadcrumb" aria-label="Breadcrumb">
+          <a href={sitePath('/')}>Practice sessions</a>
           <span>/</span>
-          <span className="text-foreground">Chapter 2</span>
+          <span aria-current="page">Chapter 2</span>
         </nav>
 
-        <section className="grid gap-8 lg:grid-cols-[1fr_310px] lg:items-end">
+        <header className="chapter-header">
           <div>
-            <div className="mb-4 flex flex-wrap items-center gap-2">
-              <Badge>KAIST MAS110</Badge>
-              <Badge variant="secondary">4 guided sections</Badge>
-            </div>
-            <p className="font-mono text-xs uppercase tracking-[0.12em] text-primary">
-              Chapter 2
-            </p>
-            <h1 className="mt-2 max-w-4xl text-3xl font-semibold leading-tight tracking-[-0.035em] text-balance sm:text-5xl">
+            <p className="section-kicker">Chapter 2 · Computation</p>
+            <h1 className="course-title mt-4 max-w-5xl">
               Matrices and Gaussian Elimination
             </h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Choose a section, then execute its teaching snippet one step at a
-              time. Each code statement stays paired with the matrix, block
-              structure, factorization, or graph change it causes.
+          </div>
+          <div className="chapter-question">
+            <span>One question</span>
+            <p>
+              When, and how, can we solve <em>Ax = b</em>?
             </p>
           </div>
-          <div className="rounded-2xl border bg-card/88 p-5 shadow-sm">
-            <p className="text-xs uppercase tracking-[0.1em] text-primary">
-              Learning loop
-            </p>
-            <ol className="mt-4 grid grid-cols-3 gap-2 text-center text-[10px] text-muted-foreground sm:grid-cols-5 sm:gap-1">
-              {['Prime', 'Read', 'Run', 'See', 'Explain'].map((item, index) => (
-                <li key={item} className="relative">
-                  <span className="mx-auto mb-2 grid size-7 place-items-center rounded-full border bg-background font-mono text-foreground">
-                    {index + 1}
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+        </header>
 
-        <section
-          className="py-12 sm:py-16"
-          aria-labelledby="chapter-ideas-heading"
-        >
-          <div className="mb-5 flex items-end justify-between gap-4">
+        <section className="py-12 sm:py-16" aria-labelledby="concepts-title">
+          <div className="section-heading-row">
             <div>
-              <p className="text-sm font-medium text-primary">
-                Before choosing a section
-              </p>
-              <h2
-                id="chapter-ideas-heading"
-                className="mt-1 text-2xl font-semibold"
-              >
-                The four views of Chapter 2
+              <p className="section-kicker">Before the code</p>
+              <h2 id="concepts-title" className="section-title">
+                Four ideas to keep in view
               </h2>
             </div>
+            <p className="max-w-md text-sm leading-6 text-muted-foreground">
+              Chapter 2 turns hand calculations into an algorithm. Every visual
+              below answers: what did this line read, compute, and change?
+            </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {chapterIdeas.map((idea, index) => (
-              <article
-                key={idea.label}
-                className="rounded-2xl border bg-card/84 p-5"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-primary">
-                    0{index + 1}
-                  </span>
-                  <code className="rounded bg-muted px-2 py-1 text-xs text-primary">
-                    {idea.relation}
-                  </code>
-                </div>
-                <h3 className="mt-7 font-semibold">{idea.label}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {idea.text}
-                </p>
-              </article>
+          <dl className="concept-ledger mt-8">
+            {concepts.map(([term, relation, copy], index) => (
+              <div key={term}>
+                <dt>
+                  <span>0{index + 1}</span>
+                  {term}
+                </dt>
+                <dd>
+                  <code>{relation}</code>
+                  <p>{copy}</p>
+                </dd>
+              </div>
             ))}
-          </div>
+          </dl>
         </section>
 
-        <section aria-labelledby="sections-heading">
-          <div className="mb-6">
-            <p className="text-sm font-medium text-primary">Section menu</p>
-            <h2
-              id="sections-heading"
-              className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl"
-            >
-              Choose what to explore
+        <section className="lecture-bridge" aria-labelledby="bridge-title">
+          <div>
+            <p className="section-kicker">Lecture bridge</p>
+            <h2 id="bridge-title" className="section-title mt-2">
+              See the zeros before writing the loop
             </h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+              The lecture’s running system becomes upper triangular through
+              three row operations. The Python loop repeats exactly this
+              cancellation pattern.
+            </p>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {chapterTwoSections.map((section) => (
-              <article
-                key={section.slug}
-                className="group flex min-h-72 flex-col rounded-2xl border bg-card/90 p-6 shadow-sm transition-transform hover:-translate-y-0.5"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="font-mono text-sm font-semibold text-primary">
-                    {section.number}
-                  </span>
-                  <Badge variant={section.optional ? 'secondary' : 'outline'}>
-                    {section.optional
-                      ? 'Optional · guided'
-                      : 'Guided walkthrough'}
-                  </Badge>
+          <div className="bridge-flow">
+            <figure
+              className="lecture-matrix"
+              aria-label="Initial augmented matrix: rows 2 1 1 5; 4 negative 6 0 negative 2; negative 2 7 2 9"
+            >
+              <figcaption>Start · [ A | b ]</figcaption>
+              {[
+                [2, 1, 1, 5],
+                [4, -6, 0, -2],
+                [-2, 7, 2, 9],
+              ].map((row, rowIndex) => (
+                <div key={rowIndex}>
+                  {row.map((value, columnIndex) => (
+                    <span
+                      key={columnIndex}
+                      className={columnIndex === 3 ? 'is-rhs' : ''}
+                    >
+                      {value}
+                    </span>
+                  ))}
                 </div>
-                <h3 className="mt-8 text-xl font-semibold tracking-tight">
-                  {section.title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {section.summary}
-                </p>
-                <p className="mt-4 font-mono text-[11px] text-primary">
-                  {section.focus}
-                </p>
-                <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t pt-5">
-                  <a
-                    aria-label={`Open the source notebook for ${section.title}`}
-                    className={cn(
-                      buttonVariants({ variant: 'ghost', size: 'sm' }),
-                      '-ml-3 min-h-11',
-                    )}
-                    href={section.githubUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Notebook
-                    <ExternalLink data-icon="inline-end" aria-hidden="true" />
-                  </a>
-                  <a
-                    aria-label={`Open guided section ${section.number}: ${section.title}`}
-                    className={cn(buttonVariants({ size: 'sm' }), 'min-h-11')}
-                    href={sitePath(`/chapter-2/${section.slug}`)}
-                  >
-                    Open section
-                    <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                  </a>
+              ))}
+            </figure>
+            <ol className="bridge-operations">
+              <li>
+                <span>01</span>
+                <code>R₂ ← R₂ − 2R₁</code>
+                <small>4 → 0</small>
+              </li>
+              <li>
+                <span>02</span>
+                <code>R₃ ← R₃ + R₁</code>
+                <small>−2 → 0</small>
+              </li>
+              <li>
+                <span>03</span>
+                <code>R₃ ← R₃ + R₂</code>
+                <small>8 → 0</small>
+              </li>
+            </ol>
+            <figure
+              className="lecture-matrix is-result"
+              aria-label="Upper triangular augmented matrix: rows 2 1 1 5; 0 negative 8 negative 2 negative 12; 0 0 1 2"
+            >
+              <figcaption>Result · [ U | c ]</figcaption>
+              {[
+                [2, 1, 1, 5],
+                [0, -8, -2, -12],
+                [0, 0, 1, 2],
+              ].map((row, rowIndex) => (
+                <div key={rowIndex}>
+                  {row.map((value, columnIndex) => (
+                    <span
+                      key={columnIndex}
+                      className={cn(
+                        columnIndex === 3 && 'is-rhs',
+                        rowIndex > 0 && columnIndex < rowIndex && 'is-zero',
+                      )}
+                    >
+                      {value}
+                    </span>
+                  ))}
                 </div>
-              </article>
-            ))}
+              ))}
+            </figure>
           </div>
+          <p className="bridge-conclusion">
+            <span>Back-substitution</span>
+            <strong>(u, v, w) = (1, 1, 2)</strong>
+          </p>
         </section>
 
-        <section className="mt-16 flex flex-col gap-4 rounded-2xl bg-primary px-6 py-7 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <div className="flex gap-4">
-            <BookOpenText className="mt-1 size-5 shrink-0" aria-hidden="true" />
+        <section aria-labelledby="labs-title">
+          <div className="section-heading-row">
             <div>
-              <h2 className="font-semibold">Independent TA companion</h2>
-              <p className="mt-1 max-w-2xl text-sm leading-6 opacity-80">
-                Guided explanations are paired with—not substituted for—the
-                original notebooks by Wanmo Kang and Kyunghyun Cho.
-              </p>
+              <p className="section-kicker">Practice sequence</p>
+              <h2 id="labs-title" className="section-title">
+                Choose a lab
+              </h2>
             </div>
+            <p className="max-w-md text-sm leading-6 text-muted-foreground">
+              Begin with the guided 3×3 trace, then open the original notebook
+              in Colab when you want the complete Python run.
+            </p>
           </div>
-          <a
-            className={cn(buttonVariants({ variant: 'secondary' }), 'shrink-0')}
-            href={repositoryBase}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Original repository
-            <ExternalLink data-icon="inline-end" aria-hidden="true" />
-          </a>
+          <ol className="syllabus-list mt-8">
+            {chapterTwoSections.map((section) => (
+              <li key={section.slug}>
+                <a
+                  className="chapter-lab-row group"
+                  href={sitePath(`/chapter-2/${section.slug}`)}
+                >
+                  <span className="syllabus-number">{section.number}</span>
+                  <span className="min-w-0">
+                    <strong>{section.title}</strong>
+                    <small>{section.summary}</small>
+                  </span>
+                  <code>{section.focus}</code>
+                  <span className="syllabus-action">
+                    Open lab{' '}
+                    <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
         </section>
+
+        <aside className="source-note mt-14">
+          <span>Source note</span>
+          <p>
+            The web walkthroughs use small, deterministic teaching traces. They
+            explain the operations but do not execute Python. Each lab links to
+            the corresponding <em>Foundations of LADS</em> notebook for the full
+            run.
+          </p>
+        </aside>
       </main>
+      <SiteFooter />
     </div>
   );
 }

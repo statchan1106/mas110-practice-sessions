@@ -10,28 +10,28 @@ export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: 'KAIST MAS110 — Foundations of LADS',
+  title: 'KAIST MAS110 Practice Sessions',
   description:
-    'An independent interactive TA companion for KAIST MAS110 · Linear Algebra for Data Science.',
+    'Friday practice materials for KAIST MAS110 · Linear Algebra for Data Science.',
   openGraph: {
-    title: 'KAIST MAS110 — Foundations of LADS',
+    title: 'KAIST MAS110 Practice Sessions',
     description:
-      'Concept primer, prediction, execution, visual interpretation, and the complete notebook library.',
+      'Review lecture ideas, trace the Python, and compare each visible mathematical change.',
     images: [
       {
-        url: `${siteUrl}/og.png`,
-        width: 1200,
-        height: 630,
-        alt: 'Foundations of LADS — See every row operation.',
+        url: `${siteUrl}/og-mas110.png`,
+        width: 1730,
+        height: 909,
+        alt: 'An augmented matrix before and after one Gaussian elimination step.',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'KAIST MAS110 — Foundations of LADS',
+    title: 'KAIST MAS110 Practice Sessions',
     description:
-      'Concept primer, interactive walkthrough, and complete notebook library.',
-    images: [`${siteUrl}/og.png`],
+      'Line-by-line Chapter 2 practice materials for Linear Algebra for Data Science.',
+    images: [`${siteUrl}/og-mas110.png`],
   },
 };
 

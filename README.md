@@ -1,54 +1,62 @@
-# KAIST MAS110 · Foundations of LADS companion
+# KAIST MAS110 Practice Sessions
 
-An independent interactive TA companion for KAIST MAS110, based on the notebooks in [Foundations of Linear Algebra for Data Science](https://github.com/kyunghyuncho/Foundations_of_LADS) by Wanmo Kang and Kyunghyun Cho.
+Interactive Friday practice materials for **MAS110: Linear Algebra for Data Science** at KAIST (Fall 2026).
 
-The teaching pattern is consistent across every guided section:
+- Sessions: Friday 11:00–12:00 and 14:00–15:00
+- Location: Room 101, Bldg E11
+- Purpose: review lecture material and implement key ideas in code; these are not problem-solving sessions
+- Practice materials: Seongchan Lee
 
-1. Read a short concept primer.
-2. Predict what the current Python code will change.
-3. Run one teaching step.
-4. Compare the visible program state before and after.
-5. Explain why the mathematical change is valid.
-6. Open the original notebook in Colab for real Python execution.
+## Chapter 2
+
+Chapter 2 is organized as four guided labs:
+
+1. Gaussian elimination and solving `Ax = b`
+2. Block matrices, Schur complements, and graph matrices
+3. Numerical tests for pivoted LU decomposition
+4. A detailed elimination trace
+
+The browser walkthroughs are deterministic teaching traces. They do not execute Python. Each source line is paired with:
+
+- the values it reads;
+- the operation it computes;
+- the variable or matrix region it changes;
+- a prediction prompt; and
+- a persistent before/after visualization.
+
+Every lab links to the complete source notebook in Colab for real Python execution.
 
 ## Local development
 
-Requires Node.js 22 or later.
+Node.js 22 or later is required.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-The normal production build keeps the Vinext/Cloudflare runtime used by OpenAI Sites:
+Create a production build with:
 
 ```bash
 npm run build
 ```
 
-## Content structure
+## Content maintenance
 
-- `app/page.tsx`: course home
-- `app/chapter-2/page.tsx`: Chapter 2 section menu
-- `app/chapter-2/*/page.tsx`: static section routes
-- `lib/chapter-two/*.ts`: primers, code steps, numerical snapshots, and visual states
-- `components/code-walkthrough.tsx`: shared step runner and visualization renderer
-- `components/chapter-section-page.tsx`: shared lesson-page layout
+- `app/page.tsx` — practice-session home and schedule
+- `app/chapter-2/page.tsx` — Chapter 2 concept map and lab index
+- `lib/chapter-two/*.ts` — lesson copy, code traces, and visual states
+- `components/code-walkthrough.tsx` — shared line-by-line learning interface
+- `components/chapter-section-page.tsx` — shared lab-page structure
 
-To add a guided section, create one `ChapterSection` data module, add it to `lib/chapter-two-data.ts`, and create a thin static route page. Keep the exact source notebook and Colab links in the data module.
+When changing a trace, keep the source line, its explanation, and its resulting visual state in the same `WalkthroughStep`. Use `lineNotes` when the automatic Reads / Computes / Changes explanation is not precise enough.
 
-## GitHub Pages
+## Deployment
 
-The included `.github/workflows/pages.yml` creates a static Vinext export and publishes `dist/client`. It supports both a root Pages repository and a project URL such as `https://owner.github.io/repository/`.
+`.github/workflows/pages.yml` builds a static export and deploys it to GitHub Pages after every push to `main`. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
 
-After pushing the project to GitHub:
+The project can also be deployed through OpenAI Sites because `.openai/hosting.json` remains part of the workspace.
 
-1. Open **Settings → Pages**.
-2. Set **Build and deployment → Source** to **GitHub Actions**.
-3. Push to `main` or run the workflow manually.
+## Acknowledgment
 
-GitHub Pages is public hosting. Do not put private course data or credentials in this repository or site.
-
-## Source acknowledgment
-
-The companion explanations and visual state models are paired with, and do not replace, the original notebooks. The source repository is distributed under the [MIT License](https://github.com/kyunghyuncho/Foundations_of_LADS/blob/main/LICENSE).
+These practice materials are based on [Foundations of Linear Algebra for Data Science](https://github.com/kyunghyuncho/Foundations_of_LADS) by Wanmo Kang and Kyunghyun Cho. The original notebooks are distributed under the [MIT License](https://github.com/kyunghyuncho/Foundations_of_LADS/blob/main/LICENSE).

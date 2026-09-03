@@ -1,7 +1,9 @@
 {
-  "name": "sites-project",
+  "name": "kaist-mas110-practice-sessions",
   "version": "0.1.0",
   "private": true,
+  "description": "Interactive Chapter 2 practice materials for KAIST MAS110.",
+  "repository": "https://github.com/statchan1106/mas110-practice-sessions",
   "engines": {
     "node": ">=22.13.0"
   },

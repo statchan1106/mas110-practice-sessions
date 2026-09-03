@@ -93,7 +93,7 @@ export const luDecompositionSection: ChapterSection = {
         },
       },
       {
-        code: 'if k > min(m, n): raise ValueError("k is too large")',
+        code: '    if k > min(m, n): raise ValueError("k is too large")',
         title: 'Reject an impossible requested rank',
         explanation:
           'No m×n matrix can have rank larger than min(m,n), so the function checks k before allocating arrays.',
@@ -116,7 +116,7 @@ export const luDecompositionSection: ChapterSection = {
         },
       },
       {
-        code: 'left = np.random.randn(m, k)',
+        code: '    left = np.random.randn(m, k)',
         title: 'Generate the left random factor',
         explanation:
           'The source notebook names this function-local array A. The guide uses “left” so it cannot be confused with the final test matrix.',
@@ -149,7 +149,7 @@ export const luDecompositionSection: ChapterSection = {
         },
       },
       {
-        code: 'right = np.random.randn(k, n)',
+        code: '    right = np.random.randn(k, n)',
         title: 'Generate the compatible right factor',
         explanation:
           'Its seven rows match the seven columns of the left factor, so matrix multiplication is defined.',
@@ -182,7 +182,7 @@ export const luDecompositionSection: ChapterSection = {
         },
       },
       {
-        code: 'return left @ right',
+        code: '    return left @ right',
         title: 'Create the rank-controlled product',
         explanation:
           'All information passes through a seven-dimensional middle space, so the product has rank at most seven.',
@@ -373,7 +373,7 @@ export const luDecompositionSection: ChapterSection = {
           'The two 10×11 matrices are subtracted entrywise, then the default matrix norm compresses the residual into one Frobenius magnitude.',
         drives: 'A residual heatmap contracts into a tiny scalar error.',
         watchFor:
-          'Tiny floating-point noise is normal; compare it with a scale-aware tolerance instead of demanding exact equality.',
+          'Tiny floating-point noise is normal; compare it with the notebook’s dimension-aware absolute threshold instead of demanding exact equality.',
         variables: [
           { name: 'error', value: '2.685e−15', meaning: 'Saved notebook run.' },
           {
@@ -483,7 +483,7 @@ export const luDecompositionSection: ChapterSection = {
         },
       },
       {
-        code: 'for trial in range(10): run_test()\nsns.histplot(errors)\nsns.histplot(ranks_u, discrete=True)',
+        code: 'errors, ranks = [], []\nfor trial in range(10):\n    A = create_random_matrix(10, 11, 7)\n    P, L, U = sp.linalg.lu(A)\n    errors.append(np.linalg.norm(P.T @ A - L @ U))\n    ranks.append(np.linalg.matrix_rank(U))\nsns.histplot(errors)\nsns.histplot(ranks, discrete=True)',
         title: 'Repeat the experiment ten times',
         explanation:
           'Each unseeded run generates a new A, records one reconstruction error, and records the rank of U.',
@@ -498,7 +498,7 @@ export const luDecompositionSection: ChapterSection = {
             meaning: 'Independent random experiments.',
           },
           {
-            name: 'ranks_u',
+            name: 'ranks',
             value: '[7, …, 7]',
             meaning: 'Discrete rank results, typically all seven.',
           },

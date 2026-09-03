@@ -372,7 +372,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'E @ A + G @ B',
+        code: 'try:\n    E @ A + G @ B\nexcept ValueError as error:\n    print(error)',
         title: 'Test the tempting reversed order',
         explanation:
           'Reversing factors creates a 3×3 matrix and a 2×2 matrix. NumPy cannot add arrays with these incompatible shapes.',
@@ -420,7 +420,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'Z = np.block([[Z11, Z12],[Z21, Z22]])\nZ11_inv = sp.linalg.inv(Z11)',
+        code: 'Z11 = np.array([[1.,2.,2.],[1.,4.,5.],[1.,2.,3.]])\nZ12 = np.array([[1.,3.],[0.,2.],[1.,1.]])\nZ21 = np.array([[2.,1.,1.],[1.,1.,1.]])\nZ22 = np.array([[1.,1.],[0.,1.]])\nZ = np.block([[Z11, Z12],[Z21, Z22]])\nZ11_inv = sp.linalg.inv(Z11)',
         title: 'Set up a block elimination problem',
         explanation:
           'Z is partitioned 3+2 in both directions. Inverting Z11 lets a block row operation normalize the upper-left block.',
@@ -504,7 +504,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'S_inv = sp.linalg.inv(S22)\nL2 = np.block([[np.eye(3), -Z11_inv@Z12@S_inv],[np.zeros((2,3)), S_inv]])\nZ_inv = L2 @ L1',
+        code: 'S22 = Z22 - Z21 @ Z11_inv @ Z12\nS_inv = sp.linalg.inv(S22)\nL2 = np.block([[np.eye(3), -Z11_inv@Z12@S_inv],[np.zeros((2,3)), S_inv]])\nZ_inv = L2 @ L1',
         title: 'Finish the block inverse',
         explanation:
           'L2 normalizes the Schur complement and clears the upper-right block. Because L2 @ L1 @ Z = I, their product is Z inverse.',
@@ -555,7 +555,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
         },
       },
       {
-        code: 'A = np.zeros((8,8))\nfor i in range(1,9):\n    for j in edges[i]: A[i-1,j-1] = 1',
+        code: 'edges = {1:[3,4,5], 2:[3,4,5], 3:[1,2,6,7], 4:[1,2,6,7], 5:[1,2,6,7], 6:[3,4,5,8], 7:[3,4,5,8], 8:[6,7]}\nA = np.zeros((8,8))\nfor i in range(1,9):\n    for j in edges[i]: A[i-1,j-1] = 1',
         title: 'Turn an adjacency list into a matrix',
         explanation:
           'Each listed neighbor writes a 1 into the corresponding row and column. The subtraction converts vertex labels 1–8 into Python indices 0–7.',

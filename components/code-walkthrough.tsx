@@ -1,22 +1,9 @@
 'use client';
 
-import { useId, useState } from 'react';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ChevronDown,
-  Play,
-  RotateCcw,
-} from 'lucide-react';
+import { useId, useMemo, useState } from 'react';
+import { ArrowLeft, ArrowRight, ChevronDown, RotateCcw } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 
 export type CellTone =
@@ -62,6 +49,7 @@ export type WalkthroughVisual = {
 
 export type WalkthroughStep = {
   code: string;
+  lineNotes?: Array<{ reads: string; computes: string; changes: string }>;
   title: string;
   explanation: string;
   drives: string;
@@ -95,10 +83,9 @@ const toneClass: Record<CellTone, string> = {
 function MatrixView({ matrix }: { matrix: WalkthroughMatrix }) {
   const columnCount = matrix.values[0]?.length ?? 1;
   const spokenValues = matrix.values.map((row) => row.join(', ')).join('; ');
-
   return (
     <div className="walk-matrix-card">
-      <p className="mb-2 text-center font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
+      <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
         {matrix.label}
       </p>
       <div className="overflow-x-auto pb-1">
@@ -149,7 +136,6 @@ function GraphView({
     .filter((edge) => edge.active)
     .map((edge) => `${edge.from} to ${edge.to}`)
     .join(', ');
-
   return (
     <figure
       className="walk-graph overflow-x-auto"
@@ -214,22 +200,20 @@ function VisualPanel({
 }) {
   return (
     <div key={stateKey} className="walk-visual-enter">
-      <div className="mb-4">
-        <h3 className="font-semibold">{visual.title}</h3>
-        <p className="mt-1 text-sm leading-6 text-muted-foreground">
-          {visual.description}
-        </p>
-      </div>
+      <h4 className="font-semibold">{visual.title}</h4>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+        {visual.description}
+      </p>
       {visual.equation && (
-        <div className="mb-4 overflow-x-auto rounded-xl border bg-background px-4 py-3 text-center font-mono text-sm font-semibold text-primary">
-          {visual.equation}
-        </div>
+        <div className="walk-equation">{visual.equation}</div>
       )}
       {visual.graph && (
-        <GraphView graph={visual.graph} label={visual.description} />
+        <div className="mt-4">
+          <GraphView graph={visual.graph} label={visual.description} />
+        </div>
       )}
       {visual.matrices && (
-        <div className="grid gap-3 xl:grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
+        <div className="mt-4 grid gap-3 xl:grid-cols-[repeat(auto-fit,minmax(170px,1fr))]">
           {visual.matrices.map((matrix) => (
             <MatrixView key={matrix.label} matrix={matrix} />
           ))}
@@ -237,20 +221,20 @@ function VisualPanel({
       )}
       {(visual.matrices || visual.graph) && (
         <div
-          className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-muted-foreground"
+          className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-muted-foreground"
           aria-label="Visual state legend"
         >
           <span className="walk-legend">
             <i className="walk-legend-source" />
-            source or pivot
+            PIVOT / SOURCE
           </span>
           <span className="walk-legend">
             <i className="walk-legend-target" />
-            target or attention
+            TARGET
           </span>
           <span className="walk-legend">
             <i className="walk-legend-result" />
-            new result
+            NEW
           </span>
         </div>
       )}
@@ -263,45 +247,161 @@ function VisualPanel({
   );
 }
 
+type LineMeaning = {
+  kind: string;
+  reads: string;
+  computes: string;
+  changes: string;
+};
+
+function inferLineMeaning(
+  source: string,
+  step: WalkthroughStep,
+  lineIndex: number,
+): LineMeaning {
+  const supplied = step.lineNotes?.[lineIndex];
+  if (supplied) return { kind: 'notebook line', ...supplied };
+  const line = source.trim();
+  if (line.startsWith('#'))
+    return {
+      kind: 'comment',
+      reads: 'No program values.',
+      computes: 'Documents the intention of the next statement.',
+      changes: 'Nothing in program state.',
+    };
+  if (/^(import |from )/.test(line))
+    return {
+      kind: 'import',
+      reads: 'An installed Python package or symbol.',
+      computes: 'Loads reusable functions into this notebook.',
+      changes: 'Binds the imported module or name.',
+    };
+  if (line.startsWith('def '))
+    return {
+      kind: 'define',
+      reads: 'The parameter names in the function signature.',
+      computes: 'Creates a reusable procedure; its body does not run yet.',
+      changes: 'Binds the new function name.',
+    };
+  if (line.startsWith('for '))
+    return {
+      kind: 'loop',
+      reads: `The iteration range in “${line.replace(/:$/, '')}”.`,
+      computes: 'Chooses the next loop index.',
+      changes:
+        'Only the loop cursor changes on this line; matrix entries change inside the body.',
+    };
+  if (line.startsWith('if '))
+    return {
+      kind: 'condition',
+      reads: `The values used by “${line.replace(/:$/, '')}”.`,
+      computes: 'Evaluates a Boolean condition.',
+      changes: 'No matrix entry changes unless the indented branch runs.',
+    };
+  if (/^(else|elif|try|except)/.test(line))
+    return {
+      kind: 'control',
+      reads: 'The outcome of the preceding branch or attempted operation.',
+      computes: 'Selects which indented statements execute next.',
+      changes: 'No numerical value changes on this line.',
+    };
+  if (line.startsWith('return '))
+    return {
+      kind: 'return',
+      reads: line.slice(7),
+      computes: 'Collects the function result.',
+      changes: 'Ends this function call and passes the result outward.',
+    };
+  if (/^(print|display|assert)\b/.test(line))
+    return {
+      kind: line.startsWith('assert') ? 'check' : 'inspect',
+      reads: line.replace(/^(print|display|assert)\s*/, ''),
+      computes: line.startsWith('assert')
+        ? 'Checks that the stated condition is true.'
+        : 'Formats a value for inspection.',
+      changes: 'The numerical state is unchanged.',
+    };
+
+  const assignment = line.match(/^(.+?)\s*(\+=|-=|\*=|\/=|=)\s*(.+)$/);
+  if (assignment) {
+    const [, left, operator, right] = assignment;
+    const mutates = operator !== '=' || left.includes('[');
+    return {
+      kind: mutates ? 'mutate' : 'bind',
+      reads: right,
+      computes:
+        operator === '='
+          ? `Evaluates the expression on the right of “=”. ${step.explanation}`
+          : `Combines the current ${left.trim()} with the right-hand expression using ${operator[0]}.`,
+      changes: mutates
+        ? `${left.trim()} is updated in place. ${step.drives}`
+        : `${left.trim()} receives the computed value. ${step.drives}`,
+    };
+  }
+
+  return {
+    kind: 'call',
+    reads: `The arguments in “${line}”.`,
+    computes: step.explanation,
+    changes: step.drives,
+  };
+}
+
+function splitLines(step: WalkthroughStep) {
+  return step.code.split('\n').filter((line) => line.trim().length > 0);
+}
+
 function SourceList({
   steps,
   stepIndex,
+  lineIndex,
   unlockedThrough,
   onSelect,
 }: {
   steps: WalkthroughStep[];
   stepIndex: number;
+  lineIndex: number;
   unlockedThrough: number;
-  onSelect: (index: number) => void;
+  onSelect: (step: number, line: number) => void;
 }) {
+  const sourceLines = steps.flatMap((step, currentStep) => {
+    const offset = steps
+      .slice(0, currentStep)
+      .reduce((count, item) => count + splitLines(item).length, 0);
+    return splitLines(step).map((line, currentLine) => ({
+      step,
+      currentStep,
+      currentLine,
+      line,
+      number: offset + currentLine + 1,
+    }));
+  });
   return (
-    <ol className="code-walkthrough-window" aria-label="Teaching code sequence">
-      {steps.map((item, index) => {
-        const completed = index < unlockedThrough;
-        const active = index === stepIndex;
-        const available = index <= unlockedThrough;
+    <ol className="trace-source" aria-label="Teaching trace source lines">
+      {sourceLines.map(({ step, currentStep, currentLine, line, number }) => {
+        const available = currentStep <= unlockedThrough;
+        const active = currentStep === stepIndex && currentLine === lineIndex;
+        const complete = currentStep < unlockedThrough;
         return (
-          <li key={`${item.code}-${index}`}>
+          <li key={`${currentStep}-${currentLine}`}>
+            {currentLine === 0 && (
+              <span className="trace-block-label">
+                Block {currentStep + 1} · {step.title}
+              </span>
+            )}
             <button
               type="button"
               disabled={!available}
-              onClick={() => available && onSelect(index)}
+              onClick={() => available && onSelect(currentStep, currentLine)}
               className={cn(
-                'code-walkthrough-line',
+                'trace-source-line',
                 active && 'is-active',
-                completed && 'is-complete',
+                complete && 'is-complete',
               )}
               aria-current={active ? 'step' : undefined}
-              aria-label={`Step ${index + 1}: ${item.title}${completed ? ', executed' : active ? ', ready' : ', locked'}`}
             >
-              <span className="code-walkthrough-number">
-                {completed ? (
-                  <Check className="size-3" aria-hidden="true" />
-                ) : (
-                  index + 1
-                )}
-              </span>
-              <code>{item.code}</code>
+              <span>L{String(number).padStart(2, '0')}</span>
+              <code>{line}</code>
             </button>
           </li>
         );
@@ -310,101 +410,93 @@ function SourceList({
   );
 }
 
-function ExplanationCard({
-  step,
-  index,
-}: {
-  step: WalkthroughStep;
-  index: number;
-}) {
+function MeaningLedger({ meaning }: { meaning: LineMeaning }) {
   return (
-    <div className="rounded-xl border bg-muted/35 p-4">
-      <p className="text-[11px] uppercase tracking-[0.1em] text-primary">
-        What code step {index + 1} controls
-      </p>
-      <h3 className="mt-1 font-semibold">{step.title}</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        {step.explanation}
-      </p>
-      <div className="mt-3 rounded-lg bg-background p-3 text-xs leading-5">
-        <strong>This code drives:</strong> {step.drives}
+    <dl className="line-meaning">
+      <div>
+        <dt>Reads</dt>
+        <dd>{meaning.reads}</dd>
       </div>
-      <p className="mt-3 text-xs leading-5 text-muted-foreground">
-        <strong className="text-foreground">Watch for:</strong> {step.watchFor}
-      </p>
-    </div>
+      <div>
+        <dt>Computes</dt>
+        <dd>{meaning.computes}</dd>
+      </div>
+      <div>
+        <dt>Changes</dt>
+        <dd>{meaning.changes}</dd>
+      </div>
+    </dl>
   );
 }
 
-function VariableCards({
+function VariableLedger({
   step,
-  hasRun,
+  revealed,
 }: {
   step: WalkthroughStep;
-  hasRun: boolean;
+  revealed: boolean;
 }) {
   if (!step.variables?.length) return null;
   return (
-    <div className="grid gap-2 sm:grid-cols-2">
+    <div className="variable-ledger">
       {step.variables.map((variable) => (
-        <div
-          key={variable.name}
-          className={cn(
-            'rounded-lg border p-3 transition-colors',
-            hasRun ? 'bg-background' : 'bg-muted/25',
-          )}
-        >
-          <div className="flex items-center justify-between gap-3">
-            <code className="text-xs font-semibold text-primary">
-              {variable.name}
-            </code>
-            <code className="text-right text-xs">
-              {hasRun
-                ? variable.value
-                : (variable.before ?? 'reveal after run')}
-            </code>
-          </div>
-          <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
-            {variable.meaning}
-          </p>
+        <div key={variable.name}>
+          <code>{variable.name}</code>
+          <span>
+            {variable.before ?? 'not bound'} <b aria-hidden="true">→</b>{' '}
+            <strong className={cn(!revealed && 'is-hidden')}>
+              {revealed ? variable.value : 'predict'}
+            </strong>
+          </span>
+          <small>{variable.meaning}</small>
         </div>
       ))}
     </div>
   );
 }
 
-function StatePanel({
-  visual,
-  hasRun,
-  stepIndex,
+function StateComparison({
+  before,
+  after,
+  revealed,
+  stepNumber,
 }: {
-  visual: WalkthroughVisual;
-  hasRun: boolean;
-  stepIndex: number;
+  before: WalkthroughVisual;
+  after: WalkthroughVisual;
+  revealed: boolean;
+  stepNumber: number;
 }) {
   return (
-    <>
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs text-muted-foreground">
-            {hasRun
-              ? `After step ${stepIndex + 1}`
-              : `Before step ${stepIndex + 1}`}
-          </p>
-          <h3 className="mt-0.5 font-semibold">Visible program state</h3>
-        </div>
-        <span className={cn('state-indicator', hasRun && 'is-after')}>
-          <span />
-          {hasRun ? 'after' : 'before'}
+    <div className="state-compare-grid">
+      <section
+        className="state-sheet"
+        aria-label={`Before block ${stepNumber}`}
+      >
+        <span className="state-sheet-label">
+          Before · B{String(stepNumber).padStart(2, '0')}
         </span>
-      </div>
-      <div className="min-h-[280px] rounded-xl border bg-muted/22 p-4 sm:p-5">
-        <VisualPanel
-          visual={visual}
-          stateKey={`${stepIndex}-${hasRun ? 'after' : 'before'}`}
-        />
-      </div>
-    </>
+        <VisualPanel visual={before} stateKey={`${stepNumber}-before`} />
+      </section>
+      <section
+        className={cn('state-sheet is-after', !revealed && 'is-pending')}
+        aria-label={`After block ${stepNumber}`}
+      >
+        <span className="state-sheet-label">
+          After · B{String(stepNumber).padStart(2, '0')}
+        </span>
+        {revealed ? (
+          <VisualPanel visual={after} stateKey={`${stepNumber}-after`} />
+        ) : (
+          <div className="state-prediction">
+            <span>?</span>
+            <p>
+              Predict the changed row, entry, or variable before revealing this
+              state.
+            </p>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -414,228 +506,190 @@ export function CodeWalkthrough({
   walkthrough: CodeWalkthroughData;
 }) {
   const [stepIndex, setStepIndex] = useState(0);
+  const [lineIndex, setLineIndex] = useState(0);
   const [unlockedThrough, setUnlockedThrough] = useState(0);
   const step = walkthrough.steps[stepIndex];
-  const hasRun = stepIndex < unlockedThrough;
-  const isLast = stepIndex === walkthrough.steps.length - 1;
-  const visible = hasRun
-    ? step.after
-    : stepIndex === 0
+  const lines = splitLines(step);
+  const revealed = stepIndex < unlockedThrough;
+  const isLastStep = stepIndex === walkthrough.steps.length - 1;
+  const isLastLine = lineIndex === lines.length - 1;
+  const totalLines = useMemo(
+    () =>
+      walkthrough.steps.reduce(
+        (count, item) => count + splitLines(item).length,
+        0,
+      ),
+    [walkthrough.steps],
+  );
+  const globalLine =
+    walkthrough.steps
+      .slice(0, stepIndex)
+      .reduce((count, item) => count + splitLines(item).length, 0) +
+    lineIndex +
+    1;
+  const meaning = inferLineMeaning(lines[lineIndex], step, lineIndex);
+  const before =
+    stepIndex === 0
       ? walkthrough.initial
       : walkthrough.steps[stepIndex - 1].after;
-  const progress = (unlockedThrough / walkthrough.steps.length) * 100;
 
-  function runStep() {
-    setUnlockedThrough((current) => Math.max(current, stepIndex + 1));
+  function selectLine(nextStep: number, nextLine: number) {
+    setStepIndex(nextStep);
+    setLineIndex(nextLine);
   }
-  function nextStep() {
-    if (hasRun && !isLast) setStepIndex((current) => current + 1);
+  function previousLine() {
+    if (lineIndex > 0) setLineIndex((current) => current - 1);
+    else if (stepIndex > 0) {
+      const previous = stepIndex - 1;
+      setStepIndex(previous);
+      setLineIndex(splitLines(walkthrough.steps[previous]).length - 1);
+    }
   }
-  function previousStep() {
-    if (stepIndex > 0) setStepIndex((current) => current - 1);
-  }
-  function restart() {
+  function advance() {
+    if (!isLastLine) {
+      setLineIndex((current) => current + 1);
+      return;
+    }
+    if (!revealed) {
+      setUnlockedThrough((current) => Math.max(current, stepIndex + 1));
+      return;
+    }
+    if (!isLastStep) {
+      setStepIndex((current) => current + 1);
+      setLineIndex(0);
+      return;
+    }
     setStepIndex(0);
+    setLineIndex(0);
     setUnlockedThrough(0);
   }
 
-  const nextControl = isLast ? (
-    <Button
-      type="button"
-      size="lg"
-      variant="secondary"
-      onClick={restart}
-      className="min-h-11"
-    >
-      <RotateCcw data-icon="inline-start" aria-hidden="true" />
-      Run again
-    </Button>
-  ) : (
-    <Button
-      type="button"
-      size="lg"
-      onClick={nextStep}
-      disabled={!hasRun}
-      className="min-h-11"
-    >
-      Next step
-      <ArrowRight data-icon="inline-end" aria-hidden="true" />
-    </Button>
-  );
+  const actionLabel = !isLastLine
+    ? 'Explain next line'
+    : !revealed
+      ? 'Reveal resulting state'
+      : !isLastStep
+        ? 'Next source block'
+        : 'Trace again';
 
   return (
-    <section
-      className="overflow-hidden rounded-2xl border bg-card/94 shadow-sm"
-      aria-label={walkthrough.title}
-    >
-      <header className="border-b px-5 py-5 sm:px-7 sm:py-6">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-[0.12em] text-primary">
-              {walkthrough.eyebrow}
-            </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
-              {walkthrough.title}
-            </h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-              {walkthrough.objective}
-            </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Here, <strong className="text-foreground">Run</strong> advances a
-              faithful visual state model. Use the linked Colab notebook to
-              execute the original Python.
-            </p>
-          </div>
-          <Badge variant="outline" className="w-fit font-mono">
-            STEP {stepIndex + 1} / {walkthrough.steps.length}
-          </Badge>
+    <section className="trace-workbench" aria-label={walkthrough.title}>
+      <header className="trace-header">
+        <div>
+          <p className="section-kicker">
+            {walkthrough.eyebrow} · Adapted teaching trace
+          </p>
+          <h2>{walkthrough.title}</h2>
+          <p>{walkthrough.objective}</p>
         </div>
-        <Progress value={progress} className="mt-5">
-          <ProgressLabel>
-            {unlockedThrough === walkthrough.steps.length
-              ? 'Walkthrough complete'
-              : `${unlockedThrough} steps executed`}
-          </ProgressLabel>
-          <ProgressValue>
-            {(_formattedValue, value) => `${Math.round(value ?? 0)}%`}
-          </ProgressValue>
-        </Progress>
+        <div
+          className="trace-progress"
+          aria-label={`Line ${globalLine} of ${totalLines}`}
+        >
+          <strong>L{String(globalLine).padStart(2, '0')}</strong>
+          <span>/ {totalLines} source lines</span>
+        </div>
       </header>
 
       <output className="sr-only" aria-live="polite">
-        {hasRun
-          ? `Executed step ${stepIndex + 1}. ${step.after.title}`
-          : `Step ${stepIndex + 1} is ready. ${step.title}`}
+        {revealed
+          ? `Resulting state for block ${stepIndex + 1} revealed.`
+          : `Line ${globalLine}: ${lines[lineIndex]}`}
       </output>
 
-      <div className="hidden lg:grid lg:grid-cols-[minmax(330px,0.86fr)_minmax(420px,1.14fr)]">
-        <section className="border-r p-6" aria-label="Source code">
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground">Teaching snippet</p>
-              <h3 className="mt-0.5 font-semibold">
-                Run the code step by step
-              </h3>
-            </div>
-            <Badge variant={hasRun ? 'default' : 'secondary'}>
-              {hasRun ? 'executed' : 'ready'}
-            </Badge>
-          </div>
-          <SourceList
-            steps={walkthrough.steps}
-            stepIndex={stepIndex}
-            unlockedThrough={unlockedThrough}
-            onSelect={setStepIndex}
-          />
-          <div className="mt-5">
-            <ExplanationCard step={step} index={stepIndex} />
-          </div>
-        </section>
-        <section className="p-6" aria-label="Visualization and variables">
-          <StatePanel visual={visible} hasRun={hasRun} stepIndex={stepIndex} />
-          <div className="mt-4">
-            <VariableCards step={step} hasRun={hasRun} />
-          </div>
-          <div className="mt-5 flex items-center justify-between gap-3 border-t pt-5">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={previousStep}
-              disabled={stepIndex === 0}
-              className="min-h-11"
-            >
-              <ArrowLeft data-icon="inline-start" aria-hidden="true" />
-              Previous step
-            </Button>
-            {!hasRun ? (
-              <Button
-                type="button"
-                size="lg"
-                onClick={runStep}
-                className="min-h-11"
-              >
-                <Play data-icon="inline-start" aria-hidden="true" />
-                Run step {stepIndex + 1}
-              </Button>
-            ) : (
-              nextControl
-            )}
-          </div>
-        </section>
+      <div className="trace-causal-bar">
+        <span>L{String(globalLine).padStart(2, '0')}</span>
+        <code>{lines[lineIndex].trim()}</code>
+        <ArrowRight className="size-3.5" aria-hidden="true" />
+        <strong>{revealed ? step.after.title : step.title}</strong>
       </div>
 
-      <div className="lg:hidden">
-        <section className="p-5" aria-label="Current code step">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-xs font-medium text-primary">Current code</p>
-            <Badge variant={hasRun ? 'default' : 'secondary'}>
-              {hasRun ? 'executed' : 'ready'}
-            </Badge>
-          </div>
-          <pre className="mobile-active-code">
-            <code>{step.code}</code>
-          </pre>
-          {!hasRun && (
-            <Button
-              type="button"
-              size="lg"
-              onClick={runStep}
-              className="mt-3 min-h-11 w-full"
-            >
-              <Play data-icon="inline-start" aria-hidden="true" />
-              Run step {stepIndex + 1}
-            </Button>
-          )}
-        </section>
-        <section className="border-t p-5" aria-label="Visualization">
-          <StatePanel visual={visible} hasRun={hasRun} stepIndex={stepIndex} />
-        </section>
-        <section
-          className="space-y-4 border-t p-5"
-          aria-label="Explanation and variables"
+      <div className="trace-grid">
+        <aside
+          className="trace-code-pane"
+          aria-label="Python source and line explanation"
         >
-          <ExplanationCard step={step} index={stepIndex} />
-          <VariableCards step={step} hasRun={hasRun} />
-          <details className="rounded-xl border bg-background">
-            <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium">
-              View all code steps
-              <ChevronDown
-                className="size-4 text-muted-foreground"
-                aria-hidden="true"
-              />
-            </summary>
-            <div className="border-t p-3">
-              <SourceList
-                steps={walkthrough.steps}
-                stepIndex={stepIndex}
-                unlockedThrough={unlockedThrough}
-                onSelect={setStepIndex}
-              />
+          <div className="hidden lg:block">
+            <SourceList
+              steps={walkthrough.steps}
+              stepIndex={stepIndex}
+              lineIndex={lineIndex}
+              unlockedThrough={unlockedThrough}
+              onSelect={selectLine}
+            />
+          </div>
+
+          <div className="active-line-card">
+            <div>
+              <span>L{String(globalLine).padStart(2, '0')}</span>
+              <b>{meaning.kind}</b>
             </div>
+            <pre>
+              <code>{lines[lineIndex]}</code>
+            </pre>
+          </div>
+          <MeaningLedger meaning={meaning} />
+
+          <div className="trace-teaching-note">
+            <span>Block {stepIndex + 1} · teaching note</span>
+            <h3>{step.title}</h3>
+            <p>{step.explanation}</p>
+            <small>
+              <strong>Watch:</strong> {step.watchFor}
+            </small>
+          </div>
+
+          <details className="trace-mobile-source lg:hidden">
+            <summary>
+              View every source line{' '}
+              <ChevronDown className="size-4" aria-hidden="true" />
+            </summary>
+            <SourceList
+              steps={walkthrough.steps}
+              stepIndex={stepIndex}
+              lineIndex={lineIndex}
+              unlockedThrough={unlockedThrough}
+              onSelect={selectLine}
+            />
           </details>
-          <div className="grid grid-cols-2 gap-2 border-t pt-4">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={previousStep}
-              disabled={stepIndex === 0}
-              className="min-h-11"
-            >
-              <ArrowLeft data-icon="inline-start" aria-hidden="true" />
-              Previous
-            </Button>
-            {hasRun ? (
-              nextControl
-            ) : (
+        </aside>
+
+        <section
+          className="trace-state-pane"
+          aria-label="Before and after visualization"
+        >
+          <div className="lg:sticky lg:top-24">
+            <div className="trace-prediction">
+              <span>Before revealing</span>
+              <p>{step.watchFor}</p>
+            </div>
+            <StateComparison
+              before={before}
+              after={step.after}
+              revealed={revealed}
+              stepNumber={stepIndex + 1}
+            />
+            <VariableLedger step={step} revealed={revealed} />
+            <div className="trace-controls">
               <Button
                 type="button"
-                variant="secondary"
-                disabled
-                className="min-h-11"
+                variant="ghost"
+                onClick={previousLine}
+                disabled={stepIndex === 0 && lineIndex === 0}
               >
-                Run first
+                <ArrowLeft data-icon="inline-start" aria-hidden="true" />
+                Previous line
               </Button>
-            )}
+              <Button type="button" onClick={advance}>
+                {isLastStep && isLastLine && revealed ? (
+                  <RotateCcw data-icon="inline-start" aria-hidden="true" />
+                ) : null}
+                {actionLabel}
+                {!(isLastStep && isLastLine && revealed) && (
+                  <ArrowRight data-icon="inline-end" aria-hidden="true" />
+                )}
+              </Button>
+            </div>
           </div>
         </section>
       </div>

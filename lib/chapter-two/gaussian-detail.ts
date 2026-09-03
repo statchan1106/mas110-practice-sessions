@@ -101,7 +101,7 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'A = A.copy()\nn, m = A.shape\nr = 0\neps = 1e-12',
+        code: 'A_original = A.copy()\nA = A.copy()\nn, m = A.shape\nr = 0\neps = 1e-12\nQ_list, L_list = [], []',
         title: 'Protect the input and initialize algorithm state',
         explanation:
           'copy preserves the caller’s matrix. n and m store dimensions, r marks the active pivot row, and eps defines numerical zero.',
@@ -348,7 +348,7 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'u = A[k, j] / A[r, j]',
+        code: 'k = r + 1  # first target row in this 3×3 trace\nu = A[k, j] / A[r, j]\nEj = np.eye(n)',
         title: 'Compute the elimination multiplier',
         explanation:
           'For target row k=2, divide the target entry 2 by pivot 4. The result 0.5 is exactly how much pivot row to subtract.',
@@ -426,7 +426,7 @@ export const gaussianDetailSection: ChapterSection = {
         },
       },
       {
-        code: 'r += 1  # repeat search, swap, and elimination for the next column',
+        code: 'L_list.append(Ej.copy())\nr += 1  # repeat search, swap, elimination\nU = np.array([[4.,1.,1.],[0.,2.5,.5],[0.,0.,.6]])\nQ = np.array([[0.,1.,0.],[0.,0.,1.],[1.,0.,0.]])\nLprime = np.array([[1.,0.,0.],[-.5,1.,0.],[.4,-.8,1.]])\nL = np.linalg.inv(Lprime)\nassert np.allclose(Q @ A_original, L @ U)',
         title: 'Advance the pivot staircase and finish',
         explanation:
           'The next search compares 2 and 2.5 in column 1, swaps the 2.5 row upward, uses multiplier 0.8, and creates the final zero below the diagonal.',
@@ -450,7 +450,7 @@ export const gaussianDetailSection: ChapterSection = {
         after: {
           title: 'The algorithm has produced U and all operation receipts',
           description:
-            'Two pivot searches, two swaps, and two meaningful cancellations create the same factors used in Section 2.1.',
+            'The pivot searches, swaps, and cancellations create the same triangular factors used in Section 2.1.',
           equation: 'A_original = Qᵀ E⁻¹ U',
           matrices: [
             {
