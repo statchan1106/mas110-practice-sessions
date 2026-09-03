@@ -48,11 +48,21 @@ const adjacency = [
 export const blockMatricesGraphsSection: ChapterSection = {
   slug: 'block-matrices-graphs',
   number: '2.2',
-  title: 'Seeing Structure: Block Matrices & Graphs',
+  title: 'Block Matrices and Graphs',
   shortTitle: 'Blocks and graphs',
   summary:
-    'Assemble and slice blocks, multiply by structure, eliminate an entire block, and read graph walks from matrix powers.',
+    'Build and multiply block matrices, find a Schur complement, and connect a graph to its adjacency matrix.',
   focus: 'blocks → Schur complement → adjacency powers',
+  learningGoal:
+    'Build and multiply matrices in blocks, use block elimination to find the Schur complement, and read graph structure from an adjacency matrix.',
+  lectureConcepts: [
+    'Block matrices',
+    'Block multiplication',
+    'Schur complement',
+    'Adjacency matrix',
+  ],
+  codeExtension:
+    'NumPy slicing and adjacency powers extend the lecture examples into code.',
   filename,
   ...links,
   primer: [
@@ -89,34 +99,63 @@ export const blockMatricesGraphsSection: ChapterSection = {
   ],
   walkthrough: {
     eyebrow: '2.2 · Guided execution',
-    title: 'Watch structure appear as code creates it',
+    title: 'Build the matrices, then track each change',
     objective:
-      'Keep the partition lines visible. Every slice, product, elimination block, and graph edge should be traceable to the exact Python line that creates it.',
+      'Keep the partition lines visible. Match each slice, product, elimination step, and graph edge to the Python line that creates it.',
     initial: {
       title: 'Start with four empty block positions',
       description:
         'The top row needs two blocks of equal height; the bottom row needs two blocks of equal height. Column widths must also agree vertically.',
       equation: 'X = [ A  B ; C  D ]',
       callout:
-        'Prediction: if A is 2×3 and D is 1×2, what must the shapes of B and C be?',
+        'Think first: if A is 2×3 and D is 1×2, what must the shapes of B and C be?',
     },
     steps: [
       {
-        code: 'A = np.array([[1.,2.,3.],[4.,5.,6.]])\nB = np.array([[7.,8.],[9.,10.]])',
-        title: 'Create the upper block row',
+        code: 'A = np.array([[1.,2.,3.],[4.,5.,6.]])',
+        title: 'Create block A',
         explanation:
-          'A contributes three columns and B contributes two. Their two-row heights match, so they can sit side by side.',
-        drives: 'A 2×3 left tile and a 2×2 right tile.',
+          'A is the upper-left block. Its two rows set the required height of the block beside it.',
+        drives: 'The 2×3 upper-left block A.',
         watchFor:
           'The name A currently means “Block A”; it will be reused later for an adjacency matrix.',
         variables: [
           { name: 'A.shape', value: '(2, 3)', meaning: 'Upper-left block.' },
-          { name: 'B.shape', value: '(2, 2)', meaning: 'Upper-right block.' },
         ],
         after: {
-          title: 'The upper row is dimension-compatible',
-          description:
-            'Both blocks have height 2, while their widths add to 5.',
+          title: 'A fills the upper-left position',
+          description: 'It has two rows and three columns.',
+          equation: 'A ∈ ℝ²ˣ³',
+          matrices: [
+            {
+              label: 'Block A',
+              values: [
+                [1, 2, 3],
+                [4, 5, 6],
+              ],
+              cellTones: toneBlock(0, 2, 0, 3, 'block-a'),
+            },
+          ],
+        },
+      },
+      {
+        code: 'B = np.array([[7.,8.],[9.,10.]])',
+        title: 'Create block B and complete the upper row',
+        explanation:
+          'B has the same two-row height as A, so the two blocks can be placed side by side.',
+        drives: 'Separate A and B matrices plus their joined upper block row.',
+        watchFor: 'The widths add: 3 columns from A and 2 from B.',
+        variables: [
+          { name: 'B.shape', value: '(2, 2)', meaning: 'Upper-right block.' },
+          {
+            name: '[A | B].shape',
+            value: '(2, 5)',
+            meaning: 'The complete upper block row.',
+          },
+        ],
+        after: {
+          title: 'A and B form the upper block row',
+          description: 'The divider shows where A ends and B begins.',
           equation: '[2×3 | 2×2] → 2×5',
           matrices: [
             {
@@ -128,24 +167,101 @@ export const blockMatricesGraphsSection: ChapterSection = {
               cellTones: toneBlock(0, 2, 0, 3, 'block-a'),
             },
             {
-              label: 'B',
+              label: 'Block B',
               values: [
                 [7, 8],
                 [9, 10],
               ],
               cellTones: toneBlock(0, 2, 0, 2, 'block-b'),
             },
+            {
+              label: 'upper row [ A | B ]',
+              values: [
+                [1, 2, 3, 7, 8],
+                [4, 5, 6, 9, 10],
+              ],
+              dividerBefore: 3,
+              cellTones: {
+                ...toneBlock(0, 2, 0, 3, 'block-a'),
+                ...toneBlock(0, 2, 3, 5, 'block-b'),
+              },
+            },
           ],
         },
       },
       {
-        code: 'C = np.array([[11.,12.,13.]])\nD = np.array([[14.,15.]])\nX = np.block([[A,B],[C,D]])',
-        title: 'Complete and assemble X',
+        code: 'C = np.array([[11.,12.,13.]])',
+        title: 'Create block C',
         explanation:
-          'C and D form the one-row lower strip. np.block joins both block rows into one 3×5 matrix.',
-        drives:
-          'Four tiles snap together while the cut after row 2 and column 3 stays visible.',
-        watchFor: 'A/C both have width 3; B/D both have width 2.',
+          'C is the lower-left block. Its three columns match the width of A above it.',
+        drives: 'The 1×3 lower-left block C.',
+        watchFor: 'A and C must have the same number of columns.',
+        variables: [
+          { name: 'C.shape', value: '(1, 3)', meaning: 'Lower-left block.' },
+        ],
+        after: {
+          title: 'C fills the lower-left position',
+          description:
+            'Its width matches A, while its height starts a new row.',
+          equation: 'C ∈ ℝ¹ˣ³',
+          matrices: [
+            {
+              label: 'Block C',
+              values: [[11, 12, 13]],
+              cellTones: toneBlock(0, 1, 0, 3, 'source'),
+            },
+          ],
+        },
+      },
+      {
+        code: 'D = np.array([[14.,15.]])',
+        title: 'Create block D and complete the lower row',
+        explanation:
+          'D matches C’s one-row height and B’s two-column width, so C and D can form the lower block row.',
+        drives: 'Separate C and D matrices plus their joined lower block row.',
+        watchFor: 'C and D share one row; B and D share two columns.',
+        variables: [
+          { name: 'D.shape', value: '(1, 2)', meaning: 'Lower-right block.' },
+          {
+            name: '[C | D].shape',
+            value: '(1, 5)',
+            meaning: 'The complete lower block row.',
+          },
+        ],
+        after: {
+          title: 'C and D form the lower block row',
+          description: 'Its total width now matches the upper block row.',
+          equation: '[1×3 | 1×2] → 1×5',
+          matrices: [
+            {
+              label: 'Block C',
+              values: [[11, 12, 13]],
+              cellTones: toneBlock(0, 1, 0, 3, 'source'),
+            },
+            {
+              label: 'Block D',
+              values: [[14, 15]],
+              cellTones: toneBlock(0, 1, 0, 2, 'target'),
+            },
+            {
+              label: 'lower row [ C | D ]',
+              values: [[11, 12, 13, 14, 15]],
+              dividerBefore: 3,
+              cellTones: {
+                ...toneBlock(0, 1, 0, 3, 'source'),
+                ...toneBlock(0, 1, 3, 5, 'target'),
+              },
+            },
+          ],
+        },
+      },
+      {
+        code: 'X = np.block([[A,B],[C,D]])',
+        title: 'Join the four blocks as X',
+        explanation:
+          'np.block places the two prepared block rows on top of each other to create one 3×5 matrix.',
+        drives: 'The upper and lower block rows combine into X.',
+        watchFor: 'The vertical divider must line up in both block rows.',
         variables: [
           {
             name: 'X.shape',
@@ -154,13 +270,26 @@ export const blockMatricesGraphsSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'Four matrices are now one matrix',
+          title: 'The four definitions are combined as X',
           description:
-            'The divider preserves how the 3×5 result was assembled.',
-          equation: 'X = np.block([[A, B], [C, D]])',
+            'First read the two block rows, then read the same values inside the final matrix.',
+          equation: '[A | B] above [C | D] → X',
           matrices: [
             {
-              label: 'X',
+              label: 'upper row [ A | B ]',
+              values: [
+                [1, 2, 3, 7, 8],
+                [4, 5, 6, 9, 10],
+              ],
+              dividerBefore: 3,
+            },
+            {
+              label: 'lower row [ C | D ]',
+              values: [[11, 12, 13, 14, 15]],
+              dividerBefore: 3,
+            },
+            {
+              label: 'combined X',
               values: [
                 [1, 2, 3, 7, 8],
                 [4, 5, 6, 9, 10],
@@ -177,7 +306,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
             },
           ],
           callout:
-            'The color boundaries are a reading aid; X itself is still an ordinary numeric array.',
+            'The dividers only show how X was built; X is still one ordinary numeric array.',
         },
       },
       {
@@ -185,7 +314,8 @@ export const blockMatricesGraphsSection: ChapterSection = {
         title: 'Create the matrix that X will multiply',
         explanation:
           'Y has five rows so its leading dimension matches the five columns of X.',
-        drives: 'A 5×4 grid with candidate cuts after row 3 and column 2.',
+        drives:
+          'A 5×4 grid with possible split lines after row 3 and column 2.',
         watchFor: 'The shared inner dimension 5 is what makes X @ Y legal.',
         variables: [
           {

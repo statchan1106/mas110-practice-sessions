@@ -800,6 +800,75 @@
     padding-block: 2.5rem 3rem;
   }
 
+  .lab-purpose {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 2rem;
+    border-block: 1px solid
+      color-mix(in oklch, var(--foreground) 22%, transparent);
+    background: color-mix(in oklch, var(--source-bg) 48%, var(--background));
+    padding: 1.5rem;
+  }
+
+  .lab-purpose h2 {
+    margin-top: 0.45rem;
+    font-family: var(--font-heading);
+    font-size: 1.55rem;
+    line-height: 1.2;
+  }
+
+  .lab-purpose > div:first-child > p:not(.section-kicker) {
+    margin-top: 0.7rem;
+    max-width: 58rem;
+    color: var(--muted-foreground);
+    font-size: 1rem;
+    line-height: 1.7rem;
+  }
+
+  .lab-concepts {
+    border-top: 1px solid
+      color-mix(in oklch, var(--foreground) 18%, transparent);
+    padding-top: 1rem;
+  }
+
+  .lab-concepts > strong,
+  .lab-concepts > p span {
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .lab-concepts ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.65rem;
+  }
+
+  .lab-concepts li {
+    border: 1px solid color-mix(in oklch, var(--primary) 26%, transparent);
+    background: var(--background);
+    padding: 0.42rem 0.65rem;
+    color: var(--foreground);
+    font-size: 0.86rem;
+    line-height: 1.2rem;
+  }
+
+  .lab-concepts > p {
+    margin-top: 0.85rem;
+    color: var(--muted-foreground);
+    font-size: 0.86rem;
+    line-height: 1.45rem;
+  }
+
+  .lab-concepts > p span {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: var(--target-fg);
+  }
+
   .lesson-meta {
     align-self: end;
     border-top: 1px solid var(--foreground);
@@ -815,13 +884,13 @@
   .lesson-meta dt {
     color: var(--muted-foreground);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.76rem;
     text-transform: uppercase;
   }
   .lesson-meta dd {
     overflow-wrap: anywhere;
-    font-size: 0.82rem;
-    line-height: 1.35rem;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
   }
 
   .concept-primer {
@@ -846,7 +915,7 @@
     gap: 1rem;
   }
   .primer-ledger dt strong {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .primer-ledger dt code {
     color: var(--primary);
@@ -856,8 +925,8 @@
   }
   .primer-ledger dd {
     color: var(--muted-foreground);
-    font-size: 0.88rem;
-    line-height: 1.5rem;
+    font-size: 0.94rem;
+    line-height: 1.6rem;
   }
   .primer-ledger dd small {
     display: block;
@@ -867,7 +936,7 @@
     margin-right: 0.55rem;
     color: oklch(0.48 0.12 63);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.76rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -941,8 +1010,8 @@
     margin-top: 0.55rem;
     max-width: 50rem;
     color: var(--muted-foreground);
-    font-size: 0.9rem;
-    line-height: 1.55rem;
+    font-size: 0.98rem;
+    line-height: 1.65rem;
   }
   .trace-progress {
     flex: none;
@@ -959,7 +1028,7 @@
     display: block;
     margin-top: 0.1rem;
     color: var(--muted-foreground);
-    font-size: 0.7rem;
+    font-size: 0.76rem;
   }
 
   .trace-mode-note {
@@ -968,8 +1037,8 @@
     background: color-mix(in oklch, var(--source-bg) 58%, var(--background));
     padding: 0.9rem 1.5rem;
     color: var(--muted-foreground);
-    font-size: 0.84rem;
-    line-height: 1.45rem;
+    font-size: 0.92rem;
+    line-height: 1.55rem;
   }
 
   .trace-mode-note strong {
@@ -985,7 +1054,7 @@
       color-mix(in oklch, var(--foreground) 18%, transparent);
     background: color-mix(in oklch, var(--primary) 5%, var(--background));
     padding: 0.7rem 1.5rem;
-    font-size: 0.78rem;
+    font-size: 0.86rem;
   }
   .trace-causal-bar > span {
     color: var(--primary);
@@ -1030,7 +1099,7 @@
     padding: 0.75rem 0.75rem 0.28rem 3.3rem;
     color: var(--code-muted);
     font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.76rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -1049,15 +1118,15 @@
   .trace-source-line > span {
     color: var(--code-muted);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.76rem;
     text-align: center;
   }
   .trace-source-line code {
     overflow-wrap: anywhere;
     white-space: pre-wrap;
     font-family: var(--font-mono);
-    font-size: 0.84rem;
-    line-height: 1.4rem;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
   }
   .trace-source-line:disabled {
     cursor: not-allowed;
@@ -1097,26 +1166,26 @@
     gap: 1rem;
     color: var(--code-active-border);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
   .active-line-card pre {
     margin-top: 0.65rem;
-    overflow-x: auto;
+    overflow-wrap: anywhere;
   }
   .active-line-card code {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
-    line-height: 1.55rem;
-    white-space: pre;
+    font-size: 0.96rem;
+    line-height: 1.65rem;
+    white-space: pre-wrap;
   }
 
   .line-meaning-key {
     margin-top: 1rem;
     color: var(--muted-foreground);
-    font-size: 0.76rem;
-    line-height: 1.35rem;
+    font-size: 0.84rem;
+    line-height: 1.45rem;
   }
 
   .line-meaning-key strong {
@@ -1141,17 +1210,19 @@
   .line-meaning dt {
     color: var(--primary);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.76rem;
     font-weight: 700;
     text-transform: uppercase;
   }
   .line-meaning dd {
+    min-width: 0;
     border-left: 1px solid
       color-mix(in oklch, var(--foreground) 12%, transparent);
     padding-left: 0.8rem;
     color: var(--muted-foreground);
-    font-size: 0.84rem;
-    line-height: 1.4rem;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
+    overflow-wrap: anywhere;
   }
 
   .trace-teaching-note {
@@ -1162,21 +1233,21 @@
   .trace-teaching-note > span {
     color: var(--target-fg);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.76rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
   .trace-teaching-note h3 {
     margin-top: 0.35rem;
-    font-size: 0.95rem;
+    font-size: 1.02rem;
   }
   .trace-teaching-note p,
   .trace-teaching-note small {
     display: block;
     margin-top: 0.4rem;
     color: var(--muted-foreground);
-    font-size: 0.82rem;
-    line-height: 1.4rem;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
   }
 
   .trace-mobile-source {
@@ -1204,17 +1275,18 @@
   .trace-prediction span {
     color: var(--target-fg);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.76rem;
     letter-spacing: 0.07em;
     text-transform: uppercase;
   }
   .trace-prediction p {
-    font-size: 0.85rem;
-    line-height: 1.4rem;
+    font-size: 0.92rem;
+    line-height: 1.5rem;
   }
 
   .state-compare-grid {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 29rem), 1fr));
     gap: 0.75rem;
     margin-top: 1rem;
   }
@@ -1236,7 +1308,7 @@
     margin-bottom: 0.8rem;
     color: var(--muted-foreground);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.76rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -1264,18 +1336,18 @@
   .state-prediction p {
     max-width: 18rem;
     color: var(--muted-foreground);
-    font-size: 0.82rem;
-    line-height: 1.4rem;
+    font-size: 0.9rem;
+    line-height: 1.5rem;
   }
   .walk-equation {
     margin-top: 0.9rem;
-    overflow-x: auto;
+    overflow-wrap: anywhere;
     border-block: 1px solid
       color-mix(in oklch, var(--foreground) 14%, transparent);
     padding: 0.65rem;
     color: var(--primary);
     font-family: var(--font-mono);
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     font-weight: 650;
     text-align: center;
   }
@@ -1297,13 +1369,13 @@
   }
   .variable-ledger code {
     color: var(--primary);
-    font-size: 0.76rem;
+    font-size: 0.82rem;
     font-weight: 700;
   }
   .variable-ledger span {
     text-align: right;
     font-family: var(--font-mono);
-    font-size: 0.76rem;
+    font-size: 0.82rem;
   }
   .variable-ledger span b {
     margin-inline: 0.25rem;
@@ -1320,8 +1392,8 @@
   .variable-ledger small {
     grid-column: 1 / -1;
     color: var(--muted-foreground);
-    font-size: 0.74rem;
-    line-height: 1.2rem;
+    font-size: 0.82rem;
+    line-height: 1.35rem;
   }
 
   .trace-controls {
@@ -1345,6 +1417,18 @@
   }
 
   @media (min-width: 768px) {
+    .lab-purpose {
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+      align-items: start;
+      padding: 1.75rem 2rem;
+    }
+    .lab-concepts {
+      border-top: 0;
+      border-left: 1px solid
+        color-mix(in oklch, var(--foreground) 18%, transparent);
+      padding-top: 0;
+      padding-left: 1.5rem;
+    }
     .section-heading-row {
       grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
       align-items: end;
@@ -1395,14 +1479,11 @@
     .lesson-pagination {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    .state-compare-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 
   @media (min-width: 1024px) {
     .trace-grid {
-      grid-template-columns: minmax(430px, 0.9fr) minmax(0, 1.1fr);
+      grid-template-columns: minmax(400px, 0.78fr) minmax(0, 1.22fr);
     }
     .trace-code-pane {
       border-right: 1px solid
@@ -1801,11 +1882,37 @@
     padding: 0.8rem;
   }
 
+  .walk-matrix-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .walk-matrix-label {
+    margin-bottom: 0.65rem;
+    overflow-wrap: anywhere;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    line-height: 1.2rem;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .walk-matrix-frame {
+    min-width: 0;
+    width: 100%;
+  }
+
   .walk-matrix-bracket {
     position: relative;
     display: grid;
-    gap: 0.28rem;
-    padding: 0.45rem 0.65rem;
+    min-width: 0;
+    width: 100%;
+    gap: clamp(0.12rem, 1.1cqi, 0.28rem);
+    padding: 0.45rem clamp(0.38rem, 2cqi, 0.65rem);
   }
 
   .walk-matrix-bracket::before,
@@ -1829,13 +1936,36 @@
 
   .walk-matrix-cell {
     display: grid;
-    min-height: 2rem;
+    min-width: 0;
+    min-height: clamp(1.75rem, 8cqi, 2.2rem);
     place-items: center;
     border-radius: 0.35rem;
     font-family: var(--font-mono);
-    font-size: 0.86rem;
+    font-size: clamp(0.78rem, 4.4cqi, 0.94rem);
     font-variant-numeric: tabular-nums;
+    line-height: 1;
+    overflow: hidden;
+    white-space: nowrap;
     transition: all 180ms ease;
+  }
+
+  .walk-matrix-card {
+    container-type: inline-size;
+  }
+
+  .walk-matrix-card.is-dense {
+    padding-inline: 0.55rem;
+  }
+
+  .walk-matrix-card.is-dense .walk-matrix-bracket {
+    gap: clamp(0.06rem, 0.55cqi, 0.16rem);
+    padding-inline: clamp(0.3rem, 1.4cqi, 0.5rem);
+  }
+
+  .walk-matrix-card.is-dense .walk-matrix-cell {
+    min-height: clamp(1.35rem, 5.5cqi, 1.8rem);
+    border-radius: 0.25rem;
+    font-size: clamp(0.62rem, 3.1cqi, 0.78rem);
   }
 
   .walk-matrix-column-divider {

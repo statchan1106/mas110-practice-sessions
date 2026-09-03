@@ -12,6 +12,14 @@ export const gaussianEliminationSection: ChapterSection = {
   summary:
     'Follow one system through row permutation, LDU factorization, forward substitution, diagonal scaling, and back substitution.',
   focus: 'Ax = b → LDUx = Qb → x',
+  learningGoal:
+    'Read A and b as a system of equations, then use row reordering and the LDU factors to solve Ax = b by forward and back-substitution.',
+  lectureConcepts: [
+    'Ax = b',
+    'Permutation matrix',
+    'LDU-decomposition',
+    'Forward / back-substitution',
+  ],
   filename,
   ...links,
   primer: [
@@ -23,21 +31,21 @@ export const gaussianEliminationSection: ChapterSection = {
       watchFor: 'Every row operation applied to A must also be applied to b.',
     },
     {
-      term: 'Permutation',
+      term: 'Permutation matrix',
       definition:
         'A permutation matrix changes row order so a safe nonzero pivot reaches the active position.',
       relation: 'Q = Pᵀ',
       watchFor: 'SciPy returns A = P L U; therefore Q A = L U.',
     },
     {
-      term: 'LDU factors',
+      term: 'LDU-decomposition',
       definition:
         'L stores lower-triangular elimination information, D stores pivots, and U is normalized to have diagonal ones.',
       relation: 'QA = LDU',
       watchFor: 'The diagonal values move out of U_raw and into D.',
     },
     {
-      term: 'Triangular solve',
+      term: 'Forward / back-substitution',
       definition:
         'Forward substitution moves top-to-bottom through L; back substitution moves bottom-to-top through U.',
       relation: 'Lv=y, Dz=v, Ux=z',
@@ -48,22 +56,21 @@ export const gaussianEliminationSection: ChapterSection = {
     eyebrow: '2.1 · Guided execution',
     title: 'Solve Ax = b, one state change at a time',
     objective:
-      'Run each line only after predicting which rows, pivots, or variables it will change. The small deterministic example mirrors the operations in the original notebook.',
+      'Before showing each result, identify the row, pivot, or variable that should change. The small example follows the same operations as the original notebook.',
     initial: {
       title: 'No variables exist yet',
       description:
-        'The program state is empty. Line 1 will create the coefficient matrix and right-hand side.',
+        'The program state is empty. The first two steps will create A and b, then join them as the augmented matrix [A | b].',
       equation: 'Ax = b',
-      callout: 'Prediction: what shape must x have if A is 3 × 3?',
+      callout: 'Think first: what shape must x have if A is 3 × 3?',
     },
     steps: [
       {
-        code: 'A = np.array([[0.,2.,1.],[4.,1.,1.],[2.,3.,1.]])\nb = np.array([7.,9.,11.])',
-        title: 'Define the system',
+        code: 'A = np.array([[0.,2.,1.],[4.,1.,1.],[2.,3.,1.]])',
+        title: 'Create the coefficient matrix A',
         explanation:
-          'The first array stores coefficients; the second stores the right-hand side. Together they represent three equations in three unknowns.',
-        drives:
-          'The first visible matrix, the vector b, and the dimensions of x.',
+          'Each row stores the coefficients of one equation. The three columns match the three unknown entries of x.',
+        drives: 'A visible 3×3 coefficient matrix.',
         watchFor:
           'A[0,0] is zero, so using it immediately as a pivot would fail.',
         variables: [
@@ -72,17 +79,12 @@ export const gaussianEliminationSection: ChapterSection = {
             value: '(3, 3)',
             meaning: 'Three equations and three unknowns.',
           },
-          {
-            name: 'b',
-            value: '[7, 9, 11]',
-            meaning: 'One right-hand-side value per equation.',
-          },
         ],
         after: {
-          title: 'The system is now concrete',
+          title: 'A stores the left side of the equations',
           description:
-            'Each row of A and the matching entry of b form one scalar equation.',
-          equation: '[A | b]  ↔  0x₁+2x₂+x₃=7,  4x₁+x₂+x₃=9,  2x₁+3x₂+x₃=11',
+            'Rows are equations and columns line up with x₁, x₂, and x₃.',
+          equation: 'A ∈ ℝ³ˣ³',
           matrices: [
             {
               label: 'A',
@@ -93,10 +95,60 @@ export const gaussianEliminationSection: ChapterSection = {
               ],
               cellTones: toneCells([[0, 0]], 'target'),
             },
-            { label: 'b', values: [[7], [9], [11]] },
           ],
           callout:
-            'The orange zero explains why the next operation needs a row permutation.',
+            'The highlighted zero is the first pivot position. A row exchange will be needed later.',
+        },
+      },
+      {
+        code: 'b = np.array([7.,9.,11.])',
+        title: 'Create b and join the full system',
+        explanation:
+          'The vector b stores one right-hand-side value for each row of A. Placing it beside A gives the augmented matrix used in elimination.',
+        drives: 'A, b, and their combined form [A | b].',
+        watchFor:
+          'Row i of A must stay paired with entry i of b during every row operation.',
+        variables: [
+          {
+            name: 'b',
+            value: '[7, 9, 11]',
+            meaning: 'One right-hand-side value per equation.',
+          },
+          {
+            name: '[A | b].shape',
+            value: '(3, 4)',
+            meaning: 'Three coefficient columns plus one right-hand side.',
+          },
+        ],
+        after: {
+          title: 'A and b now form one augmented matrix',
+          description:
+            'The separate definitions are kept visible, then combined so each equation can be read across one row.',
+          equation: '[A | b]  ↔  0x₁+2x₂+x₃=7,  4x₁+x₂+x₃=9,  2x₁+3x₂+x₃=11',
+          matrices: [
+            {
+              label: 'A · coefficients',
+              values: [
+                [0, 2, 1],
+                [4, 1, 1],
+                [2, 3, 1],
+              ],
+              cellTones: toneCells([[0, 0]], 'target'),
+            },
+            { label: 'b · right side', values: [[7], [9], [11]] },
+            {
+              label: 'combined [ A | b ]',
+              values: [
+                [0, 2, 1, 7],
+                [4, 1, 1, 9],
+                [2, 3, 1, 11],
+              ],
+              dividerBefore: 3,
+              cellTones: toneCells([[0, 0]], 'target'),
+            },
+          ],
+          callout:
+            'Elimination changes complete rows of [A | b], so coefficients and right-hand sides remain paired.',
         },
       },
       {
@@ -185,7 +237,7 @@ export const gaussianEliminationSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'The strongest first pivot moves to the top',
+          title: 'The largest available first pivot moves to the top',
           description:
             'Q does not change any row internally; it only changes row order.',
           equation: 'Q A = L U_raw',
@@ -243,7 +295,7 @@ export const gaussianEliminationSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'Pivots have been lifted into D',
+          title: 'The pivot values are now stored in D',
           description: 'Multiplying D and U reconstructs U_raw exactly.',
           equation: 'U_raw = D U    and    Q A = L D U',
           matrices: [
@@ -374,7 +426,7 @@ export const gaussianEliminationSection: ChapterSection = {
           {
             name: 'aug[:, -1]',
             value: '[9, 6.5, 1.8]',
-            meaning: 'The solved RHS column; line 8 will bind it to v.',
+            meaning: 'The solved RHS column; line 8 will store it as v.',
           },
         ],
         after: {
@@ -441,7 +493,7 @@ export const gaussianEliminationSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'D disappears through componentwise division',
+          title: 'Solve Dz = v one row at a time',
           description: 'Each pivot controls only the value in its own row.',
           equation: 'z = [9/4, 6.5/2.5, 1.8/0.6] = [2.25, 2.6, 3]',
           matrices: [
@@ -482,7 +534,7 @@ export const gaussianEliminationSection: ChapterSection = {
         explanation:
           'Known variables are substituted upward: solve x₃ first, then x₂, then x₁.',
         drives:
-          'The solution locks in bottom-to-top and the final residual becomes zero within floating-point tolerance.',
+          'The solution is filled from bottom to top, and the final residual is zero within floating-point tolerance.',
         watchFor:
           'range(i+1, 3) uses only values of x that have already been solved.',
         variables: [

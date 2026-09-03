@@ -7,11 +7,21 @@ const links = sourceLinks(filename);
 export const gaussianDetailSection: ChapterSection = {
   slug: 'gaussian-detail',
   number: '2.4',
-  title: 'Gaussian Elimination Under the Microscope',
+  title: 'Gaussian Elimination Step by Step',
   shortTitle: 'Elimination in detail',
   summary:
-    'Trace pivot search, row swaps, multipliers, row updates, and the matrices that remember every operation.',
+    'Choose pivots, swap rows, compute multipliers, and record each row operation as a matrix.',
   focus: 'search → swap → multiply → cancel → record',
+  learningGoal:
+    'Follow Gaussian elimination step by step: choose a pivot, exchange rows, subtract row multiples, and record the operations that create an upper-triangular matrix.',
+  lectureConcepts: [
+    'Gaussian elimination',
+    'Pivot and multiplier',
+    'Row exchange',
+    'Elementary matrices',
+  ],
+  codeExtension:
+    'Partial pivoting and a numerical tolerance are implementation details added to the lecture’s elimination steps.',
   filename,
   ...links,
   optional: true,
@@ -58,7 +68,7 @@ export const gaussianDetailSection: ChapterSection = {
         'The matrix will change in place while row_to_check marks where the next pivot must land.',
       equation: 'search → swap → eliminate → advance',
       callout:
-        'Prediction: why is the top-left zero a problem for the first division?',
+        'Think first: why is the top-left zero a problem for the first division?',
     },
     steps: [
       {
@@ -275,7 +285,7 @@ export const gaussianDetailSection: ChapterSection = {
         drives:
           'Identity changes into Q₀, and Q₀ @ A_before reproduces A_after.',
         watchFor:
-          'copy freezes this step; otherwise later edits could mutate the saved receipt.',
+          'copy saves this step; otherwise later edits could change the stored operation matrix.',
         variables: [
           {
             name: 'Q₀',
@@ -284,7 +294,7 @@ export const gaussianDetailSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'Q₀ is a reusable receipt for the swap',
+          title: 'Q₀ records the row swap',
           description:
             'Left-multiplying by Q₀ performs exactly the row exchange seen in line 5.',
           equation: 'Q₀ A_before = A_after',
@@ -386,7 +396,7 @@ export const gaussianDetailSection: ChapterSection = {
         explanation:
           'The target row changes component by component. The elimination matrix stores −0.5 because left multiplication adds −0.5 times the pivot row.',
         drives:
-          '2 turns into a bright zero; the rest of its row becomes [2.5, 0.5]; −0.5 appears in the receipt.',
+          '2 becomes zero; the rest of its row becomes [2.5, 0.5]; −0.5 is stored in the operation matrix.',
         watchFor:
           'The generalized teaching code uses r in A[r,j:] and Ej[k,r], which remains correct even if an earlier column was skipped.',
         variables: [
@@ -412,7 +422,7 @@ export const gaussianDetailSection: ChapterSection = {
               cellTones: toneRow(2, 3, 'result'),
             },
             {
-              label: 'E₀ receipt',
+              label: 'operation matrix E₀',
               values: [
                 [1, 0, 0],
                 [0, 1, 0],
@@ -422,7 +432,7 @@ export const gaussianDetailSection: ChapterSection = {
             },
           ],
           callout:
-            'The strongest visual change is 2→0, but 3→2.5 and 1→0.5 are equally part of the row operation.',
+            'The key change is 2→0, but 3→2.5 and 1→0.5 are also part of the same row operation.',
         },
       },
       {
@@ -448,7 +458,7 @@ export const gaussianDetailSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'The algorithm has produced U and all operation receipts',
+          title: 'The algorithm has produced U and the operation matrices',
           description:
             'The pivot searches, swaps, and cancellations create the same triangular factors used in Section 2.1.',
           equation: 'A_original = Qᵀ E⁻¹ U',

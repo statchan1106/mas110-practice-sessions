@@ -91,7 +91,7 @@ export function CourseLibrary() {
                     className="size-4 text-primary"
                     aria-hidden="true"
                   />
-                  <h3 className="text-sm font-semibold">Concept primer</h3>
+                  <h3 className="text-sm font-semibold">Key ideas</h3>
                   <span className="text-xs text-muted-foreground">
                     Read these before opening the notebooks.
                   </span>
@@ -113,7 +113,7 @@ export function CourseLibrary() {
                       </p>
                       <p className="mt-3 border-l-2 border-accent pl-2 text-[11px] leading-4 text-muted-foreground">
                         <strong className="text-foreground">
-                          Prediction cue:
+                          Think first:
                         </strong>{' '}
                         {item.watchFor}
                       </p>

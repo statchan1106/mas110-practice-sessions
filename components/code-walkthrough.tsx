@@ -49,7 +49,7 @@ export type WalkthroughVisual = {
 
 export type WalkthroughStep = {
   code: string;
-  lineNotes?: Array<{ reads: string; computes: string; changes: string }>;
+  lineNotes?: Array<{ uses: string; does: string; updates: string }>;
   title: string;
   explanation: string;
   drives: string;
@@ -84,15 +84,13 @@ function MatrixView({ matrix }: { matrix: WalkthroughMatrix }) {
   const columnCount = matrix.values[0]?.length ?? 1;
   const spokenValues = matrix.values.map((row) => row.join(', ')).join('; ');
   return (
-    <div className="walk-matrix-card">
-      <p className="mb-2 text-center font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
-        {matrix.label}
-      </p>
-      <div className="overflow-x-auto pb-1">
+    <div className={cn('walk-matrix-card', columnCount >= 6 && 'is-dense')}>
+      <p className="walk-matrix-label">{matrix.label}</p>
+      <div className="walk-matrix-frame">
         <figure
-          className="walk-matrix-bracket min-w-max"
+          className="walk-matrix-bracket"
           style={{
-            gridTemplateColumns: `repeat(${columnCount}, minmax(2.1rem, 1fr))`,
+            gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
           }}
           aria-label={`${matrix.label}: ${spokenValues}`}
         >
@@ -138,14 +136,10 @@ function GraphView({
     .join(', ');
   return (
     <figure
-      className="walk-graph overflow-x-auto"
+      className="walk-graph"
       aria-label={`${label}. ${graph.nodes.length} nodes and ${graph.edges.length} edges.${activeEdges ? ` Active edges: ${activeEdges}.` : ''}`}
     >
-      <svg
-        viewBox="0 0 340 190"
-        className="h-48 w-full min-w-[300px]"
-        aria-hidden="true"
-      >
+      <svg viewBox="0 0 340 190" className="h-auto w-full" aria-hidden="true">
         <defs>
           <marker
             id={markerId}
@@ -201,7 +195,7 @@ function VisualPanel({
   return (
     <div key={stateKey} className="walk-visual-enter">
       <h4 className="font-semibold">{visual.title}</h4>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+      <p className="mt-1 text-base leading-7 text-muted-foreground">
         {visual.description}
       </p>
       {visual.equation && (
@@ -213,7 +207,7 @@ function VisualPanel({
         </div>
       )}
       {visual.matrices && (
-        <div className="mt-4 grid gap-3 xl:grid-cols-[repeat(auto-fit,minmax(170px,1fr))]">
+        <div className="walk-matrix-list">
           {visual.matrices.map((matrix) => (
             <MatrixView key={matrix.label} matrix={matrix} />
           ))}
@@ -221,7 +215,7 @@ function VisualPanel({
       )}
       {(visual.matrices || visual.graph) && (
         <div
-          className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground"
+          className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground"
           aria-label="Visual state legend"
         >
           <span className="walk-legend">
@@ -239,7 +233,7 @@ function VisualPanel({
         </div>
       )}
       {visual.callout && (
-        <p className="mt-4 border-l-2 border-primary pl-3 text-sm leading-6 text-muted-foreground">
+        <p className="mt-4 border-l-2 border-primary pl-3 text-base leading-7 text-muted-foreground">
           {visual.callout}
         </p>
       )}
@@ -249,9 +243,9 @@ function VisualPanel({
 
 type LineMeaning = {
   kind: string;
-  reads: string;
-  computes: string;
-  changes: string;
+  uses: string;
+  does: string;
+  updates: string;
 };
 
 function inferLineMeaning(
@@ -265,61 +259,61 @@ function inferLineMeaning(
   if (line.startsWith('#'))
     return {
       kind: 'comment',
-      reads: 'No program values.',
-      computes: 'Documents the intention of the next statement.',
-      changes: 'Nothing in program state.',
+      uses: 'No program values.',
+      does: 'Documents the intention of the next statement.',
+      updates: 'Nothing in program state.',
     };
   if (/^(import |from )/.test(line))
     return {
       kind: 'import',
-      reads: 'An installed Python package or symbol.',
-      computes: 'Loads reusable functions into this notebook.',
-      changes: 'Binds the imported module or name.',
+      uses: 'An installed Python package or symbol.',
+      does: 'Loads reusable functions into this notebook.',
+      updates: 'Stores the imported module or name.',
     };
   if (line.startsWith('def '))
     return {
       kind: 'define',
-      reads: 'The parameter names in the function signature.',
-      computes: 'Creates a reusable procedure; its body does not run yet.',
-      changes: 'Binds the new function name.',
+      uses: 'The parameter names in the function signature.',
+      does: 'Creates a reusable procedure; its body does not run yet.',
+      updates: 'Stores the new function name.',
     };
   if (line.startsWith('for '))
     return {
       kind: 'loop',
-      reads: `The iteration range in “${line.replace(/:$/, '')}”.`,
-      computes: 'Chooses the next loop index.',
-      changes:
+      uses: `The iteration range in “${line.replace(/:$/, '')}”.`,
+      does: 'Chooses the next loop index.',
+      updates:
         'Only the loop cursor changes on this line; matrix entries change inside the body.',
     };
   if (line.startsWith('if '))
     return {
       kind: 'condition',
-      reads: `The values used by “${line.replace(/:$/, '')}”.`,
-      computes: 'Evaluates a Boolean condition.',
-      changes: 'No matrix entry changes unless the indented branch runs.',
+      uses: `The values used by “${line.replace(/:$/, '')}”.`,
+      does: 'Evaluates a Boolean condition.',
+      updates: 'No matrix entry changes unless the indented branch runs.',
     };
   if (/^(else|elif|try|except)/.test(line))
     return {
       kind: 'control',
-      reads: 'The outcome of the preceding branch or attempted operation.',
-      computes: 'Selects which indented statements execute next.',
-      changes: 'No numerical value changes on this line.',
+      uses: 'The outcome of the preceding branch or attempted operation.',
+      does: 'Selects which indented statements execute next.',
+      updates: 'No numerical value changes on this line.',
     };
   if (line.startsWith('return '))
     return {
       kind: 'return',
-      reads: line.slice(7),
-      computes: 'Collects the function result.',
-      changes: 'Ends this function call and passes the result outward.',
+      uses: line.slice(7),
+      does: 'Collects the function result.',
+      updates: 'Ends this function call and passes the result outward.',
     };
   if (/^(print|display|assert)\b/.test(line))
     return {
       kind: line.startsWith('assert') ? 'check' : 'inspect',
-      reads: line.replace(/^(print|display|assert)\s*/, ''),
-      computes: line.startsWith('assert')
+      uses: line.replace(/^(print|display|assert)\s*/, ''),
+      does: line.startsWith('assert')
         ? 'Checks that the stated condition is true.'
         : 'Formats a value for inspection.',
-      changes: 'The numerical state is unchanged.',
+      updates: 'The numerical state is unchanged.',
     };
 
   const assignment = line.match(/^(.+?)\s*(\+=|-=|\*=|\/=|=)\s*(.+)$/);
@@ -327,13 +321,13 @@ function inferLineMeaning(
     const [, left, operator, right] = assignment;
     const mutates = operator !== '=' || left.includes('[');
     return {
-      kind: mutates ? 'mutate' : 'bind',
-      reads: right,
-      computes:
+      kind: mutates ? 'update' : 'store',
+      uses: right,
+      does:
         operator === '='
           ? `Evaluates the expression on the right of “=”. ${step.explanation}`
           : `Combines the current ${left.trim()} with the right-hand expression using ${operator[0]}.`,
-      changes: mutates
+      updates: mutates
         ? `${left.trim()} is updated in place. ${step.drives}`
         : `${left.trim()} receives the computed value. ${step.drives}`,
     };
@@ -341,9 +335,9 @@ function inferLineMeaning(
 
   return {
     kind: 'call',
-    reads: `The arguments in “${line}”.`,
-    computes: step.explanation,
-    changes: step.drives,
+    uses: `The arguments in “${line}”.`,
+    does: step.explanation,
+    updates: step.drives,
   };
 }
 
@@ -386,7 +380,7 @@ function SourceList({
           <li key={`${currentStep}-${currentLine}`}>
             {currentLine === 0 && (
               <span className="trace-block-label">
-                Block {currentStep + 1} · {step.title}
+                Step {currentStep + 1} · {step.title}
               </span>
             )}
             <button
@@ -414,21 +408,21 @@ function MeaningLedger({ meaning }: { meaning: LineMeaning }) {
   return (
     <div>
       <p className="line-meaning-key">
-        <strong>Line meaning</strong> · Reads = referenced values · Computes =
-        evaluated operation · Changes = updated program state
+        <strong>What this line does</strong> · Uses = values it looks at · Does
+        = its operation · Updates = what changes
       </p>
       <dl className="line-meaning">
         <div>
-          <dt>Reads</dt>
-          <dd>{meaning.reads}</dd>
+          <dt>Uses</dt>
+          <dd>{meaning.uses}</dd>
         </div>
         <div>
-          <dt>Computes</dt>
-          <dd>{meaning.computes}</dd>
+          <dt>Does</dt>
+          <dd>{meaning.does}</dd>
         </div>
         <div>
-          <dt>Changes</dt>
-          <dd>{meaning.changes}</dd>
+          <dt>Updates</dt>
+          <dd>{meaning.updates}</dd>
         </div>
       </dl>
     </div>
@@ -449,9 +443,9 @@ function VariableLedger({
         <div key={variable.name}>
           <code>{variable.name}</code>
           <span>
-            {variable.before ?? 'not bound'} <b aria-hidden="true">→</b>{' '}
+            {variable.before ?? 'not stored'} <b aria-hidden="true">→</b>{' '}
             <strong className={cn(!revealed && 'is-hidden')}>
-              {revealed ? variable.value : 'predict'}
+              {revealed ? variable.value : 'think first'}
             </strong>
           </span>
           <small>{variable.meaning}</small>
@@ -474,30 +468,23 @@ function StateComparison({
 }) {
   return (
     <div className="state-compare-grid">
-      <section
-        className="state-sheet"
-        aria-label={`Before block ${stepNumber}`}
-      >
-        <span className="state-sheet-label">
-          Before · B{String(stepNumber).padStart(2, '0')}
-        </span>
+      <section className="state-sheet" aria-label={`Before step ${stepNumber}`}>
+        <span className="state-sheet-label">Before step {stepNumber}</span>
         <VisualPanel visual={before} stateKey={`${stepNumber}-before`} />
       </section>
       <section
         className={cn('state-sheet is-after', !revealed && 'is-pending')}
-        aria-label={`After block ${stepNumber}`}
+        aria-label={`After step ${stepNumber}`}
       >
-        <span className="state-sheet-label">
-          After · B{String(stepNumber).padStart(2, '0')}
-        </span>
+        <span className="state-sheet-label">After step {stepNumber}</span>
         {revealed ? (
           <VisualPanel visual={after} stateKey={`${stepNumber}-after`} />
         ) : (
           <div className="state-prediction">
             <span>?</span>
             <p>
-              Predict the changed row, entry, or variable, then reveal the
-              prepared comparison. This does not run Python.
+              Think about which row, entry, or variable will change. Then show
+              the expected before-and-after. This page does not run Python.
             </p>
           </div>
         )}
@@ -573,9 +560,9 @@ export function CodeWalkthrough({
   const actionLabel = !isLastLine
     ? 'Next line'
     : !revealed
-      ? 'Reveal prepared state'
+      ? 'Show expected result'
       : !isLastStep
-        ? 'Next source block'
+        ? 'Next code step'
         : 'Trace again';
 
   return (
@@ -583,7 +570,7 @@ export function CodeWalkthrough({
       <header className="trace-header">
         <div>
           <p className="section-kicker">
-            {walkthrough.eyebrow} · Adapted teaching trace
+            {walkthrough.eyebrow} · Guided code trace
           </p>
           <h2>{walkthrough.title}</h2>
           <p>{walkthrough.objective}</p>
@@ -598,14 +585,14 @@ export function CodeWalkthrough({
       </header>
 
       <p className="trace-mode-note">
-        <strong>How it works:</strong> select a line, read what it uses and
-        changes, predict the result, then reveal the prepared visual state. This
-        page does not execute Python; the full run is available in Colab.
+        <strong>How it works:</strong> choose a line, see what it uses, does,
+        and updates, think about the result, then show the expected change. The
+        full Python code runs in Colab.
       </p>
 
       <output className="sr-only" aria-live="polite">
         {revealed
-          ? `Line ${globalLine}: ${lines[lineIndex]}. Prepared result state for block ${stepIndex + 1} is revealed.`
+          ? `Line ${globalLine}: ${lines[lineIndex]}. Expected result for step ${stepIndex + 1} is shown.`
           : `Line ${globalLine}: ${lines[lineIndex]}`}
       </output>
 
@@ -643,11 +630,11 @@ export function CodeWalkthrough({
           <MeaningLedger meaning={meaning} />
 
           <div className="trace-teaching-note">
-            <span>Block {stepIndex + 1} · teaching note</span>
+            <span>Step {stepIndex + 1} · why it matters</span>
             <h3>{step.title}</h3>
             <p>{step.explanation}</p>
             <small>
-              <strong>Prediction cue:</strong> {step.watchFor}
+              <strong>Think first:</strong> {step.watchFor}
             </small>
           </div>
 
@@ -672,7 +659,7 @@ export function CodeWalkthrough({
         >
           <div className="lg:sticky lg:top-24">
             <div className="trace-prediction">
-              <span>Prediction cue</span>
+              <span>Think first</span>
               <p>{step.watchFor}</p>
             </div>
             <StateComparison

@@ -16,6 +16,9 @@ export type ChapterSection = {
   shortTitle: string;
   summary: string;
   focus: string;
+  learningGoal: string;
+  lectureConcepts: string[];
+  codeExtension?: string;
   filename: string;
   githubUrl: string;
   colabUrl: string;

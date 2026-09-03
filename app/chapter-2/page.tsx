@@ -44,7 +44,7 @@ export default function ChapterTwoHome() {
       <SiteHeader />
       <main
         id="main-content"
-        className="mx-auto max-w-[96rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
+        className="mx-auto max-w-[108rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
       >
         <nav className="course-breadcrumb" aria-label="Breadcrumb">
           <a href={sitePath('/')}>Practice sessions</a>
@@ -75,9 +75,9 @@ export default function ChapterTwoHome() {
                 Four ideas to keep in view
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-6 text-muted-foreground">
+            <p className="max-w-md text-base leading-7 text-muted-foreground">
               Chapter 2 turns hand calculations into an algorithm. Every visual
-              below answers: what did this line read, compute, and change?
+              below answers: what did this line use, do, and update?
             </p>
           </div>
           <dl className="concept-ledger mt-8">
@@ -102,7 +102,7 @@ export default function ChapterTwoHome() {
             <h2 id="bridge-title" className="section-title mt-2">
               See the zeros before writing the loop
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+            <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
               The lecture’s running system becomes upper triangular through
               three row operations. The Python loop repeats exactly this
               cancellation pattern.
@@ -188,7 +188,7 @@ export default function ChapterTwoHome() {
                 Choose a lab
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-6 text-muted-foreground">
+            <p className="max-w-md text-base leading-7 text-muted-foreground">
               Begin with the guided 3×3 trace, then open the original notebook
               in Colab when you want the complete Python run.
             </p>
@@ -219,7 +219,7 @@ export default function ChapterTwoHome() {
         <aside className="source-note mt-14">
           <span>Source note</span>
           <p>
-            The web walkthroughs use small, deterministic teaching traces. They
+            The web walkthroughs use small, fixed teaching examples. They
             explain the operations but do not execute Python. Each lab links to
             the corresponding <em>Foundations of LADS</em> notebook for the full
             run.

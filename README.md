@@ -20,12 +20,12 @@ Chapter 2 is organized as four guided labs:
 3. Numerical tests for pivoted LU decomposition
 4. A detailed elimination trace
 
-The browser walkthroughs are deterministic teaching traces. They do not execute Python. Each source line is paired with:
+The browser walkthroughs use small, fixed teaching examples. They do not execute Python. Each source line is paired with:
 
-- the values it reads;
-- the operation it computes;
-- the variable or matrix region it changes;
-- a prediction prompt; and
+- the values it uses;
+- the operation it does;
+- the variable or matrix region it updates;
+- a “Think first” prompt; and
 - a persistent before/after visualization.
 
 Every lab links to the complete source notebook in Colab for real Python execution.
@@ -53,7 +53,14 @@ npm run build
 - `components/code-walkthrough.tsx` — shared line-by-line learning interface
 - `components/chapter-section-page.tsx` — shared lab-page structure
 
-When changing a trace, keep the source line, its explanation, and its resulting visual state in the same `WalkthroughStep`. Use `lineNotes` when the automatic Reads / Computes / Changes explanation is not precise enough.
+Each lab object keeps its `learningGoal`, `lectureConcepts`, key ideas, code, and visual states together. When changing a trace:
+
+1. Use the same terms as the lecture notes in `learningGoal` and `lectureConcepts`.
+2. Keep each source line, plain-English explanation, and resulting visual in one `WalkthroughStep`.
+3. Give separate matrix-definition lines separate steps when students need to see the matrices before they are combined.
+4. Use `lineNotes` only when the automatic Uses / Does / Updates explanation needs a more precise description.
+
+The shared matrix component automatically fits its cells to the available panel width. Avoid adding fixed matrix widths or horizontal-scroll wrappers to individual labs.
 
 ## Deployment
 

@@ -10,23 +10,23 @@ export const dynamic = 'force-static';
 const pageFunctions = [
   [
     '01',
-    'Concept primer',
+    'Key ideas',
     'A short reference for the definitions used in the lab. It is not a quiz or a graded check.',
   ],
   [
     '02',
     'Next line',
-    'Moves to the next prepared Python line and explains what it reads, computes, and changes.',
+    'Moves to the next Python line and explains what it uses, does, and updates.',
   ],
   [
     '03',
-    'Prediction cue',
-    'Names the specific row, entry, or variable to think about before seeing the result.',
+    'Think first',
+    'Names the row, entry, or variable to watch before you see the result.',
   ],
   [
     '04',
-    'Reveal prepared state',
-    'Shows a deterministic before-and-after visual. Python itself runs only after you open Colab.',
+    'Show expected result',
+    'Shows the prepared before-and-after view. The full Python code runs in Colab.',
   ],
 ];
 
@@ -36,7 +36,7 @@ export default function CourseHome() {
       <SiteHeader />
       <main id="main-content">
         <section className="course-hero">
-          <div className="mx-auto grid max-w-[96rem] gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.65fr)] lg:px-8 lg:py-20">
+          <div className="mx-auto grid max-w-[108rem] gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.65fr)] lg:px-8 lg:py-20">
             <div>
               <p className="section-kicker">
                 KAIST MAS110 · Linear Algebra for Data Science · Fall 2026
@@ -103,7 +103,7 @@ export default function CourseHome() {
           </div>
         </section>
 
-        <div className="mx-auto max-w-[96rem] px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[108rem] px-4 pb-20 sm:px-6 lg:px-8">
           <section
             id="chapters"
             className="scroll-mt-24 py-14 sm:py-16"

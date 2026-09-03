@@ -10,13 +10,23 @@ export const luDecompositionSection: ChapterSection = {
   title: 'Testing LU Decomposition',
   shortTitle: 'LU decomposition test',
   summary:
-    'Construct a rank-controlled matrix, factor it with pivoting, measure the reconstruction error, and repeat the numerical experiment.',
-  focus: 'rank bottleneck → A = PLU → residual test',
+    'Create a test matrix, compute its pivoted LU factors, and check the lecture identity numerically.',
+  focus: 'intermediate width → A = PLU → numerical check',
+  learningGoal:
+    'Create a test matrix, compute SciPy’s P, L, and U, and check numerically that the lecture identity QA = LU holds.',
+  lectureConcepts: [
+    'Matrix multiplication',
+    'Permutation matrix',
+    'LU-decomposition',
+    'Lower / upper triangular matrices',
+  ],
+  codeExtension:
+    'Rank control, residuals, and repeated random trials are numerical extensions of the lecture’s LU identity.',
   filename,
   ...links,
   primer: [
     {
-      term: 'Rank bottleneck',
+      term: 'Rank limit from product shape',
       definition:
         'If an m×k matrix multiplies a k×n matrix, the product can carry at most k independent directions.',
       relation: 'rank(AB) ≤ k',
@@ -51,13 +61,13 @@ export const luDecompositionSection: ChapterSection = {
     eyebrow: '2.3 · Guided experiment',
     title: 'Build, factor, and test a low-rank matrix',
     objective:
-      'Separate the mathematical claim from the numerical evidence: first construct the rank bottleneck, then verify the factorization within floating-point tolerance.',
+      'First build a matrix whose intermediate width limits its rank. Then check the LU identity within floating-point tolerance.',
     initial: {
       title: 'Choose the outside dimensions and hidden width',
       description:
         'The notebook uses m=10 rows, n=11 columns, and an intermediate width k=7.',
       equation: '(m×k) @ (k×n) → (m×n)',
-      callout: 'Prediction: which dimension limits the rank of the product?',
+      callout: 'Think first: which dimension limits the rank of the product?',
     },
     steps: [
       {
@@ -165,7 +175,7 @@ export const luDecompositionSection: ChapterSection = {
         after: {
           title: 'The two random factors are multiplication-compatible',
           description:
-            'The shared 7 will disappear from the outside shape but remain as the rank bottleneck.',
+            'The shared 7 is not part of the outside shape, but it still limits the rank.',
           equation: '(10×7) @ (7×11)',
           matrices: [
             {
@@ -203,7 +213,8 @@ export const luDecompositionSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'A wide matrix passes through a seven-dimensional bottleneck',
+          title:
+            'The intermediate width limits the result to rank at most seven',
           description:
             'The result has 110 entries but no more than seven independent rows or columns.',
           equation: 'rank(left @ right) ≤ min(rank(left), rank(right)) ≤ 7',
@@ -223,7 +234,7 @@ export const luDecompositionSection: ChapterSection = {
       },
       {
         code: 'A = create_random_matrix(m=10, n=11, k=7)',
-        title: 'Bind the product as the test matrix',
+        title: 'Store the product as the test matrix',
         explanation:
           'The returned matrix becomes the outer variable A used by the LU experiment.',
         drives:
@@ -239,7 +250,7 @@ export const luDecompositionSection: ChapterSection = {
           {
             name: 'rank(A)',
             value: '7 in saved run',
-            meaning: 'Typical full use of the seven-dimensional bottleneck.',
+            meaning: 'The rank found in the saved notebook run.',
           },
         ],
         after: {
@@ -274,7 +285,7 @@ export const luDecompositionSection: ChapterSection = {
         after: {
           title: 'LU stores the elimination process',
           description:
-            'A small deterministic inset makes the shapes and triangular patterns visible before returning to the 10×11 experiment.',
+            'A small fixed example makes the shapes and triangular patterns visible before returning to the 10×11 experiment.',
           equation: 'A = P L U',
           matrices: [
             {
@@ -333,7 +344,7 @@ export const luDecompositionSection: ChapterSection = {
         title: 'Move the permutation to the left side',
         explanation:
           'Permutation matrices are orthogonal, so P transpose equals P inverse. Multiplying A by Q yields the row order reconstructed by L @ U.',
-        drives: 'Rows of the deterministic A physically reorder into Q @ A.',
+        drives: 'Rows of the fixed example are reordered to form Q @ A.',
         watchFor:
           'A=LU only when no row swap is needed; with pivoting, use A=PLU or QA=LU.',
         variables: [{ name: 'Q @ P', value: 'I', meaning: 'Q reverses P.' }],
@@ -371,7 +382,8 @@ export const luDecompositionSection: ChapterSection = {
         title: 'Measure reconstruction error',
         explanation:
           'The two 10×11 matrices are subtracted entrywise, then the default matrix norm compresses the residual into one Frobenius magnitude.',
-        drives: 'A residual heatmap contracts into a tiny scalar error.',
+        drives:
+          'The residual entries are compared, then summarized by one small norm.',
         watchFor:
           'Tiny floating-point noise is normal; compare it with the notebook’s dimension-aware absolute threshold instead of demanding exact equality.',
         variables: [
@@ -504,7 +516,7 @@ export const luDecompositionSection: ChapterSection = {
           },
         ],
         after: {
-          title: 'Repeated evidence replaces a one-off result',
+          title: 'Ten runs show the numerical pattern',
           description:
             'All ten dots should stay beneath the error threshold, while the rank counts remain concentrated at seven.',
           equation: '10 trials → {errorₜ, rank(Uₜ)} for t=1,…,10',

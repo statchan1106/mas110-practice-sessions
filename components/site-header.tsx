@@ -6,7 +6,7 @@ export function SiteHeader() {
       <a className="skip-link" href="#main-content">
         Skip to main content
       </a>
-      <div className="mx-auto flex max-w-[96rem] items-center justify-between gap-5 px-4 py-3.5 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-[108rem] items-center justify-between gap-5 px-4 py-3.5 sm:px-6 lg:px-8">
         <a className="group min-w-0" href={sitePath('/')}>
           <span className="block font-mono text-xs font-semibold uppercase tracking-[0.16em] text-primary">
             KAIST · Fall 2026

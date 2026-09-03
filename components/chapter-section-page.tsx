@@ -25,7 +25,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
       <SiteHeader />
       <main
         id="main-content"
-        className="mx-auto max-w-[96rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
+        className="mx-auto max-w-[108rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
       >
         <nav className="course-breadcrumb" aria-label="Breadcrumb">
           <a href={sitePath('/')}>Practice sessions</a>
@@ -59,23 +59,49 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
             </div>
             <div>
               <dt>Web mode</dt>
-              <dd>Prepared visual trace · Python runs in Colab</dd>
+              <dd>Fixed before-and-after guide · Python runs in Colab</dd>
             </div>
           </dl>
         </header>
 
+        <section
+          className="lab-purpose"
+          aria-labelledby={`lab-${section.number}-goal`}
+        >
+          <div>
+            <p className="section-kicker">Lab goal</p>
+            <h2 id={`lab-${section.number}-goal`}>
+              What you should be able to do
+            </h2>
+            <p>{section.learningGoal}</p>
+          </div>
+          <div className="lab-concepts">
+            <strong>Lecture 2 concepts</strong>
+            <ul>
+              {section.lectureConcepts.map((concept) => (
+                <li key={concept}>{concept}</li>
+              ))}
+            </ul>
+            {section.codeExtension && (
+              <p>
+                <span>Code extension</span>
+                {section.codeExtension}
+              </p>
+            )}
+          </div>
+        </section>
+
         <section className="concept-primer" aria-labelledby="primer-heading">
           <div className="section-heading-row">
             <div>
-              <p className="section-kicker">Concept primer</p>
+              <p className="section-kicker">Key ideas</p>
               <h2 id="primer-heading" className="section-title">
-                Terms used in the walkthrough
+                Terms you will use
               </h2>
             </div>
             <p className="max-w-xl text-base leading-7 text-muted-foreground">
-              This is a reference, not a quiz. Each definition explains the
-              idea; each “Prediction cue” names what to look for before the
-              prepared visual state is revealed.
+              Use this as a quick reference. “Think first” tells you what to
+              notice before the expected result appears.
             </p>
           </div>
           <dl className="primer-ledger mt-7">
@@ -88,7 +114,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
                 <dd>
                   <p>{item.definition}</p>
                   <small>
-                    <span>Prediction cue</span>
+                    <span>Think first</span>
                     {item.watchFor}
                   </small>
                 </dd>
