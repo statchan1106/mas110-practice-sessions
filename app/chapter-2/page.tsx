@@ -102,19 +102,20 @@ export default function ChapterTwoHome() {
               See the zeros before writing the loop
             </h2>
             <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
-              The Python loop repeats these three cancellations.
+              One small system shows the pivot-and-cancel pattern used in the
+              labs.
             </p>
           </div>
           <div className="bridge-flow">
             <figure
               className="lecture-matrix"
-              aria-label="Initial augmented matrix: rows 2 1 1 5; 4 negative 6 0 negative 2; negative 2 7 2 9"
+              aria-label="Initial augmented matrix: rows 0 2 2 10; 4 4 0 12; 2 3 2 14"
             >
               <figcaption>Start · [ A | b ]</figcaption>
               {[
-                [2, 1, 1, 5],
-                [4, -6, 0, -2],
-                [-2, 7, 2, 9],
+                [0, 2, 2, 10],
+                [4, 4, 0, 12],
+                [2, 3, 2, 14],
               ].map((row, rowIndex) => (
                 <div key={rowIndex}>
                   {row.map((value, columnIndex) => (
@@ -131,29 +132,29 @@ export default function ChapterTwoHome() {
             <ol className="bridge-operations">
               <li>
                 <span>01</span>
-                <code>R₂ ← R₂ − 2R₁</code>
-                <small>4 → 0</small>
+                <code>R₁ ↔ R₂</code>
+                <small>move 4 into the pivot</small>
               </li>
               <li>
                 <span>02</span>
-                <code>R₃ ← R₃ + R₁</code>
-                <small>−2 → 0</small>
+                <code>R₃ ← R₃ − 0.5R₁</code>
+                <small>2 → 0</small>
               </li>
               <li>
                 <span>03</span>
-                <code>R₃ ← R₃ + R₂</code>
-                <small>8 → 0</small>
+                <code>R₃ ← R₃ − 0.5R₂</code>
+                <small>1 → 0</small>
               </li>
             </ol>
             <figure
               className="lecture-matrix is-result"
-              aria-label="Upper triangular augmented matrix: rows 2 1 1 5; 0 negative 8 negative 2 negative 12; 0 0 1 2"
+              aria-label="Upper triangular augmented matrix: rows 4 4 0 12; 0 2 2 10; 0 0 1 3"
             >
-              <figcaption>Result · [ U | c ]</figcaption>
+              <figcaption>Result · [ U_raw | c ]</figcaption>
               {[
-                [2, 1, 1, 5],
-                [0, -8, -2, -12],
-                [0, 0, 1, 2],
+                [4, 4, 0, 12],
+                [0, 2, 2, 10],
+                [0, 0, 1, 3],
               ].map((row, rowIndex) => (
                 <div key={rowIndex}>
                   {row.map((value, columnIndex) => (
@@ -173,7 +174,7 @@ export default function ChapterTwoHome() {
           </div>
           <p className="bridge-conclusion">
             <span>Back-substitution</span>
-            <strong>(u, v, w) = (1, 1, 2)</strong>
+            <strong>x = (1, 2, 3)</strong>
           </p>
         </section>
 
@@ -212,8 +213,9 @@ export default function ChapterTwoHome() {
         <aside className="source-note mt-14">
           <span>Source note</span>
           <p>
-            Prepared examples are shown here; run the full{' '}
-            <em>Foundations of LADS</em> notebook in Colab.
+            Each lab adapts one notebook idea into a small teaching example. Run
+            the full <em>Foundations of LADS</em> notebook in Colab for the
+            larger version and extensions.
           </p>
         </aside>
       </main>

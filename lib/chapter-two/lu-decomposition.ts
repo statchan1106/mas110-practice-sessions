@@ -1,14 +1,8 @@
 import type { ChapterSection } from './shared';
-import { sourceLinks, toneCells } from './shared';
+import { sourceLinks, toneCells, toneRow } from './shared';
 
 const filename = 'Ch2-3 Test LU-Decomposition.ipynb';
 const links = sourceLinks(filename);
-
-const source = {
-  filename,
-  url: links.githubUrl,
-  note: 'Code order and saved summary follow the upstream notebook; random reruns will differ.',
-};
 
 export const luDecompositionSection: ChapterSection = {
   slug: 'lu-decomposition',
@@ -16,270 +10,214 @@ export const luDecompositionSection: ChapterSection = {
   title: 'Testing LU Decomposition',
   shortTitle: 'Testing LU',
   summary:
-    'Generate rank-limited 10×11 matrices, test pivoted LU ten times, and inspect reconstruction errors and ranks.',
-  focus: 'rank-limited A → pivoted LU → repeated test',
+    'Build one deterministic rank-2 matrix, read SciPy’s LU factors, and verify the result.',
+  focus: 'low rank → LU → check',
   learningGoal:
-    'Understand what each source function guarantees, what the assertions actually test, and why floating-point reconstruction uses a tolerance.',
+    'See what SciPy returns, why Q = P.T gives Q @ A = L @ U, and where rank deficiency appears.',
   lectureConcepts: [
     'Rank of a product',
     'Rectangular LU',
     'Permutation matrix',
-    'Numerical error',
+    'Residual',
   ],
-  codeExtension: 'Functions, assertions, repeated trials, and histograms.',
+  codeExtension:
+    'The full notebook generates random 10×11 matrices, repeats the test ten times, and plots the collected results.',
   filename,
   ...links,
   primer: [
     {
-      term: 'Rank-limited product',
+      term: 'Rank bound',
       definition:
-        'Multiplying a 10×7 matrix by a 7×11 matrix creates a 10×11 matrix with rank at most 7.',
-      relation: 'rank(AB) ≤ 7',
-      watchFor:
-        'Random factors usually produce rank 7, but the algebraic guarantee is “at most 7.”',
+        'A product with a two-dimensional middle space cannot have rank larger than two.',
+      relation: 'A = X Y ⇒ rank(A) ≤ 2',
+      watchFor: 'The third row of A will depend on another row.',
     },
     {
-      term: 'Rectangular LU',
+      term: 'Pivoted LU',
       definition:
-        'For this 10×11 input, SciPy returns square P and L plus a 10×11 upper factor U; the notebook then sets Q=P.T.',
-      relation: 'Q A = L U',
-      watchFor: 'The executed function is scipy.linalg.lu.',
+        'SciPy returns A = P L U. Setting Q = P.T gives the course form Q A = L U.',
+      relation: 'A = P L U ⇔ Q A = L U',
+      watchFor: 'Q changes row order but not rank.',
     },
     {
-      term: 'Residual norm',
+      term: 'Residual',
       definition:
-        'The norm compresses the difference between two reconstructed matrices into one nonnegative number.',
-      relation: '‖QA − LU‖',
-      watchFor:
-        'Small rounding error is expected in floating-point arithmetic.',
+        'The residual compresses the reconstruction difference into one nonnegative number.',
+      relation: '‖Q A − L U‖',
+      watchFor: 'Use a tolerance for floating-point calculations.',
     },
   ],
   walkthrough: {
-    eyebrow: 'Lab 2.3 · Source trace',
-    title: 'Read the original LU test as an experiment',
+    eyebrow: 'Lab 2.3 · Guided example',
+    title: 'Test LU once, with reproducible numbers',
     objective:
-      'The page follows the source function definitions, ten-trial loop, plot cell, and final print cell. No site-created 3×3 example is substituted.',
-    source,
+      'The notebook’s repeated random experiment is reduced to one deterministic 3×4 matrix so the rank and reconstruction are visible without a histogram.',
+    source: {
+      filename,
+      url: links.githubUrl,
+      note: 'The full source repeats this test with larger unseeded random matrices.',
+    },
     initial: {
-      title: 'Start before the experiment is defined',
+      title: 'Build rank into the example',
       description:
-        'The notebook will create low-rank matrices by multiplication, factor each one, and record whether the numerical claims pass.',
-      equation: '(10×7)(7×11) → 10×11',
+        'We will multiply a 3×2 matrix by a 2×4 matrix, forcing the result through a two-dimensional middle space.',
+      equation: '(3×2)(2×4) → 3×4 with rank at most 2',
     },
     steps: [
       {
-        sourceCell: 'Code cell 1',
-        code: 'import numpy as np\nimport scipy as sp\nimport matplotlib as mpl\nimport matplotlib.pyplot as plt\nimport seaborn as sns',
-        title: 'Load numerical and plotting libraries',
-        explanation:
-          'These are the source imports with comments and blank lines compacted.',
-        drives: 'Aliases used by the function, test, and plot cells.',
-        watchFor: 'SciPy provides lu; Seaborn draws the histograms.',
-        after: {
-          title: 'The experiment tools are ready',
-          description: 'No random matrix has been generated yet.',
-          equation: 'sp.linalg.lu · sns.histplot',
-        },
-      },
-      {
-        sourceCell: 'Code cell 2',
-        code: '# create a random matrix of size m x n with the rank <= k <= min(m, n).\ndef create_random_matrix(m: int, n: int, k: int) -> np.ndarray:\n    if k > min(m, n):\n        raise ValueError("k must be less than or equal to min(n, m)")\n    A = np.random.randn(m, k)\n    B = np.random.randn(k, n)\n    return A@B',
-        title: 'Define the rank-limited generator',
-        explanation:
-          'The function validates k, draws two compatible Gaussian matrices, and returns their product. Defining it does not run its body yet.',
-        drives: 'A reusable function named create_random_matrix.',
-        watchFor: 'A and B here are local variables inside the function.',
-        variables: [
-          {
-            name: 'create_random_matrix',
-            value: 'defined',
-            meaning: 'Ready to be called by the test function.',
-          },
+        code: 'import numpy as np\nimport scipy as sp\nX = np.array([[1., 0.], [0., 1.], [0., 2.]])\nY = np.array([[1., 2., 3., 4.], [2., 5., 7., 9.]])',
+        lineNotes: [
+          { action: 'Loads NumPy for arrays, ranks, and norms.' },
+          { action: 'Loads SciPy for LU decomposition.' },
+          { action: 'Creates a 3×2 left factor.' },
+          { action: 'Creates a 2×4 right factor.' },
         ],
+        title: 'Create two narrow factors',
+        explanation:
+          'The shared dimension is only 2, so the product cannot carry three independent row directions.',
+        watchFor: 'X has two columns and Y has two rows.',
         after: {
-          title: 'The generator promises a narrow middle dimension',
+          title: 'The factors are compatible',
           description:
-            'The shared dimension k limits the rank of the returned product.',
-          equation: 'A(m×k) @ B(k×n) → result(m×n)',
+            'The inner dimensions match and disappear in the product.',
+          equation: 'X.shape = (3,2) · Y.shape = (2,4)',
           matrices: [
-            { label: 'shape flow', values: [['m×k', '@', 'k×n', '→', 'm×n']] },
+            {
+              label: 'X',
+              values: [
+                [1, 0],
+                [0, 1],
+                [0, 2],
+              ],
+            },
+            {
+              label: 'Y',
+              values: [
+                [1, 2, 3, 4],
+                [2, 5, 7, 9],
+              ],
+            },
           ],
         },
       },
       {
-        sourceCell: 'Code cell 3',
-        code: 'def test_lu_decomposition(m: int, n: int, k: int):\n    A = create_random_matrix(m, n, k)\n    P, L, U = sp.linalg.lu(A)\n    Q = P.T\n    error = np.linalg.norm(Q@A - L@U)\n    rank_l = np.linalg.matrix_rank(L)\n    rank_u = np.linalg.matrix_rank(U)\n    assert rank_u == k, f"Rank of U is not equal to {k} ({rank_u})"\n    assert error <= n * m * np.finfo(float).eps, f"Error is too large ({error})"\n    return A, Q, L, U, error',
-        title: 'Define the test performed in every trial',
-        explanation:
-          'The function factors one random matrix, measures QA−LU, checks rank(U) and an absolute error threshold, then returns the factors.',
-        drives:
-          'A second function that turns mathematical claims into assertions.',
-        watchFor:
-          'rank_l is measured but never asserted; the saved L has rank 10, not 7.',
-        variables: [
-          {
-            name: 'test_lu_decomposition',
-            value: 'defined',
-            meaning: 'Its body runs only when code cell 4 calls it.',
-          },
-          {
-            name: 'threshold when m=10,n=11',
-            value: '2.4425e−14',
-            meaning: 'The source’s n·m·machine-epsilon bound.',
-          },
+        code: 'A = X @ Y\nrank_A = np.linalg.matrix_rank(A)',
+        lineNotes: [
+          { action: 'Multiplies the two factors to create A.' },
+          { action: 'Counts the independent directions in A.' },
         ],
-        after: {
-          title: 'The source test checks two precise claims',
-          description:
-            'It requires rank(U)=k and a small absolute reconstruction residual.',
-          equation: 'rank(U)=k  and  ‖QA−LU‖ ≤ nmε',
-          callout:
-            'The notebook comment mentions rank(L)=k, but the executable assertion does not.',
-        },
-      },
-      {
-        sourceCell: 'Code cell 4',
-        code: 'm=10\nn=11\nk=7\nn_repeats = 10\nerrors = []\nranks = []\nfor i in range(n_repeats):\n    A, Q, L, U, error = test_lu_decomposition(m, n, k)\n    errors.append(error)\n    ranks.append(np.linalg.matrix_rank(U))',
-        title: 'Run the source test ten times',
+        title: 'Create a rank-2 matrix',
         explanation:
-          'Each iteration creates a new unseeded matrix. The lists keep one residual and one U rank per trial; A, Q, L, U, and error end with trial 10.',
-        drives:
-          'Ten error values, ten rank values, and the final trial’s factors.',
-        watchFor:
-          'The notebook does not set a seed, so a new Colab run will not reproduce the saved matrices.',
+          'The last row is twice the second row, so A has only two independent rows.',
+        watchFor: 'A[2] = 2 × A[1].',
         variables: [
           {
             name: 'A.shape',
-            value: '(10, 11)',
-            meaning: 'The rectangular test matrix.',
+            value: '(3, 4)',
+            meaning: 'A rectangular matrix.',
           },
-          {
-            name: 'Q / L',
-            value: '(10, 10)',
-            meaning: 'Square permutation and lower factors.',
-          },
-          {
-            name: 'U.shape',
-            value: '(10, 11)',
-            meaning: 'Rectangular upper factor.',
-          },
-          {
-            name: 'len(errors)',
-            value: '10',
-            meaning: 'One residual per completed trial.',
-          },
+          { name: 'rank_A', value: '2', meaning: 'One row is dependent.' },
         ],
         after: {
-          title: 'Ten independent LU tests have completed',
-          description:
-            'Every completed trial has already passed both source assertions.',
+          title: 'The dependence is visible',
+          description: 'The highlighted row is twice the row above it.',
           matrices: [
             {
-              label: 'trial records',
+              label: 'A = X @ Y',
               values: [
-                ['trial', 1, 2, 3, '…', 10],
-                ['error', '✓', '✓', '✓', '…', '✓'],
-                ['rank(U)', 7, 7, 7, '…', 7],
+                [1, 2, 3, 4],
+                [2, 5, 7, 9],
+                [4, 10, 14, 18],
               ],
-              rowDividerBefore: 1,
-              cellTones: toneCells(
-                [
-                  [1, 1],
-                  [1, 2],
-                  [1, 3],
-                  [1, 5],
-                  [2, 1],
-                  [2, 2],
-                  [2, 3],
-                  [2, 5],
-                ],
-                'result',
-              ),
+              cellTones: toneRow(2, 4, 'target'),
             },
           ],
-          callout:
-            'Only the final residual is printed as text later; the saved figure contains the ten-value distributions.',
+          callout: 'rank(A) = 2, not 3.',
         },
       },
       {
-        sourceCell: 'Code cell 5',
-        code: 'sns.set(style="whitegrid")\nfig, axs = plt.subplots(1, 2, figsize=(12, 5))\nsns.histplot(errors, kde=True, ax=axs[0])\naxs[0].set_title("LU Decomposition Errors")\naxs[0].set_xlabel("Error")\naxs[0].set_ylabel("Frequency")\naxs[0].set_xlim([0, np.max(errors) * 2.])\nsns.histplot(ranks, kde=True, ax=axs[1])\naxs[1].set_title("Ranks of U")\naxs[1].set_xlabel("Rank")\naxs[1].set_ylabel("Frequency")\naxs[1].set_xlim(0, np.max([n, m])+1)\nplt.tight_layout()\nplt.show()',
-        title: 'Plot the two recorded distributions',
+        code: 'P, L, U = sp.linalg.lu(A)\nQ = P.T',
+        lineNotes: [
+          { action: 'Computes SciPy’s permutation, lower, and upper factors.' },
+          {
+            action:
+              'Transposes P to express the factorization as Q @ A = L @ U.',
+          },
+        ],
+        title: 'Read the LU factors',
         explanation:
-          'The left histogram shows floating-point reconstruction error; the right shows the U ranks collected by the loop.',
-        drives: 'The source notebook’s saved 1×2 histogram figure.',
-        watchFor:
-          'kde=True is source code; a discrete rank plot would be a separate plotting choice.',
+          'Q moves the largest first-column row to the top. The dependent direction appears as a zero row in U.',
+        watchFor: 'U has one complete zero row.',
         after: {
-          title: 'Error varies; rank stays at seven',
+          title: 'U carries the rank deficiency',
           description:
-            'The saved rank histogram concentrates all ten completed trials at 7.',
-          equation: 'errors → continuous scale · ranks → integer values',
+            'L remains invertible, while U has only two nonzero rows.',
+          equation: 'Q @ A = L @ U',
           matrices: [
             {
-              label: 'saved rank histogram summary',
+              label: 'Q @ A',
               values: [
-                ['rank', 7],
-                ['frequency', 10],
+                [4, 10, 14, 18],
+                [1, 2, 3, 4],
+                [2, 5, 7, 9],
               ],
-              cellTones: toneCells([[1, 1]], 'result'),
+            },
+            {
+              label: 'L',
+              values: [
+                [1, 0, 0],
+                [0.25, 1, 0],
+                [0.5, 0, 1],
+              ],
+            },
+            {
+              label: 'U',
+              values: [
+                [4, 10, 14, 18],
+                [0, -0.5, -0.5, -0.5],
+                [0, 0, 0, 0],
+              ],
+              cellTones: toneRow(2, 4, 'result'),
             },
           ],
-          callout:
-            'Run the Colab cell to generate the actual plots from your own random trials.',
         },
       },
       {
-        sourceCell: 'Code cell 6',
-        code: `# print out the final LU decomposition result in a pretty format.
-print("Original matrix A:")
-print(np.array2string(A, precision=2, suppress_small=True))
-print("\\nPermutation matrix Q:")
-print(np.array2string(Q, precision=2, suppress_small=True))
-print("\\nLower triangular matrix L:")
-print(np.array2string(L, precision=2, suppress_small=True))
-print("\\nUpper triangular matrix U:")
-print(np.array2string(U, precision=2, suppress_small=True))
-print(f"\\nLU decomposition error: {error:.3e}")
-print(f"Rank of A: {np.linalg.matrix_rank(A)}")
-print(f"Rank of L: {np.linalg.matrix_rank(L)}")
-print(f"Rank of U: {np.linalg.matrix_rank(U)}")`,
-        title: 'Inspect the final saved trial',
+        code: 'residual = np.linalg.norm(Q @ A - L @ U)\nrank_U = np.linalg.matrix_rank(U)\nreconstructs = np.allclose(Q @ A, L @ U)\npassed = rank_A == rank_U == 2 and reconstructs',
+        lineNotes: [
+          { action: 'Measures the size of the reconstruction difference.' },
+          { action: 'Computes the rank visible in U.' },
+          {
+            action: 'Checks the two reconstructed matrices within a tolerance.',
+          },
+          {
+            action:
+              'Combines the rank and reconstruction claims into one result.',
+          },
+        ],
+        title: 'Test the mathematical claims',
         explanation:
-          'Because the loop overwrites these variables, the printed matrices and summary belong to trial 10 of the saved historical run.',
-        drives: 'The final A, Q, L, U and four summary values.',
+          'A useful test checks both structure—rank 2—and computation—Q @ A agrees with L @ U.',
         watchFor:
-          'The values will change when rerun, but the dimensions and intended relationships stay the same.',
+          'Both ranks should be 2 and the residual should be zero here.',
         variables: [
-          {
-            name: 'error',
-            value: '2.685e−15',
-            meaning: 'Saved final-trial residual.',
-          },
-          { name: 'rank(A)', value: '7', meaning: 'Saved numerical rank.' },
-          {
-            name: 'rank(L)',
-            value: '10',
-            meaning: 'L is full-rank unit lower triangular.',
-          },
-          { name: 'rank(U)', value: '7', meaning: 'Rank loss appears in U.' },
+          { name: 'passed', value: 'True', meaning: 'Both checks pass.' },
         ],
         after: {
-          title: 'The saved output supports the executed checks',
+          title: 'One compact test is enough for the idea',
           description:
-            'The residual is below the source threshold, U has rank 7, and L has rank 10.',
-          equation: '2.685×10⁻¹⁵ < 2.4425×10⁻¹⁴',
+            'The deterministic example gives the same result on every run.',
+          equation: 'passed = True',
           matrices: [
             {
-              label: 'saved final summary',
+              label: 'check summary',
               values: [
                 ['quantity', 'value'],
-                ['error', '2.685e−15'],
-                ['rank(A)', 7],
-                ['rank(L)', 10],
-                ['rank(U)', 7],
+                ['rank(A)', 2],
+                ['rank(U)', 2],
+                ['residual', 0],
+                ['reconstructs', 'True'],
               ],
-              rowDividerBefore: 1,
               cellTones: toneCells(
                 [
                   [1, 1],
@@ -292,7 +230,7 @@ print(f"Rank of U: {np.linalg.matrix_rank(U)}")`,
             },
           ],
           callout:
-            'The source uses an absolute nmε threshold; scale-aware applications may prefer a relative residual.',
+            'Open Colab only when you are ready to repeat the experiment with random matrices.',
         },
       },
     ],

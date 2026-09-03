@@ -54,7 +54,7 @@ export type WalkthroughStep = {
   lineNotes?: Array<{ action: string }>;
   title: string;
   explanation: string;
-  drives: string;
+  drives?: string;
   watchFor: string;
   variables?: Array<{
     name: string;
@@ -404,7 +404,7 @@ function SourceList({
     }));
   });
   return (
-    <ol className="trace-source" aria-label="Teaching trace source lines">
+    <ol className="trace-source" aria-label="Teaching example code lines">
       {sourceLines.map(({ step, currentStep, currentLine, line, number }) => {
         const available = currentStep <= unlockedThrough;
         const active = currentStep === stepIndex && currentLine === lineIndex;
@@ -628,7 +628,7 @@ export function CodeWalkthrough({
           <p className="trace-objective">{walkthrough.objective}</p>
           {walkthrough.source && (
             <p className="trace-source-meta">
-              <strong>Notebook-led trace</strong>
+              <strong>Simplified from</strong>
               <span aria-hidden="true">·</span>
               <a href={walkthrough.source.url} target="_blank" rel="noreferrer">
                 {walkthrough.source.filename} ↗
@@ -683,8 +683,8 @@ export function CodeWalkthrough({
                   )}
                 >
                   {step.sourceKind === 'correction'
-                    ? 'corrected variant'
-                    : 'source notebook'}
+                    ? 'teaching correction'
+                    : 'upstream reference'}
                 </b>
               )}
               <b>{meaning.kind}</b>

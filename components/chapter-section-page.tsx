@@ -128,7 +128,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
               target="_blank"
               rel="noreferrer"
             >
-              Inspect exact source ↗
+              View the full source ↗
             </a>
           </div>
         </section>

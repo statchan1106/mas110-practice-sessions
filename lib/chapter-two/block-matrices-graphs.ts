@@ -1,89 +1,33 @@
 import type { WalkthroughGraph } from '@/components/code-walkthrough';
 
 import type { ChapterSection } from './shared';
-import { sourceLinks, toneBlock, toneCells } from './shared';
+import { sourceLinks, toneCells } from './shared';
 
 const filename = 'Ch2-2 Block Matrices & Graphs.ipynb';
 const links = sourceLinks(filename);
 
-const source = {
-  filename,
-  url: links.githubUrl,
-  note: 'Notebook code is compacted; variables, operation order, and saved values follow upstream.',
-};
-
 const graph: WalkthroughGraph = {
   nodes: [
-    { id: '1', label: '1', x: 35, y: 55 },
-    { id: '2', label: '2', x: 35, y: 140 },
-    { id: '3', label: '3', x: 125, y: 30 },
-    { id: '4', label: '4', x: 125, y: 78 },
-    { id: '5', label: '5', x: 125, y: 145 },
-    { id: '6', label: '6', x: 225, y: 55 },
-    { id: '7', label: '7', x: 225, y: 140 },
-    { id: '8', label: '8', x: 305, y: 98 },
+    { id: '1', label: '1', x: 45, y: 95 },
+    { id: '2', label: '2', x: 145, y: 40 },
+    { id: '3', label: '3', x: 145, y: 150 },
+    { id: '4', label: '4', x: 285, y: 95 },
   ],
   edges: [
+    { from: '1', to: '2' },
     { from: '1', to: '3' },
-    { from: '1', to: '4' },
-    { from: '1', to: '5' },
-    { from: '2', to: '3' },
     { from: '2', to: '4' },
-    { from: '2', to: '5' },
-    { from: '3', to: '6' },
-    { from: '3', to: '7' },
-    { from: '4', to: '6' },
-    { from: '4', to: '7' },
-    { from: '5', to: '6' },
-    { from: '5', to: '7' },
-    { from: '6', to: '8' },
-    { from: '7', to: '8' },
+    { from: '3', to: '4' },
   ],
 };
 
-const adjacency = [
-  [0, 0, 1, 1, 1, 0, 0, 0],
-  [0, 0, 1, 1, 1, 0, 0, 0],
-  [1, 1, 0, 0, 0, 1, 1, 0],
-  [1, 1, 0, 0, 0, 1, 1, 0],
-  [1, 1, 0, 0, 0, 1, 1, 0],
-  [0, 0, 1, 1, 1, 0, 0, 1],
-  [0, 0, 1, 1, 1, 0, 0, 1],
-  [0, 0, 0, 0, 0, 1, 1, 0],
-];
-
-const adjacencyCube = [
-  [0, 0, 12, 12, 12, 0, 0, 6],
-  [0, 0, 12, 12, 12, 0, 0, 6],
-  [12, 12, 0, 0, 0, 14, 14, 0],
-  [12, 12, 0, 0, 0, 14, 14, 0],
-  [12, 12, 0, 0, 0, 14, 14, 0],
-  [0, 0, 14, 14, 14, 0, 0, 8],
-  [0, 0, 14, 14, 14, 0, 0, 8],
-  [6, 6, 0, 0, 0, 8, 8, 0],
-];
-
-const reordered = [
-  [0, 0, 0, 0, 1, 1, 1, 1],
-  [0, 0, 0, 0, 1, 1, 1, 1],
-  [0, 0, 0, 0, 1, 1, 1, 1],
-  [0, 0, 0, 0, 0, 0, 1, 1],
-  [1, 1, 1, 0, 0, 0, 0, 0],
-  [1, 1, 1, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 0, 0, 0, 0],
-  [1, 1, 1, 1, 0, 0, 0, 0],
-];
-
-const reorderedSquared = [
-  [4, 4, 4, 2, 0, 0, 0, 0],
-  [4, 4, 4, 2, 0, 0, 0, 0],
-  [4, 4, 4, 2, 0, 0, 0, 0],
-  [2, 2, 2, 2, 0, 0, 0, 0],
-  [0, 0, 0, 0, 3, 3, 3, 3],
-  [0, 0, 0, 0, 3, 3, 3, 3],
-  [0, 0, 0, 0, 3, 3, 4, 4],
-  [0, 0, 0, 0, 3, 3, 4, 4],
-];
+const activeGraph: WalkthroughGraph = {
+  nodes: graph.nodes.map((node) => ({
+    ...node,
+    tone: node.id === '1' ? 'source' : node.id === '4' ? 'target' : undefined,
+  })),
+  edges: graph.edges.map((edge) => ({ ...edge, active: true })),
+};
 
 export const blockMatricesGraphsSection: ChapterSection = {
   slug: 'block-matrices-graphs',
@@ -91,555 +35,226 @@ export const blockMatricesGraphsSection: ChapterSection = {
   title: 'Block Matrices and Graphs',
   shortTitle: 'Blocks and graphs',
   summary:
-    'Build and multiply blocks, derive a block inverse, and read walk counts from adjacency powers.',
-  focus: 'blocks → Schur complement → adjacency powers',
+    'Build one small block matrix, multiply it blockwise, and count two-step graph walks.',
+  focus: 'join blocks → multiply → count walks',
   learningGoal:
-    'Read the original NumPy code as matrix algebra: see how slices create blocks, elimination creates a Schur complement, and powers count graph walks.',
+    'Explain how np.block joins compatible rectangles and why one entry of a squared adjacency matrix counts length-two walks.',
   lectureConcepts: [
     'Block matrices',
     'Block multiplication',
-    'Schur complement',
     'Adjacency matrix',
+    'Walk counts',
   ],
-  codeExtension: 'NumPy block construction, slicing, and matrix powers.',
+  codeExtension:
+    'The full notebook continues to Schur complements, block inverses, longer walks, and bipartite reordering.',
   filename,
   ...links,
   primer: [
     {
-      term: 'Block matrix',
+      term: 'Compatible blocks',
       definition:
-        'A partition groups entries into smaller matrices without changing the underlying matrix.',
-      relation: 'X = [[A,B],[C,D]]',
-      watchFor: 'Adjacent block dimensions must agree.',
+        'Blocks in one block row need the same height; blocks in one block column need the same width.',
+      relation: 'X = [[A, B], [C, D]]',
+      watchFor: 'The divider is a boundary, not another matrix entry.',
     },
     {
-      term: 'Half-open slice',
-      definition: 'A NumPy slice includes its start and excludes its stop.',
-      relation: 'Y[:3, 0:2]',
-      watchFor: 'This selects rows 0–2 and columns 0–1.',
-    },
-    {
-      term: 'Schur complement',
+      term: 'Block multiplication',
       definition:
-        'Block Gaussian elimination leaves a new lower-right block after eliminating Z₂₁.',
-      relation: 'S₂₂ = Z₂₂ − Z₂₁Z₁₁⁻¹Z₁₂',
-      watchFor: 'The factor order cannot be rearranged.',
+        'The usual row-by-column rule still applies when each entry is itself a compatible matrix.',
+      relation: 'top-left = A E + B G',
+      watchFor: 'Keep the multiplication order.',
     },
     {
       term: 'Adjacency power',
-      definition: 'Entry (i,j) of Aᵐ counts length-m walks from i to j.',
-      relation: '(Aᵐ)ᵢⱼ = # walks',
-      watchFor: 'A walk may repeat vertices or edges.',
+      definition:
+        'Entry (i,j) of G² counts the length-two walks from vertex i to vertex j.',
+      relation: '(adj²)ᵢⱼ = # two-step walks',
+      watchFor: 'A walk may revisit a vertex; it is not always a path.',
     },
   ],
   walkthrough: {
-    eyebrow: 'Lab 2.2 · Source trace',
-    title: 'Track the notebook’s blocks and graphs',
+    eyebrow: 'Lab 2.2 · Guided example',
+    title: 'See blocks and graph walks with small matrices',
     objective:
-      'Core executable statements keep the original variables and order. Print-only labels and comments are compacted; source typos that affect meaning are explained.',
-    source,
+      'This trace keeps two ideas from the notebook—block arithmetic and adjacency powers—and removes the larger inverse and 8-vertex examples.',
+    source: {
+      filename,
+      url: links.githubUrl,
+      note: 'The values and graph are intentionally smaller than the full notebook examples.',
+    },
     initial: {
-      title: 'Start before the block matrices',
+      title: 'Two ideas, one rule',
       description:
-        'After the shared import and print-option cells, the notebook begins with four compatible blocks.',
-      equation: 'X = [ A  B ; C  D ]',
+        'Matrix multiplication combines compatible rows and columns, whether we view them as blocks or graph connections.',
+      equation: 'row × column → one output entry',
     },
     steps: [
       {
-        sourceCell: 'Code cells 1–2',
-        code: 'import numpy as np\nimport scipy as sp\nimport matplotlib as mpl\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nnp.set_printoptions(4, linewidth=100, suppress=True)',
-        title: 'Prepare the notebook',
+        code: 'import numpy as np\nA = np.array([[1, 2], [3, 4]])\nB = np.array([[5], [6]])\nC = np.array([[7, 8]])\nD = np.array([[9]])\nX = np.block([[A, B], [C, D]])',
+        lineNotes: [
+          { action: 'Loads NumPy for arrays and block construction.' },
+          { action: 'Creates the 2×2 upper-left block.' },
+          { action: 'Creates the 2×1 upper-right block.' },
+          { action: 'Creates the 1×2 lower-left block.' },
+          { action: 'Creates the 1×1 lower-right block.' },
+          { action: 'Joins the four compatible rectangles into X.' },
+        ],
+        title: 'Join four compatible blocks',
         explanation:
-          'These are the original imports and array display settings, with comments and blank lines compacted.',
-        drives: 'The same numerical environment used in Lab 2.1.',
-        watchFor: 'The settings affect display, not matrix arithmetic.',
-        after: {
-          title: 'NumPy and SciPy are ready',
-          description: 'The first matrix values are created in code cell 3.',
-          equation: 'np → arrays · sp → inverse',
-        },
-      },
-      {
-        sourceCell: 'Code cell 3',
-        code: 'A = np.array([[1.0, 2.0, 3.0],\n              [4.0, 5.0, 6.0]])\nB = np.array([[7.0, 8.0],\n              [9.0, 10.0]])\nC = np.array([[11.0, 12.0, 13.0]])\nD = np.array([[14.0, 15.0]])\nX = np.block([[A, B],\n              [C, D]])\nprint("X = ")\nprint(X)',
-        title: 'Build X from four source blocks',
-        explanation:
-          'np.block joins A and B across the top, C and D across the bottom, then combines the two block rows.',
-        drives: 'The exact saved 3×5 matrix X.',
-        watchFor: 'A/C share width 3; B/D share width 2.',
+          'A and B share height 2; C and D share height 1. The block columns have widths 2 and 1.',
+        watchFor: 'The four definitions become one 3×3 matrix.',
         variables: [
           {
             name: 'X.shape',
-            value: '(3, 5)',
-            meaning: 'Two block rows and two block columns.',
+            value: '(3, 3)',
+            meaning: 'A complete square matrix.',
           },
         ],
         after: {
-          title: 'The four definitions become one matrix',
+          title: 'np.block preserves the four regions',
           description:
-            'Divider lines show boundaries; they are not extra entries.',
+            'The visible dividers mark the 2+1 row and column split.',
           matrices: [
             {
-              label: 'X · saved output',
+              label: 'X',
               values: [
-                [1, 2, 3, 7, 8],
-                [4, 5, 6, 9, 10],
-                [11, 12, 13, 14, 15],
-              ],
-              dividerBefore: 3,
-              rowDividerBefore: 2,
-            },
-          ],
-        },
-      },
-      {
-        sourceCell: 'Code cell 4',
-        code: 'Y = np.array([[0.1, 0.2, 0.7, 0.8],\n              [0.3, 0.4, 0.9, 1.0],\n              [0.5, 0.6, 1.1, 1.2],\n              [1.3, 1.4, 1.7, 1.8],\n              [1.5, 1.6, 1.9, 2.0]])\nE = Y[:3, 0:2]\nF = Y[0:3, 2:]\nG = Y[3:5, :2]\nH = Y[3:, 2:4]\nprint("Blocks:")\nprint(E)\nprint(F)\nprint(G)\nprint(H)',
-        title: 'Recover four blocks with slices',
-        explanation:
-          'The source comments spell out equivalent slice bounds. Each expression selects one rectangle without changing Y.',
-        drives: 'E, F, G, and H as views of Y.',
-        watchFor:
-          'The split after the first three rows matches X’s split after its first three columns.',
-        variables: [
-          { name: 'E / F', value: '(3, 2)', meaning: 'Upper block row.' },
-          { name: 'G / H', value: '(2, 2)', meaning: 'Lower block row.' },
-        ],
-        after: {
-          title: 'The slice boundaries reveal Y’s partition',
-          description:
-            'The first three rows form the top block row; columns split 2+2.',
-          matrices: [
-            {
-              label: 'Y · source input with slice boundaries',
-              values: [
-                [0.1, 0.2, 0.7, 0.8],
-                [0.3, 0.4, 0.9, 1],
-                [0.5, 0.6, 1.1, 1.2],
-                [1.3, 1.4, 1.7, 1.8],
-                [1.5, 1.6, 1.9, 2],
-              ],
-              dividerBefore: 2,
-              rowDividerBefore: 3,
-            },
-            {
-              label: 'E · saved output',
-              values: [
-                [0.1, 0.2],
-                [0.3, 0.4],
-                [0.5, 0.6],
-              ],
-            },
-            {
-              label: 'F · saved output',
-              values: [
-                [0.7, 0.8],
-                [0.9, 1],
-                [1.1, 1.2],
-              ],
-            },
-            {
-              label: 'G · saved output',
-              values: [
-                [1.3, 1.4],
-                [1.5, 1.6],
-              ],
-            },
-            {
-              label: 'H · saved output',
-              values: [
-                [1.7, 1.8],
-                [1.9, 2],
-              ],
-            },
-          ],
-        },
-      },
-      {
-        sourceCell: 'Code cells 5–6',
-        code: 'print("Direct multplication: X*Y =")\nprint(X @ Y)\nprint("A*E + B*G =")\nprint(A@E + B@G)\nprint("A*F + B*H =")\nprint(A@F + B@H)\nprint("C*E + D*G =")\nprint(C@E + D@G)\nprint("C*F + D*H =")\nprint(C@F + D@H)\ntry:\n    print(E@A + G@B)\nexcept Exception as e:\n    print("The following error has occured:")\n    print(e)',
-        title: 'Multiply in the source order',
-        explanation:
-          'The executable operator is @. The source’s printed * labels and spelling are typos; NumPy * would mean elementwise multiplication.',
-        drives:
-          'The direct product, its four matching blocks, and the intended order error.',
-        watchFor: 'E@A is 3×3 while G@B is 2×2, so their sum is undefined.',
-        variables: [
-          { name: 'X @ Y', value: '(3, 4)', meaning: 'The complete product.' },
-          {
-            name: 'reversed sum',
-            value: 'ValueError',
-            meaning: 'The two result shapes cannot be added.',
-          },
-        ],
-        after: {
-          title: 'Block multiplication reproduces the full product',
-          description:
-            'The four source expressions occupy the four marked output blocks.',
-          equation: 'XY = [ AE+BG   AF+BH ; CE+DG   CF+DH ]',
-          matrices: [
-            {
-              label: 'X @ Y · saved output',
-              values: [
-                [23.3, 25.4, 32.9, 35],
-                [31.6, 35, 48.2, 51.6],
-                [51.9, 58.4, 85.1, 91.6],
+                [1, 2, 5],
+                [3, 4, 6],
+                [7, 8, 9],
               ],
               dividerBefore: 2,
               rowDividerBefore: 2,
             },
-            {
-              label: 'AE + BG · saved block',
-              values: [
-                [23.3, 25.4],
-                [31.6, 35],
-              ],
-            },
-            {
-              label: 'AF + BH · saved block',
-              values: [
-                [32.9, 35],
-                [48.2, 51.6],
-              ],
-            },
-            { label: 'CE + DG · saved block', values: [[51.9, 58.4]] },
-            { label: 'CF + DH · saved block', values: [[85.1, 91.6]] },
-          ],
-          callout:
-            'Saved reverse-order error: operands could not be broadcast together with shapes (3,3) (2,2).',
-        },
-      },
-      {
-        sourceCell: 'Code cell 7',
-        code: 'Z11 = np.array([[1, 2, 2],\n                [1, 4, 5],\n                [2, 7, 8]])\nZ12 = np.array([[1, 3],\n                [0, 2],\n                [3, 7]])\nZ21 = np.array([[5, 3, 0],\n                [2, 3, 1]])\nZ22 = np.array([[4, 3],\n                [9, 7]])\nZ = np.block([[Z11, Z12],\n              [Z21, Z22]])\nprint("Z = ")\nprint(Z)',
-        title: 'Create the block inverse example',
-        explanation:
-          'The source organizes a 5×5 matrix around an invertible 3×3 leading block Z11.',
-        drives: 'The exact integer matrix Z.',
-        watchFor: 'The boundary is 3+2 in both directions.',
-        after: {
-          title: 'Z is ready for block elimination',
-          description:
-            'The highlighted regions retain the original four-block layout.',
-          matrices: [
-            {
-              label: 'Z · saved output',
-              values: [
-                [1, 2, 2, 1, 3],
-                [1, 4, 5, 0, 2],
-                [2, 7, 8, 3, 7],
-                [5, 3, 0, 4, 3],
-                [2, 3, 1, 9, 7],
-              ],
-              dividerBefore: 3,
-              rowDividerBefore: 3,
-            },
           ],
         },
       },
       {
-        sourceCell: 'Code cells 8–10',
-        code: 'Z11_inv = sp.linalg.inv(Z11)\nprint(Z11_inv)\nL1 = np.block([[Z11_inv, np.zeros((3, 2))],\n              [-Z21 @ Z11_inv, np.eye(2)]])\nprint(L1 @ Z)\nprint("Z_11^-1 * Z_12 =")\nprint(Z11_inv @ Z12)\nS22 = Z22 - Z21 @ Z11_inv @ Z12\nprint("S_22 =")\nprint(S22)',
-        title: 'Eliminate the lower-left block',
+        code: 'Y = np.array([[1, 0], [0, 1], [1, 2]])\nE, F = Y[:2, :1], Y[:2, 1:]\nG, H = Y[2:, :1], Y[2:, 1:]\ndirect = X @ Y\nby_blocks = np.block([[A @ E + B @ G, A @ F + B @ H],\n                      [C @ E + D @ G, C @ F + D @ H]])\nsame = np.array_equal(direct, by_blocks)',
+        lineNotes: [
+          { action: 'Creates a 3×2 matrix with the matching 2+1 row split.' },
+          { action: 'Slices the top block row into E and F.' },
+          { action: 'Slices the bottom block row into G and H.' },
+          { action: 'Computes the ordinary full matrix product.' },
+          { action: 'Computes the top output blocks from block products.' },
+          { action: 'Computes the bottom output blocks and closes np.block.' },
+          { action: 'Checks that the two calculations give the same entries.' },
+        ],
+        title: 'Multiply directly and by blocks',
         explanation:
-          'L1 first turns Z11 into identity and then cancels Z21. The remaining lower-right block is the Schur complement S22.',
-        drives: 'Z11_inv, a block upper-triangular L1@Z, and S22.',
-        watchFor:
-          'The source print label uses *, but every executable multiplication here uses @.',
+          'Each output block follows the same row-by-column pattern as one scalar entry in ordinary multiplication.',
+        watchFor: 'Both methods should produce the same 3×2 result.',
         variables: [
-          {
-            name: 'S22',
-            value: '[[-2, -13], [-1, -7]]',
-            meaning: 'The remaining 2×2 block.',
-          },
+          { name: 'same', value: 'True', meaning: 'Blockwise equals direct.' },
         ],
         after: {
-          title: 'A whole 2×3 block becomes zero',
+          title: 'Block multiplication is ordinary multiplication',
           description:
-            'The saved result isolates S22 in the lower-right corner.',
-          equation: 'S₂₂ = Z₂₂ − Z₂₁Z₁₁⁻¹Z₁₂',
+            'The right matrix shows the block boundaries in the same result.',
+          equation: 'A E + B G = top-left output block',
           matrices: [
             {
-              label: 'Z11_inv · saved output',
+              label: 'direct = X @ Y',
               values: [
-                [3, 2, -2],
-                [-2, -4, 3],
-                [1, 3, -2],
+                [6, 12],
+                [9, 16],
+                [16, 26],
               ],
             },
             {
-              label: 'L1 @ Z · saved output',
+              label: 'by_blocks',
               values: [
-                [1, 0, 0, -3, -1],
-                [0, 1, 0, 7, 7],
-                [0, 0, 1, -5, -5],
-                [0, 0, 0, -2, -13],
-                [0, 0, 0, -1, -7],
+                [6, 12],
+                [9, 16],
+                [16, 26],
               ],
-              dividerBefore: 3,
-              rowDividerBefore: 3,
-              cellTones: toneBlock(3, 5, 0, 3, 'result'),
-            },
-            {
-              label: 'Z11_inv @ Z12 · saved output',
-              values: [
-                [-3, -1],
-                [7, 7],
-                [-5, -5],
-              ],
-            },
-            {
-              label: 'S22',
-              values: [
-                [-2, -13],
-                [-1, -7],
-              ],
-              cellTones: toneBlock(0, 2, 0, 2, 'result'),
-            },
-          ],
-        },
-      },
-      {
-        sourceCell: 'Code cells 11–13',
-        code: 'S_inv = sp.linalg. inv(S22)\nprint(S_inv)\nL2 = np.block([[np.eye(3), -Z11_inv @ Z12 @ S_inv],\n               [np.zeros((2, 3)), S_inv]])\nprint(L2 @ (L1 @ Z))\nprint("Direct inverse: Z^-1 =")\nprint(sp.linalg.inv(Z))\nprint(Z11_inv + Z11_inv @ Z12 @ S_inv @ Z21 @ Z11_inv)\nprint(-Z11_inv @ Z12 @ S_inv)\nprint(-S_inv @ Z21 @ Z11_inv)\nprint(S_inv)',
-        title: 'Finish the block inverse',
-        explanation:
-          'S_inv normalizes the Schur-complement block to identity. L2@L1 sends Z to identity, so the combined block formulas equal Z inverse.',
-        drives: 'A saved identity matrix and the four blocks of Z inverse.',
-        watchFor:
-          'The unusual space in sp.linalg. inv is valid Python, though sp.linalg.inv is clearer.',
-        variables: [
-          {
-            name: 'S_inv',
-            value: '[[-7, 13], [1, -2]]',
-            meaning: 'The inverse Schur complement.',
-          },
-          {
-            name: 'L2 @ (L1 @ Z)',
-            value: 'I₅',
-            meaning: 'The elimination has produced identity.',
-          },
-        ],
-        after: {
-          title: 'The block formula matches the direct inverse',
-          description: 'This is the complete saved 5×5 inverse.',
-          matrices: [
-            {
-              label: 'S_inv · saved output',
-              values: [
-                [-7, 13],
-                [1, -2],
-              ],
-            },
-            {
-              label: 'L2 @ (L1 @ Z) · saved values',
-              values: [
-                [1, 0, 0, 0, 0],
-                [0, 1, 0, 0, 0],
-                [0, 0, 1, 0, 0],
-                [0, 0, 0, 1, 0],
-                [0, 0, 0, 0, 1],
-              ],
+              dividerBefore: 1,
+              rowDividerBefore: 2,
               cellTones: toneCells(
                 [
                   [0, 0],
+                  [0, 1],
+                  [1, 0],
                   [1, 1],
-                  [2, 2],
-                  [3, 3],
-                  [4, 4],
+                  [2, 0],
+                  [2, 1],
                 ],
                 'result',
               ),
             },
-            {
-              label: 'Z⁻¹ · saved output',
-              values: [
-                [146, 147, -133, -20, 37],
-                [-303, -305, 276, 42, -77],
-                [216, 218, -197, -30, 55],
-                [50, 51, -46, -7, 13],
-                [-7, -8, 7, 1, -2],
-              ],
-              dividerBefore: 3,
-              rowDividerBefore: 3,
-            },
-            {
-              label: 'top-left inverse block · saved output',
-              values: [
-                [146, 147, -133],
-                [-303, -305, 276],
-                [216, 218, -197],
-              ],
-            },
-            {
-              label: 'top-right inverse block · saved output',
-              values: [
-                [-20, 37],
-                [42, -77],
-                [-30, 55],
-              ],
-            },
-            {
-              label: 'bottom-left inverse block · saved output',
-              values: [
-                [50, 51, -46],
-                [-7, -8, 7],
-              ],
-            },
-            {
-              label: 'bottom-right inverse block · saved output',
-              values: [
-                [-7, 13],
-                [1, -2],
-              ],
-            },
           ],
         },
       },
       {
-        sourceCell: 'Code cell 14',
-        code: "from IPython.display import Image\nImage('/Users/wanmokang/Downloads/example_graph.png', width = 500)",
-        title: 'Display the graph used by the notebook',
+        code: 'edges = [(0, 1), (0, 2), (1, 3), (2, 3)]\nadj = np.zeros((4, 4), dtype=int)\nfor i, j in edges:\n    adj[i, j] = 1\n    adj[j, i] = 1',
+        lineNotes: [
+          { action: 'Lists four undirected edges using zero-based indices.' },
+          { action: 'Starts a 4×4 adjacency matrix filled with zeros.' },
+          { action: 'Visits one edge at a time.' },
+          { action: 'Records the connection from i to j.' },
+          {
+            action:
+              'Records the reverse connection because the graph is undirected.',
+          },
+        ],
+        title: 'Turn edges into an adjacency matrix',
         explanation:
-          'The saved notebook contains the image, but this absolute local path is not portable. The diagram at right reconstructs the same edge set.',
-        drives: 'A graph with vertices 1 through 8.',
-        watchFor:
-          'This cell may fail on Colab unless the image path is replaced.',
+          'Code indices 0–3 correspond to visible vertex labels 1–4. An edge writes a 1 in both symmetric positions.',
+        watchFor: 'Each undirected edge creates two symmetric 1s.',
         after: {
-          title: 'The graph has 8 vertices and 14 edges',
-          description:
-            'The visualization follows the adjacency list in code cell 15.',
+          title: 'The graph and matrix encode the same connections',
+          description: 'A 1 means the two vertices share an edge.',
           graph,
-          callout:
-            'The webpage diagram is a teaching reconstruction; the code shown is the original image cell.',
-        },
-      },
-      {
-        sourceCell: 'Code cells 15–16',
-        code: '# adjacency list\nedges = [[],\n         [3, 4, 5],\n         [3, 4, 5],\n         [1, 2, 6, 7],\n         [1, 2, 6, 7],\n         [1, 2, 6, 7],\n         [3, 4, 5, 8],\n         [3, 4, 5, 8],\n         [6, 7]]\n# adjacency matrix\nA = np.zeros((8, 8))\nfor i in range(1, 8+1):\n    for j in edges[i] :\n        A[i-1, j-1] = 1\nprint(A)',
-        title: 'Convert the source edge lists to A',
-        explanation:
-          'Index 0 is intentionally empty, so vertex labels 1–8 can index the Python list directly. Matrix indices subtract one.',
-        drives: 'The exact saved 8×8 adjacency matrix.',
-        watchFor:
-          'The name A now refers to the graph matrix, replacing the earlier 2×3 block A.',
-        variables: [
-          {
-            name: 'A.shape',
-            value: '(8, 8)',
-            meaning: 'One row and column per vertex.',
-          },
-          {
-            name: 'A.sum()',
-            value: '28',
-            meaning: 'Each of 14 undirected edges appears twice.',
-          },
-        ],
-        after: {
-          title: 'Ones mark edges in the graph',
-          description:
-            'The matrix is symmetric because every listed edge is undirected.',
-          matrices: [
-            { label: 'A · saved adjacency output', values: adjacency },
-          ],
-        },
-      },
-      {
-        sourceCell: 'Code cell 17',
-        code: 'print(np.linalg.matrix_power(A, 3))',
-        title: 'Count length-three walks',
-        explanation:
-          'Matrix multiplication sums all choices of two intermediate vertices. Repeated vertices are allowed, so these are walks.',
-        drives: 'The complete saved A cubed output.',
-        watchFor:
-          'Entry [5,7] in zero-based indexing is 8: eight walks from vertex 6 to vertex 8.',
-        variables: [
-          { name: 'A³[5,7]', value: '8', meaning: 'Walks 6 → · → · → 8.' },
-        ],
-        after: {
-          title: 'A³ stores every length-three walk count',
-          description:
-            'The highlighted saved entry counts walks from vertex 6 to vertex 8.',
           matrices: [
             {
-              label: 'A³ · saved output',
-              values: adjacencyCube,
-              cellTones: toneCells([[5, 7]], 'result'),
-            },
-            {
-              label: '8 walks listed in the source explanation',
+              label: 'adj',
               values: [
-                [1, '6→3→6→8'],
-                [2, '6→4→6→8'],
-                [3, '6→5→6→8'],
-                [4, '6→3→7→8'],
-                [5, '6→4→7→8'],
-                [6, '6→5→7→8'],
-                [7, '6→8→6→8'],
-                [8, '6→8→7→8'],
+                [0, 1, 1, 0],
+                [1, 0, 0, 1],
+                [1, 0, 0, 1],
+                [0, 1, 1, 0],
               ],
             },
           ],
-          callout:
-            'The source prose says paths, but allowing repetitions makes “walks” the precise term.',
         },
       },
       {
-        sourceCell: 'Code cell 18',
-        code: '# permuted adjacency matrix\nB = np.zeros((8, 8))\nv_order = [3, 4, 5, 8, 1, 2, 6, 7]\nfor m in range(8):\n    for n in range(8) :\n        i = v_order[m]\n        j = v_order[n]\n        if j in edges[i] :\n            B[m, n] = 1\nprint(B)',
-        title: 'Reorder vertices with the source loops',
+        code: 'adj2 = adj @ adj\nwalks_1_to_4 = adj2[0, 3]',
+        lineNotes: [
+          {
+            action:
+              'Squares the adjacency matrix to combine two consecutive edges.',
+          },
+          { action: 'Reads the count from vertex 1 to vertex 4.' },
+        ],
+        title: 'Count two-step walks',
         explanation:
-          'The nested loops rebuild adjacency entries in v_order. The two independent sets become the first and last four rows and columns.',
-        drives: 'The exact saved reordered adjacency matrix B.',
-        watchFor: 'The name B now replaces the earlier 2×2 block B.',
+          'The selected entry adds the two middle-vertex choices: 1→2→4 and 1→3→4.',
+        watchFor: 'The highlighted entry should be 2.',
         variables: [
           {
-            name: 'v_order',
-            value: '[3, 4, 5, 8 | 1, 2, 6, 7]',
-            meaning: 'The two bipartition groups.',
+            name: 'walks_1_to_4',
+            value: '2',
+            meaning: 'Two walks of length two.',
           },
         ],
         after: {
-          title: 'B exposes the bipartite pattern',
+          title: 'adj² counts the two routes',
           description:
-            'Both diagonal 4×4 blocks are zero; edges lie only across the partition.',
+            'Both highlighted branches start at 1 and arrive at 4 in two edges.',
+          graph: activeGraph,
           matrices: [
             {
-              label: 'B · saved output',
-              values: reordered,
-              dividerBefore: 4,
-              rowDividerBefore: 4,
+              label: 'adj²',
+              values: [
+                [2, 0, 0, 2],
+                [0, 2, 2, 0],
+                [0, 2, 2, 0],
+                [2, 0, 0, 2],
+              ],
+              cellTones: toneCells([[0, 3]], 'result'),
             },
           ],
-        },
-      },
-      {
-        sourceCell: 'Code cell 19',
-        code: 'B2 = B @ B # shall not be confused with B**2\nprint(B2)',
-        title: 'Square B with matrix multiplication',
-        explanation:
-          'A two-step walk starts and ends in the same bipartition, so the off-diagonal blocks become zero.',
-        drives: 'The exact saved block-diagonal B2.',
-        watchFor:
-          'B@B is matrix multiplication; B**2 squares entries independently.',
-        variables: [
-          {
-            name: 'B2.shape',
-            value: '(8, 8)',
-            meaning: 'Two-step walk counts for every ordered pair.',
-          },
-        ],
-        after: {
-          title: 'Two-step walks stay within each side',
-          description: 'The saved result has two nonzero diagonal blocks.',
-          matrices: [
-            {
-              label: 'B2 · saved output',
-              values: reorderedSquared,
-              dividerBefore: 4,
-              rowDividerBefore: 4,
-            },
-          ],
+          callout: 'adj2[0,3] = 2: via vertex 2 or via vertex 3.',
         },
       },
     ],
