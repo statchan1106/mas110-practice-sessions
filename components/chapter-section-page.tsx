@@ -44,22 +44,15 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
             <h1 className="section-title mt-4 max-w-5xl sm:text-[3.2rem] min-[1680px]:text-[3.7rem]">
               {section.title}
             </h1>
-            <p className="mt-5 max-w-4xl text-lg leading-8 text-muted-foreground">
-              {section.summary}
-            </p>
           </div>
           <dl className="lesson-meta">
             <div>
-              <dt>Mathematical thread</dt>
+              <dt>Focus</dt>
               <dd>{section.focus}</dd>
             </div>
             <div>
-              <dt>Source notebook</dt>
+              <dt>Notebook</dt>
               <dd>{section.filename}</dd>
-            </div>
-            <div>
-              <dt>Web mode</dt>
-              <dd>Fixed before-and-after guide · Python runs in Colab</dd>
             </div>
           </dl>
         </header>
@@ -70,10 +63,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
         >
           <div>
             <p className="section-kicker">Lab goal</p>
-            <h2 id={`lab-${section.number}-goal`}>
-              What you should be able to do
-            </h2>
-            <p>{section.learningGoal}</p>
+            <h2 id={`lab-${section.number}-goal`}>{section.learningGoal}</h2>
           </div>
           <div className="lab-concepts">
             <strong>Lecture 2 concepts</strong>
@@ -92,17 +82,13 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
         </section>
 
         <section className="concept-primer" aria-labelledby="primer-heading">
-          <div className="section-heading-row">
+          <div className="section-heading-row is-compact">
             <div>
               <p className="section-kicker">Key ideas</p>
               <h2 id="primer-heading" className="section-title">
                 Terms you will use
               </h2>
             </div>
-            <p className="max-w-xl text-base leading-7 text-muted-foreground">
-              Use this as a quick reference. “Think first” tells you what to
-              notice before the expected result appears.
-            </p>
           </div>
           <dl className="primer-ledger mt-7">
             {section.primer.map((item) => (
@@ -113,10 +99,6 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
                 </dt>
                 <dd>
                   <p>{item.definition}</p>
-                  <small>
-                    <span>Think first</span>
-                    {item.watchFor}
-                  </small>
                 </dd>
               </div>
             ))}
@@ -129,10 +111,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
           <div>
             <p className="section-kicker">Continue in Python</p>
             <h2>Run the complete notebook in Colab</h2>
-            <p>
-              The page above is an explanatory state model. Colab executes the
-              original code and preserves the full notebook context.
-            </p>
+            <p>Run the original code and change the inputs.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <a

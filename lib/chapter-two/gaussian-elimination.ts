@@ -53,7 +53,7 @@ export const gaussianEliminationSection: ChapterSection = {
     },
   ],
   walkthrough: {
-    eyebrow: '2.1 · Guided execution',
+    eyebrow: 'Lab 2.1 · Code trace',
     title: 'Solve Ax = b, one state change at a time',
     objective:
       'Before showing each result, identify the row, pivot, or variable that should change. The small example follows the same operations as the original notebook.',

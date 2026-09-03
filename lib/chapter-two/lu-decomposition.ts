@@ -58,7 +58,7 @@ export const luDecompositionSection: ChapterSection = {
     },
   ],
   walkthrough: {
-    eyebrow: '2.3 · Guided experiment',
+    eyebrow: 'Lab 2.3 · Code trace',
     title: 'Build, factor, and test a low-rank matrix',
     objective:
       'First build a matrix whose intermediate width limits its rank. Then check the LU identity within floating-point tolerance.',

@@ -49,7 +49,7 @@ export type WalkthroughVisual = {
 
 export type WalkthroughStep = {
   code: string;
-  lineNotes?: Array<{ uses: string; does: string; updates: string }>;
+  lineNotes?: Array<{ action: string }>;
   title: string;
   explanation: string;
   drives: string;
@@ -188,9 +188,11 @@ function GraphView({
 function VisualPanel({
   visual,
   stateKey,
+  showCallout = true,
 }: {
   visual: WalkthroughVisual;
   stateKey: string;
+  showCallout?: boolean;
 }) {
   return (
     <div key={stateKey} className="walk-visual-enter">
@@ -213,28 +215,9 @@ function VisualPanel({
           ))}
         </div>
       )}
-      {(visual.matrices || visual.graph) && (
-        <div
-          className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground"
-          aria-label="Visual state legend"
-        >
-          <span className="walk-legend">
-            <i className="walk-legend-source" />
-            PIVOT / SOURCE
-          </span>
-          <span className="walk-legend">
-            <i className="walk-legend-target" />
-            TARGET
-          </span>
-          <span className="walk-legend">
-            <i className="walk-legend-result" />
-            NEW
-          </span>
-        </div>
-      )}
-      {visual.callout && (
+      {showCallout && visual.callout && (
         <p className="mt-4 border-l-2 border-primary pl-3 text-base leading-7 text-muted-foreground">
-          {visual.callout}
+          {visual.callout.replace(/^Think first:\s*/i, '')}
         </p>
       )}
     </div>
@@ -243,9 +226,7 @@ function VisualPanel({
 
 type LineMeaning = {
   kind: string;
-  uses: string;
-  does: string;
-  updates: string;
+  action: string;
 };
 
 function inferLineMeaning(
@@ -254,90 +235,67 @@ function inferLineMeaning(
   lineIndex: number,
 ): LineMeaning {
   const supplied = step.lineNotes?.[lineIndex];
-  if (supplied) return { kind: 'notebook line', ...supplied };
+  if (supplied) return { kind: 'notebook line', action: supplied.action };
   const line = source.trim();
   if (line.startsWith('#'))
     return {
       kind: 'comment',
-      uses: 'No program values.',
-      does: 'Documents the intention of the next statement.',
-      updates: 'Nothing in program state.',
+      action: 'Labels the next step without changing a value.',
     };
   if (/^(import |from )/.test(line))
     return {
       kind: 'import',
-      uses: 'An installed Python package or symbol.',
-      does: 'Loads reusable functions into this notebook.',
-      updates: 'Stores the imported module or name.',
+      action: 'Loads reusable code under the imported name.',
     };
   if (line.startsWith('def '))
     return {
       kind: 'define',
-      uses: 'The parameter names in the function signature.',
-      does: 'Creates a reusable procedure; its body does not run yet.',
-      updates: 'Stores the new function name.',
+      action: 'Defines a function; its body runs only when called.',
     };
   if (line.startsWith('for '))
     return {
       kind: 'loop',
-      uses: `The iteration range in “${line.replace(/:$/, '')}”.`,
-      does: 'Chooses the next loop index.',
-      updates:
-        'Only the loop cursor changes on this line; matrix entries change inside the body.',
+      action: 'Moves to the next loop index.',
     };
   if (line.startsWith('if '))
     return {
       kind: 'condition',
-      uses: `The values used by “${line.replace(/:$/, '')}”.`,
-      does: 'Evaluates a Boolean condition.',
-      updates: 'No matrix entry changes unless the indented branch runs.',
+      action: 'Checks the condition and chooses a branch.',
     };
   if (/^(else|elif|try|except)/.test(line))
     return {
       kind: 'control',
-      uses: 'The outcome of the preceding branch or attempted operation.',
-      does: 'Selects which indented statements execute next.',
-      updates: 'No numerical value changes on this line.',
+      action: 'Chooses the next block without changing a value.',
     };
   if (line.startsWith('return '))
     return {
       kind: 'return',
-      uses: line.slice(7),
-      does: 'Collects the function result.',
-      updates: 'Ends this function call and passes the result outward.',
+      action: 'Returns the result and ends this function call.',
     };
   if (/^(print|display|assert)\b/.test(line))
     return {
       kind: line.startsWith('assert') ? 'check' : 'inspect',
-      uses: line.replace(/^(print|display|assert)\s*/, ''),
-      does: line.startsWith('assert')
-        ? 'Checks that the stated condition is true.'
-        : 'Formats a value for inspection.',
-      updates: 'The numerical state is unchanged.',
+      action: line.startsWith('assert')
+        ? 'Checks the condition without changing the data.'
+        : 'Shows a value without changing it.',
     };
 
   const assignment = line.match(/^(.+?)\s*(\+=|-=|\*=|\/=|=)\s*(.+)$/);
   if (assignment) {
-    const [, left, operator, right] = assignment;
+    const [, left, operator] = assignment;
     const mutates = operator !== '=' || left.includes('[');
     return {
       kind: mutates ? 'update' : 'store',
-      uses: right,
-      does:
+      action:
         operator === '='
-          ? `Evaluates the expression on the right of “=”. ${step.explanation}`
-          : `Combines the current ${left.trim()} with the right-hand expression using ${operator[0]}.`,
-      updates: mutates
-        ? `${left.trim()} is updated in place. ${step.drives}`
-        : `${left.trim()} receives the computed value. ${step.drives}`,
+          ? `Evaluates the right side and stores it as ${left.trim()}.`
+          : `Applies “${operator}” and updates ${left.trim()}.`,
     };
   }
 
   return {
     kind: 'call',
-    uses: `The arguments in “${line}”.`,
-    does: step.explanation,
-    updates: step.drives,
+    action: 'Runs the function call.',
   };
 }
 
@@ -402,21 +360,23 @@ function SourceList({
   );
 }
 
-function MeaningLedger({ meaning }: { meaning: LineMeaning }) {
+function MeaningLedger({
+  meaning,
+  explanation,
+}: {
+  meaning: LineMeaning;
+  explanation: string;
+}) {
   return (
     <div>
       <dl className="line-meaning">
         <div>
-          <dt>Reads</dt>
-          <dd>{meaning.uses}</dd>
+          <dt>Code</dt>
+          <dd>{meaning.action}</dd>
         </div>
         <div>
-          <dt>Action</dt>
-          <dd>{meaning.does}</dd>
-        </div>
-        <div>
-          <dt>Changes</dt>
-          <dd>{meaning.updates}</dd>
+          <dt>Why</dt>
+          <dd>{explanation}</dd>
         </div>
       </dl>
     </div>
@@ -439,7 +399,7 @@ function VariableLedger({
           <span>
             {variable.before ?? 'not stored'} <b aria-hidden="true">→</b>{' '}
             <strong className={cn(!revealed && 'is-hidden')}>
-              {revealed ? variable.value : 'think first'}
+              {revealed ? variable.value : '?'}
             </strong>
           </span>
           <small>{variable.meaning}</small>
@@ -463,26 +423,43 @@ function StateComparison({
   return (
     <div className="state-compare-grid">
       <section className="state-sheet" aria-label={`Before step ${stepNumber}`}>
-        <span className="state-sheet-label">Before step {stepNumber}</span>
-        <VisualPanel visual={before} stateKey={`${stepNumber}-before`} />
+        <span className="state-sheet-label">Before</span>
+        <VisualPanel
+          visual={before}
+          stateKey={`${stepNumber}-before`}
+          showCallout={false}
+        />
       </section>
       <section
         className={cn('state-sheet is-after', !revealed && 'is-pending')}
         aria-label={`After step ${stepNumber}`}
       >
-        <span className="state-sheet-label">After step {stepNumber}</span>
+        <span className="state-sheet-label">After</span>
         {revealed ? (
           <VisualPanel visual={after} stateKey={`${stepNumber}-after`} />
         ) : (
           <div className="state-prediction">
             <span>?</span>
-            <p>
-              Think about which row, entry, or variable will change. Then show
-              the expected before-and-after. This page does not run Python.
-            </p>
+            <p>Reveal to compare.</p>
           </div>
         )}
       </section>
+      {(before.matrices || before.graph || after.matrices || after.graph) && (
+        <div className="walk-legend-row" aria-label="Visual state legend">
+          <span className="walk-legend">
+            <i className="walk-legend-source" />
+            SOURCE
+          </span>
+          <span className="walk-legend">
+            <i className="walk-legend-target" />
+            TARGET
+          </span>
+          <span className="walk-legend">
+            <i className="walk-legend-result" />
+            NEW
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -554,35 +531,19 @@ export function CodeWalkthrough({
   const actionLabel = !isLastLine
     ? 'Next line'
     : !revealed
-      ? 'Show expected result'
+      ? 'Reveal change'
       : !isLastStep
-        ? 'Next code step'
+        ? 'Next step'
         : 'Trace again';
 
   return (
     <section className="trace-workbench" aria-label={walkthrough.title}>
       <header className="trace-header">
         <div>
-          <p className="section-kicker">
-            {walkthrough.eyebrow} · Guided code trace
-          </p>
+          <p className="section-kicker">{walkthrough.eyebrow}</p>
           <h2>{walkthrough.title}</h2>
-          <p>{walkthrough.objective}</p>
-        </div>
-        <div
-          className="trace-progress"
-          aria-label={`Line ${globalLine} of ${totalLines}`}
-        >
-          <strong>L{String(globalLine).padStart(2, '0')}</strong>
-          <span>/ {totalLines} source lines</span>
         </div>
       </header>
-
-      <p className="trace-mode-note">
-        <strong>How it works:</strong> choose a line, see what it reads, which
-        action it takes, and what changes. Think about the result, then show the
-        expected change. The full Python code runs in Colab.
-      </p>
 
       <output className="sr-only" aria-live="polite">
         {revealed
@@ -590,10 +551,13 @@ export function CodeWalkthrough({
           : `Line ${globalLine}: ${lines[lineIndex]}`}
       </output>
 
-      <div className="trace-causal-bar">
-        <span>L{String(globalLine).padStart(2, '0')}</span>
-        <code>{lines[lineIndex].trim()}</code>
-        <ArrowRight className="size-3.5" aria-hidden="true" />
+      <div
+        className="trace-causal-bar"
+        aria-label={`Line ${globalLine} of ${totalLines}`}
+      >
+        <span>
+          L{String(globalLine).padStart(2, '0')} / {totalLines}
+        </span>
         <strong>{revealed ? step.after.title : step.title}</strong>
       </div>
 
@@ -614,24 +578,17 @@ export function CodeWalkthrough({
 
           <div className="active-line-card">
             <div>
-              <span>L{String(globalLine).padStart(2, '0')}</span>
               <b>{meaning.kind}</b>
             </div>
             <pre>
               <code>{lines[lineIndex]}</code>
             </pre>
           </div>
-          <MeaningLedger meaning={meaning} />
-
-          <div className="trace-teaching-note">
-            <h3>{step.title}</h3>
-            <p>{step.explanation}</p>
-          </div>
+          <MeaningLedger meaning={meaning} explanation={step.explanation} />
 
           <details className="trace-mobile-source min-[1680px]:hidden">
             <summary>
-              View every source line{' '}
-              <ChevronDown className="size-4" aria-hidden="true" />
+              Full code <ChevronDown className="size-4" aria-hidden="true" />
             </summary>
             <SourceList
               steps={walkthrough.steps}
@@ -649,7 +606,7 @@ export function CodeWalkthrough({
         >
           <div className="xl:sticky xl:top-20">
             <div className="trace-prediction">
-              <span>Think first</span>
+              <span>Predict</span>
               <p>{step.watchFor}</p>
             </div>
             <StateComparison

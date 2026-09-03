@@ -8,26 +8,10 @@ import { sitePath } from '@/lib/site-path';
 export const dynamic = 'force-static';
 
 const pageFunctions = [
-  [
-    '01',
-    'Key ideas',
-    'A short reference for the definitions used in the lab. It is not a quiz or a graded check.',
-  ],
-  [
-    '02',
-    'Next line',
-    'Moves to the next Python line and explains what it reads, which action it takes, and what changes.',
-  ],
-  [
-    '03',
-    'Think first',
-    'Names the row, entry, or variable to watch before you see the result.',
-  ],
-  [
-    '04',
-    'Show expected result',
-    'Shows the prepared before-and-after view. The full Python code runs in Colab.',
-  ],
+  ['01', 'Key ideas', 'Review the terms used in the lab.'],
+  ['02', 'Next line', 'Move through the code one line at a time.'],
+  ['03', 'Predict', 'Decide what should change.'],
+  ['04', 'Reveal', 'Compare the prepared before and after.'],
 ];
 
 export default function CourseHome() {
@@ -43,14 +27,13 @@ export default function CourseHome() {
               </p>
               <h1 className="course-title mt-4 max-w-5xl">Practice Sessions</h1>
               <p className="mt-6 max-w-3xl text-xl leading-9 text-foreground/82 sm:text-2xl sm:leading-10">
-                A chapter-by-chapter guide from lecture ideas to readable code
-                and visible mathematical change.
+                Connect lecture ideas to readable code and visible mathematical
+                change.
               </p>
               <p className="mt-7 max-w-3xl border-l-2 border-primary pl-5 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
-                This course-wide project supports the practice sessions by
-                reviewing lecture concepts and implementing them in code,
-                following <em>Foundations of LADS</em>. It is a learning aid—not
-                a homework-solution bank.
+                Review the idea, trace the code, then run the full notebook in
+                Colab. Based on <em>Foundations of LADS</em>; not a
+                homework-solution bank.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
                 <a className="course-button" href="#chapters">
@@ -72,22 +55,20 @@ export default function CourseHome() {
               className="session-note"
               aria-labelledby="session-note-title"
             >
-              <p className="section-kicker">About the practice sessions</p>
-              <h2 id="session-note-title">Use the site at your own pace.</h2>
+              <p className="section-kicker">Practice sessions</p>
+              <h2 id="session-note-title">Review → Trace → Run</h2>
               <dl>
                 <div>
                   <dt>Review</dt>
-                  <dd>Reconnect each lab to the idea introduced in class.</dd>
+                  <dd>Recall the lecture idea.</dd>
                 </div>
                 <div>
                   <dt>Trace</dt>
-                  <dd>Follow the effect of each prepared Python line.</dd>
+                  <dd>See one code line change the math.</dd>
                 </div>
                 <div>
                   <dt>Run</dt>
-                  <dd>
-                    Open Colab when you want to execute the full notebook.
-                  </dd>
+                  <dd>Try the full notebook in Colab.</dd>
                 </div>
               </dl>
               <p className="session-policy">
@@ -118,9 +99,8 @@ export default function CourseHome() {
                 </h2>
               </div>
               <p className="max-w-xl text-base leading-7 text-muted-foreground">
-                Open any available chapter. Upcoming guided chapters remain in
-                course order and are clearly marked while they are being
-                prepared.
+                Available chapters open below. The rest are marked in
+                preparation.
               </p>
             </div>
 
@@ -189,9 +169,9 @@ export default function CourseHome() {
             aria-labelledby="method-title"
           >
             <div>
-              <p className="section-kicker">How the controls work</p>
+              <p className="section-kicker">In each lab</p>
               <h2 id="method-title" className="section-title mt-2">
-                What each label means
+                Review, predict, compare
               </h2>
             </div>
             <ol className="grid gap-0 sm:grid-cols-2 xl:grid-cols-4">
@@ -212,20 +192,14 @@ export default function CourseHome() {
             <div>
               <p className="section-kicker">About this project</p>
               <h2 id="about-project-title" className="section-title mt-2">
-                One place for every practice lab
+                Course-wide and growing
               </h2>
             </div>
             <div>
               <p>
-                The project page grows with the Fall 2026 course. Completed
-                chapters open into guided labs, while upcoming materials stay
-                visible in course order.
-              </p>
-              <p className="mt-3">
-                Each lab connects lecture terms, line-by-line code, visible
-                state changes, and the complete Colab notebook. No previous
-                linear algebra is assumed; Python familiarity is helpful but not
-                required to begin.
+                New labs will be added through Fall 2026. Each one connects
+                lecture terms, line-by-line code, visible changes, and the
+                original Colab notebook.
               </p>
             </div>
           </aside>

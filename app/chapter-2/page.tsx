@@ -76,9 +76,7 @@ export default function ChapterTwoHome() {
               </h2>
             </div>
             <p className="max-w-md text-base leading-7 text-muted-foreground">
-              Chapter 2 turns hand calculations into an algorithm. Every visual
-              below answers: what did this line read, which action did it take,
-              and what changed?
+              Each visual links one Python line to a mathematical change.
             </p>
           </div>
           <dl className="concept-ledger mt-8">
@@ -104,9 +102,7 @@ export default function ChapterTwoHome() {
               See the zeros before writing the loop
             </h2>
             <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
-              The lecture’s running system becomes upper triangular through
-              three row operations. The Python loop repeats exactly this
-              cancellation pattern.
+              The Python loop repeats these three cancellations.
             </p>
           </div>
           <div className="bridge-flow">
@@ -182,17 +178,13 @@ export default function ChapterTwoHome() {
         </section>
 
         <section aria-labelledby="labs-title">
-          <div className="section-heading-row">
+          <div className="section-heading-row is-compact">
             <div>
               <p className="section-kicker">Practice sequence</p>
               <h2 id="labs-title" className="section-title">
                 Choose a lab
               </h2>
             </div>
-            <p className="max-w-md text-base leading-7 text-muted-foreground">
-              Begin with the guided 3×3 trace, then open the original notebook
-              in Colab when you want the complete Python run.
-            </p>
           </div>
           <ol className="syllabus-list mt-8">
             {chapterTwoSections.map((section) => (
@@ -220,10 +212,8 @@ export default function ChapterTwoHome() {
         <aside className="source-note mt-14">
           <span>Source note</span>
           <p>
-            The web walkthroughs use small, fixed teaching examples. They
-            explain the operations but do not execute Python. Each lab links to
-            the corresponding <em>Foundations of LADS</em> notebook for the full
-            run.
+            Prepared examples are shown here; run the full{' '}
+            <em>Foundations of LADS</em> notebook in Colab.
           </p>
         </aside>
       </main>

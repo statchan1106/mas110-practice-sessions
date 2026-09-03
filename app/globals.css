@@ -301,6 +301,7 @@
     color: var(--foreground);
     font-family: var(--font-mono);
     font-weight: 650;
+    white-space: nowrap;
   }
 
   .course-button {
@@ -341,6 +342,10 @@
     border-bottom: 1px solid
       color-mix(in oklch, var(--foreground) 18%, transparent);
     padding-bottom: 1.25rem;
+  }
+
+  .section-heading-row.is-compact {
+    grid-template-columns: 1fr;
   }
 
   .math-label {
@@ -815,16 +820,8 @@
   .lab-purpose h2 {
     margin-top: 0.45rem;
     font-family: var(--font-heading);
-    font-size: 1.55rem;
-    line-height: 1.2;
-  }
-
-  .lab-purpose > div:first-child > p:not(.section-kicker) {
-    margin-top: 0.7rem;
-    max-width: 58rem;
-    color: var(--muted-foreground);
-    font-size: 1rem;
-    line-height: 1.7rem;
+    font-size: 1.3rem;
+    line-height: 1.35;
   }
 
   .lab-concepts {
@@ -890,7 +887,7 @@
     text-transform: uppercase;
   }
   .lesson-meta dd {
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     font-size: 0.9rem;
     line-height: 1.5rem;
   }
@@ -996,10 +993,6 @@
   }
 
   .trace-header {
-    display: flex;
-    align-items: start;
-    justify-content: space-between;
-    gap: 2rem;
     padding: 1.5rem;
   }
   .trace-header h2 {
@@ -1008,48 +1001,9 @@
     font-size: clamp(1.5rem, 3vw, 2.15rem);
     line-height: 1.1;
   }
-  .trace-header p:not(.section-kicker) {
-    margin-top: 0.55rem;
-    max-width: 50rem;
-    color: var(--muted-foreground);
-    font-size: 0.98rem;
-    line-height: 1.65rem;
-  }
-  .trace-progress {
-    flex: none;
-    border-left: 1px solid var(--foreground);
-    padding-left: 1rem;
-    font-family: var(--font-mono);
-  }
-  .trace-progress strong {
-    display: block;
-    color: var(--primary);
-    font-size: 1.2rem;
-  }
-  .trace-progress span {
-    display: block;
-    margin-top: 0.1rem;
-    color: var(--muted-foreground);
-    font-size: 0.76rem;
-  }
-
-  .trace-mode-note {
-    border-top: 1px solid
-      color-mix(in oklch, var(--foreground) 18%, transparent);
-    background: color-mix(in oklch, var(--source-bg) 58%, var(--background));
-    padding: 0.9rem 1.5rem;
-    color: var(--muted-foreground);
-    font-size: 0.92rem;
-    line-height: 1.55rem;
-  }
-
-  .trace-mode-note strong {
-    color: var(--foreground);
-  }
-
   .trace-causal-bar {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto minmax(120px, 0.55fr);
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0.75rem;
     border-block: 1px solid
@@ -1062,10 +1016,6 @@
     color: var(--primary);
     font-family: var(--font-mono);
     font-weight: 700;
-  }
-  .trace-causal-bar code {
-    overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
   }
   .trace-causal-bar strong {
@@ -1169,7 +1119,7 @@
   }
   .active-line-card > div {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 1rem;
     color: var(--code-active-border);
     font-family: var(--font-mono);
@@ -1179,11 +1129,11 @@
   }
   .active-line-card pre {
     margin-top: 0.65rem;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
   }
   .active-line-card code {
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.65rem;
     white-space: pre-wrap;
   }
@@ -1195,7 +1145,7 @@
   }
   .line-meaning > div {
     display: grid;
-    grid-template-columns: 5.2rem minmax(0, 1fr);
+    grid-template-columns: 4rem minmax(0, 1fr);
     border-bottom: 1px solid
       color-mix(in oklch, var(--foreground) 14%, transparent);
   }
@@ -1218,23 +1168,7 @@
     color: var(--muted-foreground);
     font-size: 0.95rem;
     line-height: 1.5rem;
-    overflow-wrap: anywhere;
-  }
-
-  .trace-teaching-note {
-    margin-top: 1rem;
-    padding: 0.2rem 0.35rem 0.2rem 1rem;
-    border-left: 2px solid var(--target-fg);
-  }
-  .trace-teaching-note h3 {
-    font-size: 1.02rem;
-  }
-  .trace-teaching-note p {
-    display: block;
-    margin-top: 0.45rem;
-    color: var(--muted-foreground);
-    font-size: 0.95rem;
-    line-height: 1.5rem;
+    overflow-wrap: break-word;
   }
 
   .trace-mobile-source {
@@ -1277,9 +1211,18 @@
 
   .state-compare-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
     gap: 0.75rem;
     margin-top: 1rem;
+  }
+  .walk-legend-row {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    padding: 0.15rem 0.1rem 0;
+    color: var(--muted-foreground);
+    font-size: 0.78rem;
   }
   .state-sheet {
     min-width: 0;
@@ -1308,7 +1251,7 @@
   }
   .state-prediction {
     display: grid;
-    min-height: 15rem;
+    min-height: 10rem;
     place-content: center;
     justify-items: center;
     gap: 0.75rem;
@@ -1501,7 +1444,7 @@
 
   @media (min-width: 1280px) {
     .trace-grid {
-      grid-template-columns: minmax(390px, 0.7fr) minmax(0, 1.3fr);
+      grid-template-columns: minmax(440px, 0.88fr) minmax(0, 1.12fr);
     }
     .trace-code-pane {
       border-right: 1px solid
@@ -1561,16 +1504,9 @@
     .trace-header {
       padding: 1.2rem 1rem;
     }
-    .trace-progress span {
-      display: none;
-    }
     .trace-causal-bar {
       grid-template-columns: auto minmax(0, 1fr);
       padding-inline: 1rem;
-    }
-    .trace-causal-bar svg,
-    .trace-causal-bar strong {
-      display: none;
     }
     .trace-code-pane,
     .trace-state-pane {

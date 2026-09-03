@@ -58,7 +58,7 @@ export const gaussianDetailSection: ChapterSection = {
     },
   ],
   walkthrough: {
-    eyebrow: '2.4 · Optional deep dive',
+    eyebrow: 'Lab 2.4 · Optional trace',
     title: 'See how every zero is deliberately created',
     objective:
       'Use the same 3×3 matrix as Section 2.1, but expose the control flow that produced its row order and triangular factors.',

@@ -98,7 +98,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
     },
   ],
   walkthrough: {
-    eyebrow: '2.2 · Guided execution',
+    eyebrow: 'Lab 2.2 · Code trace',
     title: 'Build the matrices, then track each change',
     objective:
       'Keep the partition lines visible. Match each slice, product, elimination step, and graph edge to the Python line that creates it.',
