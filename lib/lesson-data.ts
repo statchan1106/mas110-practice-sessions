@@ -108,30 +108,3 @@ export const gaussianLesson: Lesson = {
     },
   ],
 };
-
-export const roadmap = [
-  {
-    week: '01',
-    title: 'Gaussian elimination',
-    description: 'Connect pivots, row operations, and NumPy indices.',
-    active: true,
-  },
-  {
-    week: '02',
-    title: 'Block matrices & graphs',
-    description: 'See how block structure organizes larger systems.',
-    active: false,
-  },
-  {
-    week: '03',
-    title: 'Null space & transformations',
-    description: 'Move vectors and inspect what a matrix preserves or removes.',
-    active: false,
-  },
-  {
-    week: '04',
-    title: 'Inner products & least squares',
-    description: 'Build projection and approximation from geometric ideas.',
-    active: false,
-  },
-];

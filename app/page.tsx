@@ -1,5 +1,4 @@
 import {
-  ArrowRight,
   BookOpenText,
   Code2,
   ExternalLink,
@@ -8,10 +7,12 @@ import {
   Play,
 } from 'lucide-react';
 
+import { CourseLibrary } from '@/components/course-library';
 import { LessonPlayer } from '@/components/lesson-player';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
-import { gaussianLesson, roadmap } from '@/lib/lesson-data';
+import { gaussianPrimer, repositoryBase } from '@/lib/course-data';
+import { gaussianLesson } from '@/lib/lesson-data';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
@@ -25,13 +26,14 @@ export default function Home() {
             </span>
             <span>
               <span className="block text-sm font-semibold tracking-tight">Foundations of LADS</span>
-              <span className="hidden text-xs text-muted-foreground sm:block">Interactive course companion</span>
+              <span className="hidden text-xs text-muted-foreground sm:block">KAIST MAS110 · Interactive course companion</span>
             </span>
           </a>
 
           <nav className="flex items-center gap-1" aria-label="Main navigation">
+            <a className={cn(buttonVariants({ variant: 'ghost' }), 'hidden md:inline-flex')} href="#primer">Primer</a>
             <a className={buttonVariants({ variant: 'ghost' })} href="#lab">Walkthrough</a>
-            <a className={cn(buttonVariants({ variant: 'ghost' }), 'hidden sm:inline-flex')} href="#roadmap">Course map</a>
+            <a className={cn(buttonVariants({ variant: 'ghost' }), 'hidden sm:inline-flex')} href="#roadmap">Course library</a>
             <a
               className={buttonVariants({ variant: 'outline', size: 'icon' })}
               href="https://github.com/kyunghyuncho/Foundations_of_LADS"
@@ -49,6 +51,7 @@ export default function Home() {
         <section className="mb-8 grid gap-7 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
           <div>
             <div className="mb-4 flex flex-wrap items-center gap-2">
+              <Badge>KAIST MAS110</Badge>
               <Badge variant="secondary">Week 01</Badge>
               <span className="text-sm text-muted-foreground">Orientation · Ch 2.1 Gaussian Elimination</span>
             </div>
@@ -60,8 +63,8 @@ export default function Home() {
               Predict the multiplier, run one line, and watch a chosen entry become zero. You control every step—nothing auto-plays past the idea.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
-              <a className={buttonVariants({ size: 'lg' })} href="#lab">
-                <Play data-icon="inline-start" aria-hidden="true" />Start the walkthrough
+              <a className={buttonVariants({ size: 'lg' })} href="#primer">
+                <Play data-icon="inline-start" aria-hidden="true" />Start with the concepts
               </a>
               <a className={buttonVariants({ variant: 'outline', size: 'lg' })} href={gaussianLesson.colabUrl} target="_blank" rel="noreferrer">
                 Open the full notebook<ExternalLink data-icon="inline-end" aria-hidden="true" />
@@ -76,7 +79,7 @@ export default function Home() {
               </span>
               <div>
                 <p className="text-sm font-semibold">By the end of today</p>
-                <p className="text-xs text-muted-foreground">You should be able to explain—not just compute.</p>
+                <p className="text-xs text-muted-foreground">KAIST MAS110 · Linear Algebra for Data Science</p>
               </div>
             </div>
             <ul className="mt-4 space-y-3 text-sm leading-6">
@@ -96,14 +99,52 @@ export default function Home() {
               <p className="text-xs font-medium uppercase tracking-[0.12em] text-primary">Source acknowledgment</p>
               <h2 className="mt-1 font-semibold">An independent teaching companion to the original notebooks</h2>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
-                The course sequence and examples follow <em>Foundations of Linear Algebra for Data Science</em> by Wanmo Kang and Kyunghyun Cho, released under the{' '}
+                This independent TA companion uses the course sequence and examples from <em>Foundations of Linear Algebra for Data Science</em> by Wanmo Kang and Kyunghyun Cho, released under the{' '}
                 <a className="underline decoration-border underline-offset-4 hover:text-foreground" href="https://github.com/kyunghyuncho/Foundations_of_LADS/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT License</a>.
               </p>
             </div>
           </div>
-          <a className={cn(buttonVariants({ variant: 'outline' }), 'mt-4 shrink-0 sm:mt-0')} href={gaussianLesson.sourceUrl.split('/blob/')[0]} target="_blank" rel="noreferrer">
+          <a className={cn(buttonVariants({ variant: 'outline' }), 'mt-4 shrink-0 sm:mt-0')} href={repositoryBase} target="_blank" rel="noreferrer">
             Original GitHub repository<ExternalLink data-icon="inline-end" aria-hidden="true" />
           </a>
+        </section>
+
+        <section id="primer" className="scroll-mt-24 py-12 sm:py-16">
+          <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p className="mb-2 text-sm font-medium text-primary">Before the walkthrough · 2 min</p>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Four ideas to carry into elimination</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
+                You do not need to memorize the full algorithm yet. Follow one target entry and see how the pivot row turns it into zero without changing the solutions.
+              </p>
+              <p className="mt-2 max-w-3xl text-xs leading-5 text-muted-foreground">
+                The source collection begins with Chapter 2, so this Week 01 primer establishes the shared notation and learning routine first.
+              </p>
+            </div>
+            <Badge variant="outline" className="w-fit">Concept primer</Badge>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {gaussianPrimer.map((item, index) => (
+              <article key={item.term} className="flex min-h-64 flex-col rounded-2xl border bg-card/86 p-5 shadow-sm backdrop-blur-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-mono text-xs text-primary">0{index + 1}</span>
+                  <code className="rounded-md bg-muted px-2 py-1 text-[11px] text-primary">{item.relation}</code>
+                </div>
+                <h3 className="mt-8 text-lg font-semibold">{item.term}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.definition}</p>
+                <p className="mt-auto border-t pt-4 text-xs leading-5 text-muted-foreground"><strong className="text-foreground">Watch for:</strong> {item.watchFor}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/8 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div>
+              <p className="font-semibold">The whole strategy in one sentence</p>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">Cancel entries below each pivot until the matrix is upper triangular, then solve from the bottom row upward.</p>
+            </div>
+            <a className={cn(buttonVariants({ size: 'lg' }), 'shrink-0')} href="#lab">I’m ready—start the walkthrough</a>
+          </div>
         </section>
 
         <section id="lab" className="scroll-mt-24"><LessonPlayer lesson={gaussianLesson} /></section>
@@ -111,29 +152,18 @@ export default function Home() {
         <section id="roadmap" className="scroll-mt-24 pt-20">
           <div className="mb-7 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="mb-2 text-sm font-medium text-primary">Course map</p>
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">One learning loop, across the course</h2>
+              <p className="mb-2 text-sm font-medium text-primary">KAIST MAS110 course library</p>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">The complete notebook sequence, in six teaching modules</h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                Every topic follows the same rhythm: predict, run one step, inspect the visual change, then experiment in Colab.
+                All 25 source notebooks are mapped below with a short concept primer and direct GitHub and Colab access. Full interactive walkthroughs use the same learning loop and will be added one at a time.
               </p>
             </div>
-            <a className={buttonVariants({ variant: 'outline' })} href={gaussianLesson.sourceUrl} target="_blank" rel="noreferrer">
-              View this notebook<ArrowRight data-icon="inline-end" aria-hidden="true" />
+            <a className={buttonVariants({ variant: 'outline' })} href={repositoryBase} target="_blank" rel="noreferrer">
+              Browse the source collection<ExternalLink data-icon="inline-end" aria-hidden="true" />
             </a>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {roadmap.map((item) => (
-              <article key={item.week} className="rounded-xl border bg-card/82 p-5 backdrop-blur-sm">
-                <div className="mb-8 flex items-center justify-between">
-                  <span className="font-mono text-xs text-muted-foreground">W{item.week}</span>
-                  {item.active ? <Badge>Now</Badge> : <Badge variant="outline">Next</Badge>}
-                </div>
-                <h3 className="font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
-              </article>
-            ))}
-          </div>
+          <CourseLibrary />
         </section>
 
         <section className="mt-20 flex flex-col gap-5 rounded-2xl bg-primary px-6 py-7 text-primary-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
@@ -152,7 +182,7 @@ export default function Home() {
 
       <footer className="border-t bg-background/75">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-7 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>Foundations of LADS · Interactive teaching companion</p>
+          <p>KAIST MAS110 · Foundations of LADS · Independent TA companion</p>
           <p>Original notebooks by Wanmo Kang and Kyunghyun Cho</p>
         </div>
       </footer>

@@ -3,13 +3,13 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://lads-linear-algebra-lab.statchan1106.chatgpt.site'),
-  title: 'Foundations of LADS — Interactive Course Companion',
+  title: 'KAIST MAS110 — Foundations of LADS',
   description:
-    'Predict a row operation, run one line, and see exactly how Gaussian elimination creates each zero.',
+    'An independent interactive TA companion for KAIST MAS110 · Linear Algebra for Data Science.',
   openGraph: {
-    title: 'Foundations of LADS',
+    title: 'KAIST MAS110 — Foundations of LADS',
     description:
-      'See every row operation.',
+      'Concept primer, prediction, execution, visual interpretation, and the complete notebook library.',
     images: [
       {
         url: 'https://lads-linear-algebra-lab.statchan1106.chatgpt.site/og.png',
@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Foundations of LADS',
-    description: 'See every row operation.',
+    title: 'KAIST MAS110 — Foundations of LADS',
+    description: 'Concept primer, interactive walkthrough, and complete notebook library.',
     images: ['https://lads-linear-algebra-lab.statchan1106.chatgpt.site/og.png'],
   },
 };
