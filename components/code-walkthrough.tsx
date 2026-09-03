@@ -85,7 +85,7 @@ function MatrixView({ matrix }: { matrix: WalkthroughMatrix }) {
   const spokenValues = matrix.values.map((row) => row.join(', ')).join('; ');
   return (
     <div className="walk-matrix-card">
-      <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+      <p className="mb-2 text-center font-mono text-xs uppercase tracking-[0.1em] text-muted-foreground">
         {matrix.label}
       </p>
       <div className="overflow-x-auto pb-1">
@@ -201,7 +201,7 @@ function VisualPanel({
   return (
     <div key={stateKey} className="walk-visual-enter">
       <h4 className="font-semibold">{visual.title}</h4>
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">
         {visual.description}
       </p>
       {visual.equation && (
@@ -221,7 +221,7 @@ function VisualPanel({
       )}
       {(visual.matrices || visual.graph) && (
         <div
-          className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-muted-foreground"
+          className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground"
           aria-label="Visual state legend"
         >
           <span className="walk-legend">
@@ -239,7 +239,7 @@ function VisualPanel({
         </div>
       )}
       {visual.callout && (
-        <p className="mt-4 border-l-2 border-primary pl-3 text-xs leading-5 text-muted-foreground">
+        <p className="mt-4 border-l-2 border-primary pl-3 text-sm leading-6 text-muted-foreground">
           {visual.callout}
         </p>
       )}
@@ -412,20 +412,26 @@ function SourceList({
 
 function MeaningLedger({ meaning }: { meaning: LineMeaning }) {
   return (
-    <dl className="line-meaning">
-      <div>
-        <dt>Reads</dt>
-        <dd>{meaning.reads}</dd>
-      </div>
-      <div>
-        <dt>Computes</dt>
-        <dd>{meaning.computes}</dd>
-      </div>
-      <div>
-        <dt>Changes</dt>
-        <dd>{meaning.changes}</dd>
-      </div>
-    </dl>
+    <div>
+      <p className="line-meaning-key">
+        <strong>Line meaning</strong> · Reads = referenced values · Computes =
+        evaluated operation · Changes = updated program state
+      </p>
+      <dl className="line-meaning">
+        <div>
+          <dt>Reads</dt>
+          <dd>{meaning.reads}</dd>
+        </div>
+        <div>
+          <dt>Computes</dt>
+          <dd>{meaning.computes}</dd>
+        </div>
+        <div>
+          <dt>Changes</dt>
+          <dd>{meaning.changes}</dd>
+        </div>
+      </dl>
+    </div>
   );
 }
 
@@ -490,8 +496,8 @@ function StateComparison({
           <div className="state-prediction">
             <span>?</span>
             <p>
-              Predict the changed row, entry, or variable before revealing this
-              state.
+              Predict the changed row, entry, or variable, then reveal the
+              prepared comparison. This does not run Python.
             </p>
           </div>
         )}
@@ -565,9 +571,9 @@ export function CodeWalkthrough({
   }
 
   const actionLabel = !isLastLine
-    ? 'Explain next line'
+    ? 'Next line'
     : !revealed
-      ? 'Reveal resulting state'
+      ? 'Reveal prepared state'
       : !isLastStep
         ? 'Next source block'
         : 'Trace again';
@@ -591,9 +597,15 @@ export function CodeWalkthrough({
         </div>
       </header>
 
+      <p className="trace-mode-note">
+        <strong>How it works:</strong> select a line, read what it uses and
+        changes, predict the result, then reveal the prepared visual state. This
+        page does not execute Python; the full run is available in Colab.
+      </p>
+
       <output className="sr-only" aria-live="polite">
         {revealed
-          ? `Resulting state for block ${stepIndex + 1} revealed.`
+          ? `Line ${globalLine}: ${lines[lineIndex]}. Prepared result state for block ${stepIndex + 1} is revealed.`
           : `Line ${globalLine}: ${lines[lineIndex]}`}
       </output>
 
@@ -635,7 +647,7 @@ export function CodeWalkthrough({
             <h3>{step.title}</h3>
             <p>{step.explanation}</p>
             <small>
-              <strong>Watch:</strong> {step.watchFor}
+              <strong>Prediction cue:</strong> {step.watchFor}
             </small>
           </div>
 
@@ -660,7 +672,7 @@ export function CodeWalkthrough({
         >
           <div className="lg:sticky lg:top-24">
             <div className="trace-prediction">
-              <span>Before revealing</span>
+              <span>Prediction cue</span>
               <p>{step.watchFor}</p>
             </div>
             <StateComparison

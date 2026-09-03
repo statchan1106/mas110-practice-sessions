@@ -6,27 +6,28 @@ export function SiteHeader() {
       <a className="skip-link" href="#main-content">
         Skip to main content
       </a>
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-[96rem] items-center justify-between gap-5 px-4 py-3.5 sm:px-6 lg:px-8">
         <a className="group min-w-0" href={sitePath('/')}>
-          <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
+          <span className="block font-mono text-xs font-semibold uppercase tracking-[0.16em] text-primary">
             KAIST · Fall 2026
           </span>
-          <span className="block truncate text-sm font-semibold tracking-tight text-foreground sm:text-base">
-            MAS110 Practice Sessions
+          <span className="block text-base font-semibold tracking-tight text-foreground sm:text-lg">
+            <span className="sm:hidden">MAS110 Practice</span>
+            <span className="hidden sm:inline">MAS110 Practice Sessions</span>
           </span>
         </a>
         <nav
-          className="flex items-center gap-4 text-xs sm:gap-6 sm:text-sm"
+          className="flex items-center gap-4 text-sm sm:gap-7 sm:text-base"
           aria-label="Main navigation"
         >
+          <a className="course-nav-link" href={sitePath('/#chapters')}>
+            Chapters
+          </a>
           <a
             className="course-nav-link hidden sm:inline"
-            href={sitePath('/#schedule')}
+            href={sitePath('/#how-it-works')}
           >
-            Schedule
-          </a>
-          <a className="course-nav-link" href={sitePath('/chapter-2')}>
-            Chapter 2
+            How it works
           </a>
           <a
             className="course-nav-link whitespace-nowrap"
@@ -34,7 +35,7 @@ export function SiteHeader() {
             target="_blank"
             rel="noreferrer"
           >
-            Source notebooks ↗
+            Source ↗
           </a>
         </nav>
       </div>

@@ -2,27 +2,31 @@ import { ArrowRight } from 'lucide-react';
 
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
-import { chapterTwoSections } from '@/lib/chapter-two-data';
-import { courseGroups, repositoryBase } from '@/lib/course-data';
+import { courseChapters, repositoryBase } from '@/lib/course-data';
 import { sitePath } from '@/lib/site-path';
 
 export const dynamic = 'force-static';
 
-const method = [
+const pageFunctions = [
   [
     '01',
-    'Read one line',
-    'Identify the values that the Python statement reads.',
+    'Concept primer',
+    'A short reference for the definitions used in the lab. It is not a quiz or a graded check.',
   ],
   [
     '02',
-    'Predict the change',
-    'Name the row, entry, or variable that should change.',
+    'Next line',
+    'Moves to the next prepared Python line and explains what it reads, computes, and changes.',
   ],
   [
     '03',
-    'Apply and compare',
-    'Keep before and after visible; explain why the result is valid.',
+    'Prediction cue',
+    'Names the specific row, entry, or variable to think about before seeing the result.',
+  ],
+  [
+    '04',
+    'Reveal prepared state',
+    'Shows a deterministic before-and-after visual. Python itself runs only after you open Colab.',
   ],
 ];
 
@@ -32,29 +36,28 @@ export default function CourseHome() {
       <SiteHeader />
       <main id="main-content">
         <section className="course-hero">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8 lg:py-20">
+          <div className="mx-auto grid max-w-[96rem] gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.65fr)] lg:px-8 lg:py-20">
             <div>
               <p className="section-kicker">
-                KAIST MAS110 · Linear Algebra for Data Science
+                KAIST MAS110 · Linear Algebra for Data Science · Fall 2026
               </p>
-              <h1 className="course-title mt-4 max-w-4xl">
-                Friday Practice Sessions
-              </h1>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-foreground/78 sm:text-xl">
-                Review the ideas covered in class, then trace how each one
-                becomes executable and visible in code.
+              <h1 className="course-title mt-4 max-w-5xl">Practice Sessions</h1>
+              <p className="mt-6 max-w-3xl text-xl leading-9 text-foreground/82 sm:text-2xl sm:leading-10">
+                A chapter-by-chapter guide from lecture ideas to readable code
+                and visible mathematical change.
               </p>
-              <p className="mt-6 max-w-2xl border-l-2 border-primary pl-4 text-sm leading-6 text-muted-foreground">
-                These sessions follow <em>Foundations of LADS</em> and focus on
-                lecture review and implementation—not problem-solving drills.
+              <p className="mt-7 max-w-3xl border-l-2 border-primary pl-5 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+                These materials review class content and implement key concepts
+                in code, following <em>Foundations of LADS</em>. They are
+                learning aids—not a homework-solution bank.
               </p>
-              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <a className="course-button" href={sitePath('/chapter-2')}>
-                  Start Chapter 2{' '}
+              <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+                <a className="course-button" href="#chapters">
+                  Browse chapters{' '}
                   <ArrowRight className="size-4" aria-hidden="true" />
                 </a>
                 <a
-                  className="text-link text-sm"
+                  className="text-link text-base"
                   href={repositoryBase}
                   target="_blank"
                   rel="noreferrer"
@@ -65,78 +68,132 @@ export default function CourseHome() {
             </div>
 
             <aside
-              id="schedule"
-              className="schedule-sheet scroll-mt-24"
-              aria-label="Practice session schedule"
+              className="session-note"
+              aria-labelledby="session-note-title"
             >
-              <p className="section-kicker">Every Friday</p>
-              <div className="mt-5 divide-y divide-foreground/15 border-y border-foreground/20">
-                <p className="schedule-time">
-                  <span>Session A</span>
-                  <strong>11:00–12:00</strong>
-                </p>
-                <p className="schedule-time">
-                  <span>Session B</span>
-                  <strong>14:00–15:00</strong>
-                </p>
-              </div>
-              <p className="mt-5 text-sm font-semibold">Room 101 · Bldg E11</p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                Both sessions cover the same material.
+              <p className="section-kicker">About the practice sessions</p>
+              <h2 id="session-note-title">Use the site at your own pace.</h2>
+              <dl>
+                <div>
+                  <dt>Review</dt>
+                  <dd>Reconnect each lab to the idea introduced in class.</dd>
+                </div>
+                <div>
+                  <dt>Trace</dt>
+                  <dd>Follow the effect of each prepared Python line.</dd>
+                </div>
+                <div>
+                  <dt>Run</dt>
+                  <dd>
+                    Open Colab when you want to execute the full notebook.
+                  </dd>
+                </div>
+              </dl>
+              <p className="session-policy">
+                <strong>Attendance is not recorded</strong> for these practice
+                sessions.
+              </p>
+              <p className="session-contact">
+                Questions about the materials or code?{' '}
+                <a href="mailto:statchan1106@kaist.ac.kr">
+                  statchan1106@kaist.ac.kr
+                </a>
               </p>
             </aside>
           </div>
         </section>
 
-        <div className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[96rem] px-4 pb-20 sm:px-6 lg:px-8">
           <section
-            className="py-14 sm:py-16"
-            aria-labelledby="current-lab-title"
+            id="chapters"
+            className="scroll-mt-24 py-14 sm:py-16"
+            aria-labelledby="chapters-title"
           >
             <div className="section-heading-row">
               <div>
-                <p className="section-kicker">Current practice lab</p>
-                <h2 id="current-lab-title" className="section-title">
-                  Chapter 2 · Matrices and Gaussian Elimination
+                <p className="section-kicker">Practice library</p>
+                <h2 id="chapters-title" className="section-title">
+                  Browse by chapter
                 </h2>
               </div>
-              <p className="max-w-md text-sm leading-6 text-muted-foreground">
-                From <span className="math-label">Ax = b</span> to elimination,
-                reusable factors, block structure, and graph matrices.
+              <p className="max-w-xl text-base leading-7 text-muted-foreground">
+                Chapter 2 is available now. Later guided chapters are listed in
+                course order and clearly marked while they are being prepared.
               </p>
             </div>
 
-            <ol className="syllabus-list mt-8">
-              {chapterTwoSections.map((section) => (
-                <li key={section.slug}>
-                  <a
-                    className="syllabus-row group"
-                    href={sitePath(`/chapter-2/${section.slug}`)}
-                  >
-                    <span className="syllabus-number">{section.number}</span>
-                    <span className="min-w-0">
-                      <strong>{section.title}</strong>
-                      <small>{section.summary}</small>
+            <ol className="chapter-directory mt-9">
+              {courseChapters.map((chapter) => {
+                const content = (
+                  <>
+                    <span className="chapter-directory-number">
+                      {chapter.number}
                     </span>
-                    <span className="syllabus-action">
-                      Open{' '}
-                      <ArrowRight className="size-3.5" aria-hidden="true" />
+                    <span className="chapter-directory-copy">
+                      <strong>{chapter.title}</strong>
+                      <small>{chapter.summary}</small>
                     </span>
-                  </a>
-                </li>
-              ))}
+                    <span className="chapter-directory-source">
+                      {chapter.sourceNotebooks}{' '}
+                      {chapter.sourceNotebooks === 1 ? 'notebook' : 'notebooks'}
+                    </span>
+                    <span
+                      className={`chapter-status is-${chapter.status}`}
+                      aria-label={
+                        chapter.status === 'available'
+                          ? 'Guided materials available now'
+                          : 'Guided materials in preparation'
+                      }
+                    >
+                      {chapter.status === 'available'
+                        ? 'Available now'
+                        : 'In preparation'}
+                    </span>
+                    {chapter.status === 'available' && (
+                      <ArrowRight
+                        className="chapter-directory-arrow size-4"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </>
+                );
+
+                return (
+                  <li key={chapter.number}>
+                    {chapter.href ? (
+                      <a
+                        className="chapter-directory-row is-available"
+                        href={sitePath(chapter.href)}
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <div
+                        className="chapter-directory-row is-preparing"
+                        aria-disabled="true"
+                      >
+                        {content}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ol>
           </section>
 
-          <section className="method-strip" aria-labelledby="method-title">
+          <section
+            id="how-it-works"
+            className="method-strip scroll-mt-24"
+            aria-labelledby="method-title"
+          >
             <div>
-              <p className="section-kicker">How to use each walkthrough</p>
+              <p className="section-kicker">How the controls work</p>
               <h2 id="method-title" className="section-title mt-2">
-                Code is evidence, not decoration.
+                What each label means
               </h2>
             </div>
-            <ol className="grid gap-0 md:grid-cols-3">
-              {method.map(([number, title, copy]) => (
+            <ol className="grid gap-0 sm:grid-cols-2 xl:grid-cols-4">
+              {pageFunctions.map(([number, title, copy]) => (
                 <li key={number} className="method-step">
                   <span>{number}</span>
                   <strong>{title}</strong>
@@ -146,18 +203,18 @@ export default function CourseHome() {
             </ol>
           </section>
 
-          <details className="course-index mt-14">
-            <summary>View the full Foundations of LADS course map</summary>
-            <div className="mt-5 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
-              {courseGroups.map((group) => (
-                <div key={group.id} className="course-index-item">
-                  <span>{group.chapters}</span>
-                  <strong>{group.title}</strong>
-                  <small>{group.notebooks.length} source notebooks</small>
-                </div>
-              ))}
-            </div>
-          </details>
+          <aside className="home-source-note mt-14">
+            <p>
+              The chapter order follows the Fall 2026 course coverage. The
+              syllabus is a working guide, so this library will grow as the
+              semester progresses.
+            </p>
+            <p>
+              No previous linear algebra is assumed. Familiarity with Python is
+              helpful, but the walkthroughs explain each line before Colab is
+              needed.
+            </p>
+          </aside>
         </div>
       </main>
       <SiteFooter />

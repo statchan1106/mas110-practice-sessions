@@ -12,11 +12,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: 'KAIST MAS110 Practice Sessions',
   description:
-    'Friday practice materials for KAIST MAS110 · Linear Algebra for Data Science.',
+    'Chapter-by-chapter practice materials for KAIST MAS110 · Linear Algebra for Data Science.',
   openGraph: {
     title: 'KAIST MAS110 Practice Sessions',
     description:
-      'Review lecture ideas, trace the Python, and compare each visible mathematical change.',
+      'Review lecture ideas, trace the Python line by line, and compare each visible mathematical change.',
     images: [
       {
         url: `${siteUrl}/og-mas110.png`,
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'KAIST MAS110 Practice Sessions',
     description:
-      'Line-by-line Chapter 2 practice materials for Linear Algebra for Data Science.',
+      'Chapter-by-chapter visual code walkthroughs for Linear Algebra for Data Science.',
     images: [`${siteUrl}/og-mas110.png`],
   },
 };

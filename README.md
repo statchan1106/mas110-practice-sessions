@@ -1,13 +1,17 @@
 # KAIST MAS110 Practice Sessions
 
-Interactive Friday practice materials for **MAS110: Linear Algebra for Data Science** at KAIST (Fall 2026).
+Interactive practice materials for **MAS110: Linear Algebra for Data Science** at KAIST (Fall 2026).
 
-- Sessions: Friday 11:00–12:00 and 14:00–15:00
-- Location: Room 101, Bldg E11
 - Purpose: review lecture material and implement key ideas in code; these are not problem-solving sessions
+- Attendance: not recorded for the practice sessions
+- Questions about the materials or code: `statchan1106@kaist.ac.kr`
 - Practice materials: Seongchan Lee
 
-## Chapter 2
+## Practice library
+
+The homepage is the course-wide chapter index. Chapter 2 is available now, and Chapters 3–11 are visibly marked **In preparation** until their guided materials are ready.
+
+## Available now · Chapter 2
 
 Chapter 2 is organized as four guided labs:
 
@@ -43,7 +47,7 @@ npm run build
 
 ## Content maintenance
 
-- `app/page.tsx` — practice-session home and schedule
+- `app/page.tsx` — course-wide chapter hub and session guidance
 - `app/chapter-2/page.tsx` — Chapter 2 concept map and lab index
 - `lib/chapter-two/*.ts` — lesson copy, code traces, and visual states
 - `components/code-walkthrough.tsx` — shared line-by-line learning interface

@@ -112,7 +112,9 @@ export function CourseLibrary() {
                         {item.definition}
                       </p>
                       <p className="mt-3 border-l-2 border-accent pl-2 text-[11px] leading-4 text-muted-foreground">
-                        <strong className="text-foreground">Watch for:</strong>{' '}
+                        <strong className="text-foreground">
+                          Prediction cue:
+                        </strong>{' '}
                         {item.watchFor}
                       </p>
                     </article>

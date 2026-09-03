@@ -25,7 +25,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
       <SiteHeader />
       <main
         id="main-content"
-        className="mx-auto max-w-7xl px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
+        className="mx-auto max-w-[96rem] px-4 pb-20 pt-8 sm:px-6 sm:pt-12 lg:px-8"
       >
         <nav className="course-breadcrumb" aria-label="Breadcrumb">
           <a href={sitePath('/')}>Practice sessions</a>
@@ -41,10 +41,10 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
               Lab {section.number}
               {section.optional ? ' · Optional' : ''}
             </p>
-            <h1 className="section-title mt-4 max-w-4xl sm:text-[3.35rem]">
+            <h1 className="section-title mt-4 max-w-5xl sm:text-[3.7rem]">
               {section.title}
             </h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">
+            <p className="mt-5 max-w-4xl text-lg leading-8 text-muted-foreground">
               {section.summary}
             </p>
           </div>
@@ -59,7 +59,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
             </div>
             <div>
               <dt>Web mode</dt>
-              <dd>Deterministic teaching trace</dd>
+              <dd>Prepared visual trace · Python runs in Colab</dd>
             </div>
           </dl>
         </header>
@@ -67,14 +67,15 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
         <section className="concept-primer" aria-labelledby="primer-heading">
           <div className="section-heading-row">
             <div>
-              <p className="section-kicker">Concept check</p>
+              <p className="section-kicker">Concept primer</p>
               <h2 id="primer-heading" className="section-title">
-                Know these before tracing the code
+                Terms used in the walkthrough
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-6 text-muted-foreground">
-              Use each “watch” note as a prediction prompt before revealing a
-              line’s effect.
+            <p className="max-w-xl text-base leading-7 text-muted-foreground">
+              This is a reference, not a quiz. Each definition explains the
+              idea; each “Prediction cue” names what to look for before the
+              prepared visual state is revealed.
             </p>
           </div>
           <dl className="primer-ledger mt-7">
@@ -87,7 +88,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
                 <dd>
                   <p>{item.definition}</p>
                   <small>
-                    <span>Watch</span>
+                    <span>Prediction cue</span>
                     {item.watchFor}
                   </small>
                 </dd>

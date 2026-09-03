@@ -3,7 +3,13 @@ import { repositoryBase } from '@/lib/course-data';
 export function SiteFooter() {
   return (
     <footer className="border-t border-foreground/15 bg-background">
-      <div className="mx-auto grid max-w-7xl gap-4 px-4 py-7 text-xs leading-5 text-muted-foreground sm:grid-cols-[1fr_auto] sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-[96rem] gap-4 px-4 py-8 text-sm leading-6 text-muted-foreground sm:grid-cols-[1fr_auto] sm:px-6 lg:px-8">
+        <p className="footer-contact sm:col-span-2">
+          Questions about these practice materials or code?{' '}
+          <a className="text-link" href="mailto:statchan1106@kaist.ac.kr">
+            statchan1106@kaist.ac.kr
+          </a>
+        </p>
         <p>
           <strong className="font-medium text-foreground">
             Made by Seongchan Lee
