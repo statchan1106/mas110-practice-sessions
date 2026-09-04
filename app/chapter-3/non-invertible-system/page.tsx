@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 
 import { ChapterSectionPage } from '@/components/chapter-section-page';
 import {
-  chapterTwoSections,
-  getChapterTwoSection,
-} from '@/lib/chapter-two-data';
+  chapterThreeSections,
+  getChapterThreeSection,
+} from '@/lib/chapter-three-data';
 
-const section = getChapterTwoSection('gaussian-detail')!;
+const section = getChapterThreeSection('non-invertible-system')!;
 
 export const dynamic = 'force-static';
 
@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   twitter: { title: section.title, description: section.summary, images: [] },
 };
 
-export default function GaussianDetailPage() {
-  return <ChapterSectionPage section={section} sections={chapterTwoSections} />;
+export default function NonInvertibleSystemPage() {
+  return (
+    <ChapterSectionPage section={section} sections={chapterThreeSections} />
+  );
 }

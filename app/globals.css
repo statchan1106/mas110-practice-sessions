@@ -2072,6 +2072,167 @@
     stroke-width: 4;
   }
 
+  .walk-plane {
+    width: 100%;
+    margin-top: 1rem;
+    color: var(--foreground);
+  }
+
+  .walk-plane svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .walk-plane-grid line {
+    stroke: color-mix(in oklch, var(--foreground) 9%, transparent);
+    stroke-width: 1;
+  }
+
+  .walk-plane-axes line {
+    stroke: color-mix(in oklch, var(--foreground) 48%, transparent);
+    stroke-width: 1.4;
+  }
+
+  .walk-plane-axes text,
+  .walk-plane-label {
+    fill: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .walk-plane-ticks {
+    fill: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .walk-plane-line,
+  .walk-plane-segment,
+  .walk-plane-vector {
+    fill: none;
+    stroke: var(--foreground);
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .walk-plane-line {
+    stroke-width: 2;
+  }
+
+  .walk-plane-segment {
+    stroke-width: 1.7;
+  }
+
+  .walk-plane-vector {
+    stroke-width: 3;
+  }
+
+  .walk-plane-line.is-dashed,
+  .walk-plane-segment.is-dashed,
+  .walk-plane-vector.is-dashed {
+    stroke-dasharray: 6 5;
+  }
+
+  .walk-plane-point {
+    fill: var(--background);
+    stroke: var(--foreground);
+    stroke-width: 3;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .walk-plane-line.is-source,
+  .walk-plane-segment.is-source,
+  .walk-plane-vector.is-source {
+    stroke: var(--source-fg);
+  }
+  .walk-plane-point.is-source {
+    fill: var(--source-bg);
+    stroke: var(--source-fg);
+  }
+  .walk-plane-marker.is-source {
+    fill: var(--source-fg);
+  }
+  .walk-plane-label.is-source {
+    fill: var(--source-fg);
+  }
+
+  .walk-plane-line.is-target,
+  .walk-plane-segment.is-target,
+  .walk-plane-vector.is-target {
+    stroke: var(--target-fg);
+  }
+  .walk-plane-point.is-target {
+    fill: var(--target-bg);
+    stroke: var(--target-fg);
+    stroke-dasharray: 3 2;
+  }
+  .walk-plane-marker.is-target {
+    fill: var(--target-fg);
+  }
+  .walk-plane-label.is-target {
+    fill: var(--target-fg);
+  }
+
+  .walk-plane-line.is-result,
+  .walk-plane-segment.is-result,
+  .walk-plane-vector.is-result {
+    stroke: var(--result-fg);
+  }
+  .walk-plane-point.is-result {
+    fill: var(--result-bg);
+    stroke: var(--result-fg);
+  }
+  .walk-plane-marker.is-result {
+    fill: var(--result-fg);
+  }
+  .walk-plane-label.is-result {
+    fill: var(--result-fg);
+  }
+
+  .walk-plane-line.is-block-a,
+  .walk-plane-segment.is-block-a,
+  .walk-plane-vector.is-block-a {
+    stroke: oklch(0.42 0.105 235);
+  }
+  .walk-plane-point.is-block-a,
+  .walk-plane-marker.is-block-a {
+    fill: oklch(0.42 0.105 235);
+    stroke: oklch(0.42 0.105 235);
+  }
+  .walk-plane-label.is-block-a {
+    fill: oklch(0.42 0.105 235);
+  }
+
+  .walk-plane-line.is-block-b,
+  .walk-plane-segment.is-block-b,
+  .walk-plane-vector.is-block-b {
+    stroke: oklch(0.5 0.105 55);
+  }
+  .walk-plane-point.is-block-b,
+  .walk-plane-marker.is-block-b {
+    fill: oklch(0.5 0.105 55);
+    stroke: oklch(0.5 0.105 55);
+  }
+  .walk-plane-label.is-block-b {
+    fill: oklch(0.5 0.105 55);
+  }
+
+  .walk-plane-line.is-muted,
+  .walk-plane-segment.is-muted,
+  .walk-plane-vector.is-muted {
+    stroke: var(--muted-foreground);
+  }
+  .walk-plane-point.is-muted,
+  .walk-plane-marker.is-muted {
+    fill: var(--muted-foreground);
+    stroke: var(--muted-foreground);
+  }
+  .walk-plane-label.is-muted {
+    fill: var(--muted-foreground);
+  }
+
   .walk-legend {
     display: inline-flex;
     align-items: center;

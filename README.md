@@ -30,7 +30,9 @@ Each lab contains:
 - a persistent before-and-after visualization; and
 - links to the original source and a runnable Colab notebook.
 
-For Chapter 2, each walkthrough keeps one or two central operations from the source notebook but uses smaller deterministic inputs. The page is intentionally not a cell-for-cell reproduction: large matrices, repeated experiments, and advanced extensions stay in the linked Colab notebook. Every adaptation is labeled as a simplified teaching example. The browser explains prepared states and does not execute Python.
+For Chapters 2–3, each walkthrough keeps the central operations from the source notebook but uses smaller deterministic inputs. The page is intentionally not a cell-for-cell reproduction: large matrices, repeated experiments, and advanced extensions stay in the linked Colab notebook. Every adaptation is labeled as a simplified teaching example. The browser explains prepared states and does not execute Python.
+
+Chapter 3 follows one structural question: what does a matrix keep, collapse, and reach? Its three labs build a null-space direction, compare rotation with projection and reflection, and test reachable versus unreachable right-hand sides.
 
 ## Maintainer and questions
 

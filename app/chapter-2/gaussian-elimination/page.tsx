@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 
 import { ChapterSectionPage } from '@/components/chapter-section-page';
-import { getChapterTwoSection } from '@/lib/chapter-two-data';
+import {
+  chapterTwoSections,
+  getChapterTwoSection,
+} from '@/lib/chapter-two-data';
 
 const section = getChapterTwoSection('gaussian-elimination')!;
 
@@ -15,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function GaussianEliminationPage() {
-  return <ChapterSectionPage section={section} />;
+  return <ChapterSectionPage section={section} sections={chapterTwoSections} />;
 }

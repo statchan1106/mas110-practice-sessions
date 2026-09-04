@@ -55,7 +55,8 @@ export const courseChapters: CourseChapter[] = [
     summary:
       'Subspaces, null and column spaces, rank, bases, and linear transformations.',
     sourceNotebooks: 3,
-    status: 'preparing',
+    status: 'available',
+    href: '/chapter-3',
   },
   {
     number: '04',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronDown, RotateCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -38,12 +38,51 @@ export type WalkthroughGraph = {
   }>;
 };
 
+type PlaneMark = {
+  label?: string;
+  tone?: CellTone;
+};
+
+export type WalkthroughPlane = {
+  xRange: [number, number];
+  yRange: [number, number];
+  xLabel?: string;
+  yLabel?: string;
+  lines?: Array<
+    PlaneMark & {
+      from: [number, number];
+      to: [number, number];
+      dashed?: boolean;
+    }
+  >;
+  segments?: Array<
+    PlaneMark & {
+      from: [number, number];
+      to: [number, number];
+      dashed?: boolean;
+    }
+  >;
+  vectors?: Array<
+    PlaneMark & {
+      from?: [number, number];
+      to: [number, number];
+      dashed?: boolean;
+    }
+  >;
+  points?: Array<
+    PlaneMark & {
+      at: [number, number];
+    }
+  >;
+};
+
 export type WalkthroughVisual = {
   title: string;
   description: string;
   equation?: string;
   matrices?: WalkthroughMatrix[];
   graph?: WalkthroughGraph;
+  plane?: WalkthroughPlane;
   callout?: string;
 };
 
@@ -118,6 +157,14 @@ function collectVisualTones(visual: WalkthroughVisual) {
   });
   visual.graph?.nodes.forEach((node) => {
     if (node.tone) tones.add(node.tone);
+  });
+  [
+    ...(visual.plane?.lines ?? []),
+    ...(visual.plane?.segments ?? []),
+    ...(visual.plane?.vectors ?? []),
+    ...(visual.plane?.points ?? []),
+  ].forEach((mark) => {
+    if (mark.tone) tones.add(mark.tone);
   });
   return tones;
 }
@@ -227,6 +274,289 @@ function GraphView({
   );
 }
 
+const planeToneClass: Record<CellTone, string> = {
+  source: 'is-source',
+  target: 'is-target',
+  result: 'is-result',
+  'block-a': 'is-block-a',
+  'block-b': 'is-block-b',
+  muted: 'is-muted',
+};
+
+function planeTicks([minimum, maximum]: [number, number]) {
+  const step = maximum - minimum > 8 ? 2 : 1;
+  const ticks: number[] = [];
+  for (
+    let value = Math.ceil(minimum / step) * step;
+    value <= maximum;
+    value += step
+  )
+    ticks.push(value);
+  return ticks;
+}
+
+function PlaneView({
+  plane,
+  label,
+}: {
+  plane: WalkthroughPlane;
+  label: string;
+}) {
+  const figureRef = useRef<HTMLElement | null>(null);
+  const markerPrefix = useId().replace(/:/g, '');
+  const titleId = `${markerPrefix}-title`;
+  const descriptionId = `${markerPrefix}-description`;
+  const [dimensions, setDimensions] = useState({ width: 400, height: 280 });
+  const { width, height } = dimensions;
+  const padding = { left: 42, right: 24, top: 20, bottom: 38 };
+  const [xMin, xMax] = plane.xRange;
+  const [yMin, yMax] = plane.yRange;
+  const x = (value: number) =>
+    padding.left +
+    ((value - xMin) / (xMax - xMin)) * (width - padding.left - padding.right);
+  const y = (value: number) =>
+    height -
+    padding.bottom -
+    ((value - yMin) / (yMax - yMin)) * (height - padding.top - padding.bottom);
+  const xAxis = y(Math.min(yMax, Math.max(yMin, 0)));
+  const yAxis = x(Math.min(xMax, Math.max(xMin, 0)));
+  const marks = [
+    ...(plane.lines ?? []),
+    ...(plane.segments ?? []),
+    ...(plane.vectors ?? []),
+  ];
+  const xTicks = planeTicks(plane.xRange);
+  const yTicks = planeTicks(plane.yRange);
+
+  useEffect(() => {
+    const figure = figureRef.current;
+    if (!figure) return;
+
+    const updateSize = () => {
+      const nextWidth = Math.max(
+        200,
+        Math.round(figure.getBoundingClientRect().width),
+      );
+      const nextHeight =
+        nextWidth < 360 ? 250 : Math.min(320, Math.round(nextWidth * 0.7));
+      setDimensions((current) =>
+        current.width === nextWidth && current.height === nextHeight
+          ? current
+          : { width: nextWidth, height: nextHeight },
+      );
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(figure);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <figure ref={figureRef} className="walk-plane">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        aria-labelledby={`${titleId} ${descriptionId}`}
+      >
+        <title id={titleId}>{label}</title>
+        <desc id={descriptionId}>
+          A coordinate-plane view of the vectors, points, and reference lines
+          described above.
+        </desc>
+        <defs>
+          {toneOrder.map((tone) => (
+            <marker
+              key={tone}
+              id={`${markerPrefix}-${tone}`}
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M 0 0 L 10 5 L 0 10 z"
+                className={cn('walk-plane-marker', planeToneClass[tone])}
+              />
+            </marker>
+          ))}
+        </defs>
+
+        <g className="walk-plane-grid" aria-hidden="true">
+          {xTicks.map((tick) => (
+            <line
+              key={`x-${tick}`}
+              x1={x(tick)}
+              y1={padding.top}
+              x2={x(tick)}
+              y2={height - padding.bottom}
+            />
+          ))}
+          {yTicks.map((tick) => (
+            <line
+              key={`y-${tick}`}
+              x1={padding.left}
+              y1={y(tick)}
+              x2={width - padding.right}
+              y2={y(tick)}
+            />
+          ))}
+        </g>
+
+        <g className="walk-plane-axes" aria-hidden="true">
+          <line
+            x1={padding.left}
+            y1={xAxis}
+            x2={width - padding.right}
+            y2={xAxis}
+          />
+          <line
+            x1={yAxis}
+            y1={padding.top}
+            x2={yAxis}
+            y2={height - padding.bottom}
+          />
+          <text x={width - padding.right} y={height - 10} textAnchor="end">
+            {plane.xLabel ?? 'x₁'}
+          </text>
+          <text x={padding.left + 2} y={padding.top + 11}>
+            {plane.yLabel ?? 'x₂'}
+          </text>
+        </g>
+
+        <g className="walk-plane-ticks" aria-hidden="true">
+          {xTicks.map((tick) => (
+            <text
+              key={`x-label-${tick}`}
+              x={x(tick)}
+              y={Math.min(height - 14, xAxis + 18)}
+              textAnchor="middle"
+            >
+              {tick}
+            </text>
+          ))}
+          {yTicks
+            .filter((tick) => tick !== 0)
+            .map((tick) => (
+              <text
+                key={`y-label-${tick}`}
+                x={Math.max(18, yAxis - 7)}
+                y={y(tick) + 4}
+                textAnchor="end"
+              >
+                {tick}
+              </text>
+            ))}
+        </g>
+
+        {(plane.lines ?? []).map((line, index) => (
+          <g key={`line-${index}`} aria-hidden="true">
+            <line
+              x1={x(line.from[0])}
+              y1={y(line.from[1])}
+              x2={x(line.to[0])}
+              y2={y(line.to[1])}
+              className={cn(
+                'walk-plane-line',
+                line.tone && planeToneClass[line.tone],
+                line.dashed && 'is-dashed',
+              )}
+            />
+            {line.label && (
+              <text
+                x={x(line.to[0]) - 5}
+                y={y(line.to[1]) - 7}
+                textAnchor="end"
+                className={cn(
+                  'walk-plane-label',
+                  line.tone && planeToneClass[line.tone],
+                )}
+              >
+                {line.label}
+              </text>
+            )}
+          </g>
+        ))}
+
+        {(plane.segments ?? []).map((segment, index) => (
+          <line
+            key={`segment-${index}`}
+            x1={x(segment.from[0])}
+            y1={y(segment.from[1])}
+            x2={x(segment.to[0])}
+            y2={y(segment.to[1])}
+            className={cn(
+              'walk-plane-segment',
+              segment.tone && planeToneClass[segment.tone],
+              segment.dashed && 'is-dashed',
+            )}
+            aria-hidden="true"
+          />
+        ))}
+
+        {(plane.vectors ?? []).map((vector, index) => {
+          const from = vector.from ?? ([0, 0] as [number, number]);
+          const tone = vector.tone ?? 'source';
+          return (
+            <g key={`vector-${index}`} aria-hidden="true">
+              <line
+                x1={x(from[0])}
+                y1={y(from[1])}
+                x2={x(vector.to[0])}
+                y2={y(vector.to[1])}
+                markerEnd={`url(#${markerPrefix}-${tone})`}
+                className={cn(
+                  'walk-plane-vector',
+                  planeToneClass[tone],
+                  vector.dashed && 'is-dashed',
+                )}
+              />
+              {vector.label && (
+                <text
+                  x={x(vector.to[0]) + (vector.to[0] < 0 ? -7 : 7)}
+                  y={y(vector.to[1]) - 7}
+                  textAnchor={vector.to[0] < 0 ? 'end' : 'start'}
+                  className={cn('walk-plane-label', planeToneClass[tone])}
+                >
+                  {vector.label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+        {(plane.points ?? []).map((point, index) => {
+          const tone = point.tone ?? 'source';
+          return (
+            <g key={`point-${index}`} aria-hidden="true">
+              <circle
+                cx={x(point.at[0])}
+                cy={y(point.at[1])}
+                r="5"
+                className={cn('walk-plane-point', planeToneClass[tone])}
+              />
+              {point.label && (
+                <text
+                  x={x(point.at[0]) + 7}
+                  y={y(point.at[1]) - 8}
+                  className={cn('walk-plane-label', planeToneClass[tone])}
+                >
+                  {point.label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      <span className="sr-only">
+        {marks.length} vector or line marks and {plane.points?.length ?? 0}
+        points are shown.
+      </span>
+    </figure>
+  );
+}
+
 function VisualPanel({
   visual,
   stateKey,
@@ -249,6 +579,9 @@ function VisualPanel({
         <div className="mt-4">
           <GraphView graph={visual.graph} label={visual.description} />
         </div>
+      )}
+      {visual.plane && (
+        <PlaneView plane={visual.plane} label={visual.description} />
       )}
       {visual.matrices && (
         <div className="walk-matrix-list">

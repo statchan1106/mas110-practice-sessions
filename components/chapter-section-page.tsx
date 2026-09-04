@@ -3,22 +3,22 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { CodeWalkthrough } from '@/components/code-walkthrough';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
-import {
-  chapterTwoSections,
-  type ChapterSection,
-} from '@/lib/chapter-two-data';
+import type { ChapterSection } from '@/lib/chapter/shared';
 import { sitePath } from '@/lib/site-path';
 
-export function ChapterSectionPage({ section }: { section: ChapterSection }) {
-  const sectionIndex = chapterTwoSections.findIndex(
-    (item) => item.slug === section.slug,
-  );
-  const previous =
-    sectionIndex > 0 ? chapterTwoSections[sectionIndex - 1] : undefined;
+export function ChapterSectionPage({
+  section,
+  sections,
+}: {
+  section: ChapterSection;
+  sections: ChapterSection[];
+}) {
+  const chapterNumber = section.number.split('.')[0];
+  const chapterHref = `/chapter-${chapterNumber}`;
+  const sectionIndex = sections.findIndex((item) => item.slug === section.slug);
+  const previous = sectionIndex > 0 ? sections[sectionIndex - 1] : undefined;
   const next =
-    sectionIndex < chapterTwoSections.length - 1
-      ? chapterTwoSections[sectionIndex + 1]
-      : undefined;
+    sectionIndex < sections.length - 1 ? sections[sectionIndex + 1] : undefined;
 
   return (
     <div className="min-h-screen">
@@ -30,7 +30,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
         <nav className="course-breadcrumb" aria-label="Breadcrumb">
           <a href={sitePath('/')}>Practice sessions</a>
           <span>/</span>
-          <a href={sitePath('/chapter-2')}>Chapter 2</a>
+          <a href={sitePath(chapterHref)}>Chapter {chapterNumber}</a>
           <span>/</span>
           <span aria-current="page">{section.number}</span>
         </nav>
@@ -66,7 +66,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
             <h2 id={`lab-${section.number}-goal`}>{section.learningGoal}</h2>
           </div>
           <div className="lab-concepts">
-            <strong>Lecture 2 concepts</strong>
+            <strong>Lecture-note concepts</strong>
             <ul>
               {section.lectureConcepts.map((concept) => (
                 <li key={concept}>{concept}</li>
@@ -135,10 +135,10 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
 
         <nav
           className="lesson-pagination"
-          aria-label="Chapter 2 section navigation"
+          aria-label={`Chapter ${chapterNumber} section navigation`}
         >
           {previous ? (
-            <a href={sitePath(`/chapter-2/${previous.slug}`)}>
+            <a href={sitePath(`${chapterHref}/${previous.slug}`)}>
               <span>
                 <ArrowLeft className="size-3.5" aria-hidden="true" />
                 Previous
@@ -153,7 +153,7 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
           {next ? (
             <a
               className="text-right"
-              href={sitePath(`/chapter-2/${next.slug}`)}
+              href={sitePath(`${chapterHref}/${next.slug}`)}
             >
               <span className="justify-end">
                 Next
@@ -164,12 +164,12 @@ export function ChapterSectionPage({ section }: { section: ChapterSection }) {
               </strong>
             </a>
           ) : (
-            <a className="text-right" href={sitePath('/chapter-2')}>
+            <a className="text-right" href={sitePath(chapterHref)}>
               <span className="justify-end">
                 Chapter index
                 <ArrowRight className="size-3.5" aria-hidden="true" />
               </span>
-              <strong>Return to Chapter 2</strong>
+              <strong>Return to Chapter {chapterNumber}</strong>
             </a>
           )}
         </nav>
