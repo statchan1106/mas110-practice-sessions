@@ -92,12 +92,37 @@ export const blockMatricesGraphsSection: ChapterSection = {
       {
         code: 'import numpy as np\nA = np.array([[1, 2], [3, 4]])\nB = np.array([[5], [6]])\nC = np.array([[7, 8]])\nD = np.array([[9]])\nX = np.block([[A, B], [C, D]])',
         lineNotes: [
-          { action: 'Loads NumPy for arrays and block construction.' },
-          { action: 'Creates the 2×2 upper-left block.' },
-          { action: 'Creates the 2×1 upper-right block.' },
-          { action: 'Creates the 1×2 lower-left block.' },
-          { action: 'Creates the 1×1 lower-right block.' },
-          { action: 'Joins the four compatible rectangles into X.' },
+          {
+            action: 'Loads NumPy for arrays and block construction.',
+            shape: '— (module import)',
+            operation: 'Binds NumPy to the short name np.',
+          },
+          {
+            action: 'Creates the upper-left block.',
+            shape: 'A: (2, 2)',
+            operation: 'Stores two rows and two columns.',
+          },
+          {
+            action: 'Creates the upper-right block.',
+            shape: 'B: (2, 1)',
+            operation: 'Stores a two-entry column beside A.',
+          },
+          {
+            action: 'Creates the lower-left block.',
+            shape: 'C: (1, 2)',
+            operation: 'Stores one row below A.',
+          },
+          {
+            action: 'Creates the lower-right block.',
+            shape: 'D: (1, 1)',
+            operation: 'Stores the single lower-right entry 9.',
+          },
+          {
+            action: 'Joins the four compatible rectangles into X.',
+            shape: 'rows 2+1, columns 2+1 → X: (3, 3)',
+            operation:
+              'np.block places A/B above C/D; shared block sizes must match.',
+          },
         ],
         title: 'Join four compatible blocks',
         explanation:
@@ -131,13 +156,43 @@ export const blockMatricesGraphsSection: ChapterSection = {
       {
         code: 'Y = np.array([[1, 0], [0, 1], [1, 2]])\nE, F = Y[:2, :1], Y[:2, 1:]\nG, H = Y[2:, :1], Y[2:, 1:]\ndirect = X @ Y\nby_blocks = np.block([[A @ E + B @ G, A @ F + B @ H],\n                      [C @ E + D @ G, C @ F + D @ H]])\nsame = np.array_equal(direct, by_blocks)',
         lineNotes: [
-          { action: 'Creates a 3×2 matrix with the matching 2+1 row split.' },
-          { action: 'Slices the top block row into E and F.' },
-          { action: 'Slices the bottom block row into G and H.' },
-          { action: 'Computes the ordinary full matrix product.' },
-          { action: 'Computes the top output blocks from block products.' },
-          { action: 'Computes the bottom output blocks and closes np.block.' },
-          { action: 'Checks that the two calculations give the same entries.' },
+          {
+            action: 'Creates the right factor with matching block boundaries.',
+            shape: 'Y: (3, 2), split as rows 2+1 and columns 1+1',
+            operation:
+              'Its row split matches X; its column split defines two output blocks.',
+          },
+          {
+            action: 'Slices the top block row into E and F.',
+            shape: 'E: (2, 1), F: (2, 1)',
+            operation: 'Takes rows 0–1 and splits the columns at index 1.',
+          },
+          {
+            action: 'Slices the bottom block row into G and H.',
+            shape: 'G: (1, 1), H: (1, 1)',
+            operation: 'Takes the final row and splits the columns at index 1.',
+          },
+          {
+            action: 'Computes the ordinary full matrix product.',
+            shape: '(3, 3) @ (3, 2) → direct: (3, 2)',
+            operation: 'Applies ordinary row-by-column multiplication.',
+          },
+          {
+            action: 'Computes the top output blocks.',
+            shape: 'AE+BG: (2,1), AF+BH: (2,1) → top: (2,2)',
+            operation: 'Adds products only when their output shapes match.',
+          },
+          {
+            action: 'Computes the bottom blocks and closes np.block.',
+            shape: 'CE+DG, CF+DH: each (1,1) → result: (3,2)',
+            operation:
+              'Stacks the 2-row top blocks above the 1-row bottom blocks.',
+          },
+          {
+            action: 'Checks that both calculations give the same entries.',
+            shape: '(3, 2) vs (3, 2) → same: bool',
+            operation: 'All six entries agree, so the result is True.',
+          },
         ],
         title: 'Multiply directly and by blocks',
         explanation:
@@ -187,13 +242,34 @@ export const blockMatricesGraphsSection: ChapterSection = {
       {
         code: 'edges = [(0, 1), (0, 2), (1, 3), (2, 3)]\nadj = np.zeros((4, 4), dtype=int)\nfor i, j in edges:\n    adj[i, j] = 1\n    adj[j, i] = 1',
         lineNotes: [
-          { action: 'Lists four undirected edges using zero-based indices.' },
-          { action: 'Starts a 4×4 adjacency matrix filled with zeros.' },
-          { action: 'Visits one edge at a time.' },
-          { action: 'Records the connection from i to j.' },
           {
-            action:
-              'Records the reverse connection because the graph is undirected.',
+            action: 'Lists four undirected edges using zero-based indices.',
+            shape: 'edges: 4 pairs of scalar indices',
+            operation:
+              'Stores each undirected edge once with endpoints from 0 to 3.',
+          },
+          {
+            action: 'Starts an adjacency matrix filled with zeros.',
+            shape: 'adj: (4, 4)',
+            operation:
+              'Allocates 16 integer zeros before any edge is recorded.',
+          },
+          {
+            action: 'Visits one edge at a time.',
+            shape: 'one pair → i: scalar, j: scalar',
+            operation:
+              'Unpacks one edge and repeats the body for all four pairs.',
+          },
+          {
+            action: 'Records the connection from i to j.',
+            shape: 'adj[i, j]: scalar entry',
+            operation: 'Changes the forward adjacency entry from 0 to 1.',
+          },
+          {
+            action: 'Records the reverse connection.',
+            shape: 'adj[j, i]: transposed scalar entry',
+            operation:
+              'Mirrors the 1 across the diagonal, making adj symmetric.',
           },
         ],
         title: 'Turn edges into an adjacency matrix',
@@ -223,8 +299,15 @@ export const blockMatricesGraphsSection: ChapterSection = {
           {
             action:
               'Squares the adjacency matrix to combine two consecutive edges.',
+            shape: '(4, 4) @ (4, 4) → adj2: (4, 4)',
+            operation:
+              'adj2[i,j] = Σₖ adj[i,k]adj[k,j]; k chooses the middle vertex.',
           },
-          { action: 'Reads the count from vertex 1 to vertex 4.' },
+          {
+            action: 'Reads the count from vertex 1 to vertex 4.',
+            shape: 'adj2[0, 3] → scalar',
+            operation: '0·0 + 1·1 + 1·1 + 0·0 = 2, via vertices 2 and 3.',
+          },
         ],
         title: 'Count two-step walks',
         explanation:

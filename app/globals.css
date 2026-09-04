@@ -1188,6 +1188,9 @@
     border-bottom: 1px solid
       color-mix(in oklch, var(--foreground) 14%, transparent);
   }
+  .line-meaning.has-line-details > div {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+  }
   .line-meaning dt,
   .line-meaning dd {
     padding: 0.62rem 0.35rem;
@@ -1208,6 +1211,22 @@
     font-size: 0.95rem;
     line-height: 1.5rem;
     overflow-wrap: break-word;
+  }
+  .line-meaning .is-shape {
+    background: color-mix(in oklch, var(--primary) 5%, transparent);
+  }
+  .line-meaning dd code {
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .trace-reading-key {
+    margin-top: 0.75rem;
+    color: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.35rem;
   }
 
   .trace-mobile-source {

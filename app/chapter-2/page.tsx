@@ -76,7 +76,8 @@ export default function ChapterTwoHome() {
               </h2>
             </div>
             <p className="max-w-md text-base leading-7 text-muted-foreground">
-              Each visual links one Python line to a mathematical change.
+              Each active line shows its action, array shape, and mathematical
+              change.
             </p>
           </div>
           <dl className="concept-ledger mt-8">

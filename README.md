@@ -25,6 +25,7 @@ Each lab contains:
 - a clear learning goal;
 - lecture-note concepts and a short reference;
 - a short line-by-line teaching example adapted from the upstream notebook;
+- the active line’s action, input/output shape, and concrete operation;
 - one short prediction prompt;
 - a persistent before-and-after visualization; and
 - links to the original source and a runnable Colab notebook.
@@ -48,7 +49,8 @@ When adding or updating a lab:
 1. Use the same core terms as the lecture notes in the learning goal and concept tags.
 2. Keep each teaching-example line, plain-English explanation, and resulting visual state together.
 3. Show matrices separately before combining them when that order helps students understand the construction.
-4. Use `Code / Why` to separate the Python action from its mathematical meaning.
+4. Use `Action / Shape / Operation` to connect syntax, dimensions, and the
+   concrete calculation.
 5. Keep the visualization responsive; do not add fixed matrix widths or horizontal-scroll wrappers.
 6. Link the guided page to both the full source notebook and Colab.
 

@@ -67,10 +67,26 @@ export const luDecompositionSection: ChapterSection = {
       {
         code: 'import numpy as np\nimport scipy as sp\nX = np.array([[1., 0.], [0., 1.], [0., 2.]])\nY = np.array([[1., 2., 3., 4.], [2., 5., 7., 9.]])',
         lineNotes: [
-          { action: 'Loads NumPy for arrays, ranks, and norms.' },
-          { action: 'Loads SciPy for LU decomposition.' },
-          { action: 'Creates a 3×2 left factor.' },
-          { action: 'Creates a 2×4 right factor.' },
+          {
+            action: 'Loads NumPy for arrays, ranks, and norms.',
+            shape: '— (module import)',
+            operation: 'NumPy is available as np.',
+          },
+          {
+            action: 'Loads SciPy for LU decomposition.',
+            shape: '— (module import)',
+            operation: 'SciPy is available as sp.',
+          },
+          {
+            action: 'Creates a 3×2 left factor.',
+            shape: 'X: (3, 2)',
+            operation: 'Stores rows [1,0], [0,1], and [0,2].',
+          },
+          {
+            action: 'Creates a 2×4 right factor.',
+            shape: 'Y: (2, 4)',
+            operation: 'Stores rows [1,2,3,4] and [2,5,7,9].',
+          },
         ],
         title: 'Create two narrow factors',
         explanation:
@@ -103,8 +119,16 @@ export const luDecompositionSection: ChapterSection = {
       {
         code: 'A = X @ Y\nrank_A = np.linalg.matrix_rank(A)',
         lineNotes: [
-          { action: 'Multiplies the two factors to create A.' },
-          { action: 'Counts the independent directions in A.' },
+          {
+            action: 'Multiplies the two factors to create A.',
+            shape: '(3, 2) @ (2, 4) → A: (3, 4)',
+            operation: 'Forms A, with A[2] = 2 × A[1].',
+          },
+          {
+            action: 'Counts the independent directions in A.',
+            shape: 'A: (3, 4) → scalar',
+            operation: 'rank_A = 2.',
+          },
         ],
         title: 'Create a rank-2 matrix',
         explanation:
@@ -138,10 +162,16 @@ export const luDecompositionSection: ChapterSection = {
       {
         code: 'P, L, U = sp.linalg.lu(A)\nQ = P.T',
         lineNotes: [
-          { action: 'Computes SciPy’s permutation, lower, and upper factors.' },
+          {
+            action: 'Computes SciPy’s permutation, lower, and upper factors.',
+            shape: 'A: (3, 4) → P, L: (3, 3); U: (3, 4)',
+            operation: 'Factors A = P @ L @ U.',
+          },
           {
             action:
               'Transposes P to express the factorization as Q @ A = L @ U.',
+            shape: 'P: (3, 3) → Q: (3, 3)',
+            operation: 'Q row order = [3, 1, 2] (one-based); Q @ A = L @ U.',
           },
         ],
         title: 'Read the LU factors',
@@ -185,14 +215,26 @@ export const luDecompositionSection: ChapterSection = {
       {
         code: 'residual = np.linalg.norm(Q @ A - L @ U)\nrank_U = np.linalg.matrix_rank(U)\nreconstructs = np.allclose(Q @ A, L @ U)\npassed = rank_A == rank_U == 2 and reconstructs',
         lineNotes: [
-          { action: 'Measures the size of the reconstruction difference.' },
-          { action: 'Computes the rank visible in U.' },
+          {
+            action: 'Measures the size of the reconstruction difference.',
+            shape: '(3, 4) − (3, 4) → scalar',
+            operation: '‖Q @ A − L @ U‖ = 0.',
+          },
+          {
+            action: 'Computes the rank visible in U.',
+            shape: 'U: (3, 4) → scalar',
+            operation: 'rank_U = 2.',
+          },
           {
             action: 'Checks the two reconstructed matrices within a tolerance.',
+            shape: 'two (3, 4) arrays → bool',
+            operation: 'np.allclose(Q @ A, L @ U) → True.',
           },
           {
             action:
               'Combines the rank and reconstruction claims into one result.',
+            shape: 'two ranks + one bool → bool',
+            operation: '(2 == 2 == 2) and True → True.',
           },
         ],
         title: 'Test the mathematical claims',

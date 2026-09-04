@@ -61,10 +61,27 @@ export const gaussianEliminationSection: ChapterSection = {
       {
         code: 'import numpy as np\nimport scipy as sp\nA = np.array([[0., 2., 2.], [4., 4., 0.], [2., 3., 2.]])\nb = np.array([10., 12., 14.])',
         lineNotes: [
-          { action: 'Loads NumPy for arrays and linear solves.' },
-          { action: 'Loads SciPy for pivoted LU decomposition.' },
-          { action: 'Stores a small coefficient matrix as A.' },
-          { action: 'Stores the right-hand side as b.' },
+          {
+            action: 'Loads NumPy for arrays and linear solves.',
+            shape: '— (module import)',
+            operation: 'Binds NumPy to the short name np.',
+          },
+          {
+            action: 'Loads SciPy for pivoted LU decomposition.',
+            shape: '— (module import)',
+            operation: 'Binds SciPy to the short name sp.',
+          },
+          {
+            action: 'Stores a small coefficient matrix as A.',
+            shape: 'nested rows → A: (3, 3)',
+            operation:
+              'Three lists become the three rows of one 2-D float array.',
+          },
+          {
+            action: 'Stores the right-hand side as b.',
+            shape: '3 values → b: (3,)',
+            operation: 'Creates the 1-D vector [10, 12, 14].',
+          },
         ],
         title: 'Create a small system',
         explanation:
@@ -95,10 +112,18 @@ export const gaussianEliminationSection: ChapterSection = {
       {
         code: 'P, L, U_raw = sp.linalg.lu(A)\nQ = P.T',
         lineNotes: [
-          { action: 'Factors A into a row permutation, L, and U_raw.' },
+          {
+            action: 'Factors A into a row permutation, L, and U_raw.',
+            shape: 'A: (3, 3) → P, L, U_raw: each (3, 3)',
+            operation:
+              'Chooses pivot 4, reorders rows, and stores the 0.5 multipliers in L.',
+          },
           {
             action:
               'Transposes P so the course identity reads Q @ A = L @ U_raw.',
+            shape: 'P: (3, 3) → Q: (3, 3)',
+            operation:
+              'Exchanges row and column indices; this one-swap P happens to stay unchanged.',
           },
         ],
         title: 'Factor and reorder the rows',
@@ -156,9 +181,21 @@ export const gaussianEliminationSection: ChapterSection = {
           {
             action:
               'Copies the three pivot values into a one-dimensional vector.',
+            shape: 'U_raw: (3, 3) → pivot_values: (3,)',
+            operation: 'Reads U_raw[0,0], U_raw[1,1], U_raw[2,2] → [4, 2, 1].',
           },
-          { action: 'Builds the diagonal matrix D from that vector.' },
-          { action: 'Divides each row by its pivot to create U_unit.' },
+          {
+            action: 'Builds the diagonal matrix D from that vector.',
+            shape: 'pivot_values: (3,) → D: (3, 3)',
+            operation:
+              'Flattens the input, places 4, 2, 1 on the diagonal, and fills 0 elsewhere.',
+          },
+          {
+            action: 'Divides each row by its pivot to create U_unit.',
+            shape: '(3, 3) ÷ (3, 1) → U_unit: (3, 3)',
+            operation:
+              '[:, None] makes [[4], [2], [1]]; broadcasting divides row i by pivot i.',
+          },
         ],
         title: 'Separate pivot size from triangular shape',
         explanation:
@@ -179,6 +216,10 @@ export const gaussianEliminationSection: ChapterSection = {
           equation: 'Q @ A = L @ D @ U_unit',
           matrices: [
             {
+              label: 'pivot_values · shape (3,)',
+              values: [[4, 2, 1]],
+            },
+            {
               label: 'D',
               values: [
                 [4, 0, 0],
@@ -190,6 +231,18 @@ export const gaussianEliminationSection: ChapterSection = {
                   [0, 0],
                   [1, 1],
                   [2, 2],
+                ],
+                'source',
+              ),
+            },
+            {
+              label: 'pivot_values[:, None] · shape (3,1)',
+              values: [[4], [2], [1]],
+              cellTones: toneCells(
+                [
+                  [0, 0],
+                  [1, 0],
+                  [2, 0],
                 ],
                 'source',
               ),
@@ -211,15 +264,33 @@ export const gaussianEliminationSection: ChapterSection = {
               ),
             },
           ],
+          callout:
+            'Broadcasting repeats the 3×1 pivot column across the three columns, so each row is divided by its own pivot.',
         },
       },
       {
         code: 'rhs = Q @ b\ny = np.linalg.solve(L, rhs)\nz = np.linalg.solve(D, y)\nx = np.linalg.solve(U_unit, z)',
         lineNotes: [
-          { action: 'Reorders b with the same Q used on A.' },
-          { action: 'Solves the lower-triangular system L @ y = rhs.' },
-          { action: 'Divides out the pivot scales through D @ z = y.' },
-          { action: 'Solves the upper-triangular system U_unit @ x = z.' },
+          {
+            action: 'Reorders b with the same Q used on A.',
+            shape: 'Q: (3, 3) @ b: (3,) → rhs: (3,)',
+            operation: '[10, 12, 14] becomes [12, 10, 14].',
+          },
+          {
+            action: 'Solves the lower-triangular system L @ y = rhs.',
+            shape: 'L: (3, 3), rhs: (3,) → y: (3,)',
+            operation: 'Returns y = [12, 10, 3] without forming L⁻¹.',
+          },
+          {
+            action: 'Divides out the pivot scales through D @ z = y.',
+            shape: 'D: (3, 3), y: (3,) → z: (3,)',
+            operation: '[12/4, 10/2, 3/1] → [3, 5, 3].',
+          },
+          {
+            action: 'Solves the upper-triangular system U_unit @ x = z.',
+            shape: 'U_unit: (3, 3), z: (3,) → x: (3,)',
+            operation: 'Solves from the bottom row upward → x = [1, 2, 3].',
+          },
         ],
         title: 'Solve one simple factor at a time',
         explanation:
@@ -265,6 +336,9 @@ export const gaussianEliminationSection: ChapterSection = {
           {
             action:
               'Checks that substituting x reproduces b within numerical tolerance.',
+            shape: 'A @ x: (3,) vs b: (3,) → check: bool',
+            operation:
+              'A @ x gives [10, 12, 14]; allclose reduces three comparisons to True.',
           },
         ],
         title: 'Check the answer',

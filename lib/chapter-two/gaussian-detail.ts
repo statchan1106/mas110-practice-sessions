@@ -68,9 +68,21 @@ export const gaussianDetailSection: ChapterSection = {
       {
         code: 'import numpy as np\nA = np.array([[0., 2., 2.], [4., 4., 0.], [2., 3., 2.]])\nU = A.copy()',
         lineNotes: [
-          { action: 'Loads NumPy for the pivot search and row operations.' },
-          { action: 'Creates the same small matrix used in Lab 2.1.' },
-          { action: 'Copies A so the original matrix stays unchanged.' },
+          {
+            action: 'Loads NumPy for the pivot search and row operations.',
+            shape: '— (module import)',
+            operation: 'Binds NumPy to np.',
+          },
+          {
+            action: 'Creates the same small matrix used in Lab 2.1.',
+            shape: 'nested rows → A: (3, 3)',
+            operation: 'Creates the same 2-D matrix used in Lab 2.1.',
+          },
+          {
+            action: 'Copies A so the original matrix stays unchanged.',
+            shape: 'A: (3, 3) → U: (3, 3)',
+            operation: 'Copies the data; later row edits affect only U.',
+          },
         ],
         title: 'Copy the matrix',
         explanation:
@@ -105,8 +117,16 @@ export const gaussianDetailSection: ChapterSection = {
           {
             action:
               'Finds the row index of the largest first-column magnitude.',
+            shape: 'U: (3, 3) → column: (3,) → pivot: scalar',
+            operation:
+              'Takes |[0,4,2]| and returns the first largest index, 1.',
           },
-          { action: 'Swaps that row into the first pivot position.' },
+          {
+            action: 'Swaps that row into the first pivot position.',
+            shape: 'two selected rows: (2, 3) → U: (3, 3)',
+            operation:
+              'Gathers rows [pivot,0] first, then writes them to rows [0,pivot].',
+          },
         ],
         title: 'Move the best pivot into place',
         explanation:
@@ -135,8 +155,16 @@ export const gaussianDetailSection: ChapterSection = {
       {
         code: 'm = U[2, 0] / U[0, 0]\nU[2] = U[2] - m * U[0]',
         lineNotes: [
-          { action: 'Divides the target 2 by the pivot 4.' },
-          { action: 'Subtracts half of the pivot row from the target row.' },
+          {
+            action: 'Divides the target 2 by the pivot 4.',
+            shape: 'scalar ÷ scalar → m: scalar',
+            operation: '2 ÷ 4 → 0.5.',
+          },
+          {
+            action: 'Subtracts half of the pivot row from the target row.',
+            shape: 'row (3,) − scalar × row (3,) → row (3,)',
+            operation: '[2,3,2] − 0.5[4,4,0] → [0,1,2]; only U[2] changes.',
+          },
         ],
         title: 'Cancel below the first pivot',
         explanation:
@@ -173,9 +201,22 @@ export const gaussianDetailSection: ChapterSection = {
       {
         code: 'm = U[2, 1] / U[1, 1]\nU[2] = U[2] - m * U[1]\nis_upper = np.allclose(np.tril(U, -1), 0)',
         lineNotes: [
-          { action: 'Divides the next target 1 by the next pivot 2.' },
-          { action: 'Subtracts half of the second row from the last row.' },
-          { action: 'Checks that every entry below the diagonal is now zero.' },
+          {
+            action: 'Divides the next target 1 by the next pivot 2.',
+            shape: 'scalar ÷ scalar → m: scalar',
+            operation: '1 ÷ 2 → 0.5.',
+          },
+          {
+            action: 'Subtracts half of the second row from the last row.',
+            shape: 'row (3,) − scalar × row (3,) → row (3,)',
+            operation: '[0,1,2] − 0.5[0,2,2] → [0,0,1]; only U[2] changes.',
+          },
+          {
+            action: 'Checks that every entry below the diagonal is now zero.',
+            shape: 'U: (3, 3) → lower part: (3, 3) → is_upper: bool',
+            operation:
+              'Keeps entries below the diagonal and verifies they are all near 0.',
+          },
         ],
         title: 'Cancel below the second pivot',
         explanation:

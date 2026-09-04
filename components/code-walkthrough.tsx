@@ -47,11 +47,17 @@ export type WalkthroughVisual = {
   callout?: string;
 };
 
+export type WalkthroughLineNote = {
+  action: string;
+  shape?: string;
+  operation?: string;
+};
+
 export type WalkthroughStep = {
   sourceCell?: string;
   sourceKind?: 'source' | 'correction';
   code: string;
-  lineNotes?: Array<{ action: string }>;
+  lineNotes?: WalkthroughLineNote[];
   title: string;
   explanation: string;
   drives?: string;
@@ -445,22 +451,50 @@ function SourceList({
 
 function MeaningLedger({
   meaning,
+  lineNote,
   explanation,
 }: {
   meaning: LineMeaning;
+  lineNote?: WalkthroughLineNote;
   explanation: string;
 }) {
+  const hasLineDetails = Boolean(lineNote?.shape || lineNote?.operation);
   return (
     <div>
-      <dl className="line-meaning">
-        <div>
-          <dt>Code</dt>
-          <dd>{meaning.action}</dd>
-        </div>
-        <div>
-          <dt>Why</dt>
-          <dd>{explanation}</dd>
-        </div>
+      <dl className={cn('line-meaning', hasLineDetails && 'has-line-details')}>
+        {hasLineDetails ? (
+          <>
+            <div>
+              <dt>Action</dt>
+              <dd>{meaning.action}</dd>
+            </div>
+            {lineNote?.shape && (
+              <div className="is-shape">
+                <dt>Shape</dt>
+                <dd>
+                  <code>{lineNote.shape}</code>
+                </dd>
+              </div>
+            )}
+            {lineNote?.operation && (
+              <div>
+                <dt>Operation</dt>
+                <dd>{lineNote.operation}</dd>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div>
+              <dt>Code</dt>
+              <dd>{meaning.action}</dd>
+            </div>
+            <div>
+              <dt>Why</dt>
+              <dd>{explanation}</dd>
+            </div>
+          </>
+        )}
       </dl>
     </div>
   );
@@ -626,6 +660,10 @@ export function CodeWalkthrough({
           <p className="section-kicker">{walkthrough.eyebrow}</p>
           <h2>{walkthrough.title}</h2>
           <p className="trace-objective">{walkthrough.objective}</p>
+          <p className="trace-reading-key">
+            Select a line to see its action, array shape, and concrete
+            operation.
+          </p>
           {walkthrough.source && (
             <p className="trace-source-meta">
               <strong>Simplified from</strong>
@@ -693,7 +731,11 @@ export function CodeWalkthrough({
               <code>{lines[lineIndex]}</code>
             </pre>
           </div>
-          <MeaningLedger meaning={meaning} explanation={step.explanation} />
+          <MeaningLedger
+            meaning={meaning}
+            lineNote={step.lineNotes?.[lineIndex]}
+            explanation={step.explanation}
+          />
 
           <details className="trace-mobile-source min-[1680px]:hidden">
             <summary>

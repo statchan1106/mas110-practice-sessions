@@ -9,7 +9,7 @@ export const dynamic = 'force-static';
 
 const pageFunctions = [
   ['01', 'Key ideas', 'Review the terms used in the lab.'],
-  ['02', 'Next line', 'Move through the code one line at a time.'],
+  ['02', 'Line mechanics', 'Read the action, shape, and operation.'],
   ['03', 'Predict', 'Decide what should change.'],
   ['04', 'Reveal', 'Compare the prepared before and after.'],
 ];
