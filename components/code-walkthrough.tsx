@@ -115,6 +115,7 @@ export type CodeWalkthroughData = {
   eyebrow: string;
   objective: string;
   source?: {
+    label?: string;
     filename: string;
     url: string;
     note: string;
@@ -999,7 +1000,7 @@ export function CodeWalkthrough({
           </p>
           {walkthrough.source && (
             <p className="trace-source-meta">
-              <strong>Simplified from</strong>
+              <strong>{walkthrough.source.label ?? 'Simplified from'}</strong>
               <span aria-hidden="true">·</span>
               <a href={walkthrough.source.url} target="_blank" rel="noreferrer">
                 {walkthrough.source.filename} ↗

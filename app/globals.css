@@ -892,6 +892,88 @@
     line-height: 1.5rem;
   }
 
+  .lecture-notation,
+  .lecture-reasoning {
+    margin-block: 3rem;
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+  .lecture-aligned-lab .walk-matrix-label {
+    text-transform: none;
+  }
+  .lecture-notation > p:not(.section-kicker),
+  .reasoning-ledger p {
+    max-width: 85ch;
+    margin-top: 1rem;
+  }
+  .lecture-reference {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  .notation-ledger {
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .notation-ledger > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem 2rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .notation-ledger dt {
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  .notation-ledger dd {
+    min-width: 0;
+    color: var(--muted-foreground);
+  }
+  .reasoning-ledger {
+    display: grid;
+    gap: 2rem;
+    margin-block: 2rem;
+  }
+  .reasoning-ledger article {
+    min-width: 0;
+    border-top: 1px solid var(--border);
+    padding-top: 1.5rem;
+  }
+  .reasoning-ledger h3,
+  .self-check-heading {
+    font-size: 1.25rem;
+    font-weight: 650;
+    line-height: 1.5;
+  }
+  .reasoning-ledger h3 span {
+    margin-right: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+  }
+  .reasoning-equation {
+    padding: 1rem;
+    background: var(--muted);
+    border-left: 3px solid var(--primary);
+    overflow-wrap: anywhere;
+  }
+  .lecture-self-checks details {
+    border-bottom: 1px solid var(--border);
+    padding-block: 1rem;
+  }
+  .lecture-self-checks summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .lecture-self-checks p {
+    max-width: 85ch;
+    margin-top: 0.75rem;
+    color: var(--muted-foreground);
+  }
+  @media (min-width: 768px) {
+    .notation-ledger > div {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+  }
   .concept-primer {
     padding-block: 3rem;
   }

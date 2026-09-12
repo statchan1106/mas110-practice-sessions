@@ -23,12 +23,12 @@ const concepts = [
   [
     'Uniqueness',
     'Null(A) = {0}',
-    'A solution is unique when no nonzero input direction disappears.',
+    'If a solution exists, it is unique exactly when no nonzero input direction disappears.',
   ],
   [
     'Dimension',
     'rank(A) + nullity(A) = n',
-    'The input space splits between retained and collapsed directions.',
+    'For A ∈ ℝᵐˣⁿ, the number of pivots plus the number of free variables equals n, the number of input coordinates.',
   ],
   [
     'Linear map',
@@ -100,8 +100,9 @@ export default function ChapterThreeHome() {
               Different inputs can reach the same output
             </h2>
             <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
-              If a nonzero direction n disappears, adding it to an input cannot
-              change the output.
+              For A = [[1,2],[2,4]], the nonzero direction z = (−2,1)ᵀ
+              disappears. Adding z to an input cannot change the output. Each
+              row in the display below lists one vector’s coordinates.
             </p>
           </div>
           <div className="bridge-flow">
@@ -109,7 +110,7 @@ export default function ChapterThreeHome() {
               className="lecture-matrix"
               aria-label="Two inputs: 3, 0 and 1, 1"
             >
-              <figcaption>Inputs · x and x + n</figcaption>
+              <figcaption>Inputs · x and x + z</figcaption>
               {[
                 [3, 0],
                 [1, 1],
@@ -124,17 +125,17 @@ export default function ChapterThreeHome() {
             <ol className="bridge-operations">
               <li>
                 <span>01</span>
-                <code>n = (−2, 1)</code>
+                <code>z = (−2, 1)ᵀ</code>
                 <small>a null direction</small>
               </li>
               <li>
                 <span>02</span>
-                <code>A n = 0</code>
+                <code>Az = 0</code>
                 <small>the direction disappears</small>
               </li>
               <li>
                 <span>03</span>
-                <code>A(x + n) = Ax</code>
+                <code>A(x + z) = Ax</code>
                 <small>the output stays fixed</small>
               </li>
             </ol>
@@ -198,9 +199,10 @@ export default function ChapterThreeHome() {
         <aside className="source-note mt-14">
           <span>Source note</span>
           <p>
-            Each lab adapts one Chapter 3 notebook into a small deterministic
-            teaching example. The complete <em>Foundations of LADS</em>{' '}
-            notebooks remain linked for extended experiments.
+            Labs 3.1–3.2 adapt the <em>Foundations of LADS</em> notebooks. Lab
+            3.3 follows the running example in Lecture 3, printed slides 17–31,
+            with a companion notebook maintained in this project’s GitHub
+            repository.
           </p>
         </aside>
       </main>

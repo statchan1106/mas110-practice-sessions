@@ -22,6 +22,18 @@ export type ChapterSection = {
   filename: string;
   githubUrl: string;
   colabUrl: string;
+  notebookNote?: string;
+  lectureNotes?: {
+    reference: string;
+    introduction: string;
+    notation: Array<{ symbol: string; meaning: string }>;
+    reasoning: Array<{
+      title: string;
+      paragraphs: string[];
+      equation?: string;
+    }>;
+    checks: Array<{ question: string; answer: string }>;
+  };
   optional?: boolean;
   primer: PrimerItem[];
   walkthrough: CodeWalkthroughData;

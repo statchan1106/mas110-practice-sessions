@@ -21,7 +21,13 @@ export function ChapterSectionPage({
     sectionIndex < sections.length - 1 ? sections[sectionIndex + 1] : undefined;
 
   return (
-    <div className="min-h-screen">
+    <div
+      className={
+        section.lectureNotes
+          ? 'min-h-screen lecture-aligned-lab'
+          : 'min-h-screen'
+      }
+    >
       <SiteHeader />
       <main
         id="main-content"
@@ -81,6 +87,30 @@ export function ChapterSectionPage({
           </div>
         </section>
 
+        {section.lectureNotes && (
+          <section
+            className="lecture-notation"
+            aria-labelledby="notation-heading"
+          >
+            <p className="section-kicker">Lecture 3 · Reading guide</p>
+            <h2 id="notation-heading" className="section-title mt-3">
+              Read the symbols first
+            </h2>
+            <p className="lecture-reference">
+              {section.lectureNotes.reference}
+            </p>
+            <p>{section.lectureNotes.introduction}</p>
+            <dl className="notation-ledger">
+              {section.lectureNotes.notation.map(({ symbol, meaning }) => (
+                <div key={symbol}>
+                  <dt>{symbol}</dt>
+                  <dd>{meaning}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
+
         <section className="concept-primer" aria-labelledby="primer-heading">
           <div className="section-heading-row is-compact">
             <div>
@@ -99,6 +129,11 @@ export function ChapterSectionPage({
                 </dt>
                 <dd>
                   <p>{item.definition}</p>
+                  {section.lectureNotes && (
+                    <small>
+                      <span>Keep in mind</span> {item.watchFor}
+                    </small>
+                  )}
                 </dd>
               </div>
             ))}
@@ -107,11 +142,51 @@ export function ChapterSectionPage({
 
         <CodeWalkthrough walkthrough={section.walkthrough} />
 
-        <section className="notebook-bar" aria-label="Original notebook links">
+        {section.lectureNotes && (
+          <section
+            className="lecture-reasoning"
+            aria-labelledby="reasoning-heading"
+          >
+            <p className="section-kicker">Connect the steps</p>
+            <h2 id="reasoning-heading" className="section-title mt-3">
+              Why this gives every solution
+            </h2>
+            <div className="reasoning-ledger">
+              {section.lectureNotes.reasoning.map((item, index) => (
+                <article key={item.title}>
+                  <h3>
+                    <span>{String(index + 1).padStart(2, '0')}</span>{' '}
+                    {item.title}
+                  </h3>
+                  {item.paragraphs.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                  {item.equation && (
+                    <p className="reasoning-equation">{item.equation}</p>
+                  )}
+                </article>
+              ))}
+            </div>
+            <h3 className="self-check-heading">Check your understanding</h3>
+            <div className="lecture-self-checks">
+              {section.lectureNotes.checks.map(({ question, answer }) => (
+                <details key={question}>
+                  <summary>{question}</summary>
+                  <p>{answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="notebook-bar" aria-label="Notebook links">
           <div>
             <p className="section-kicker">Continue in Python</p>
             <h2>Run the complete notebook in Colab</h2>
-            <p>Run the original code and change the inputs.</p>
+            <p>
+              {section.notebookNote ??
+                'Run the original code and change the inputs.'}
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <a

@@ -30,7 +30,9 @@ Each lab contains:
 - a persistent before-and-after visualization; and
 - links to the original source and a runnable Colab notebook.
 
-For Chapters 2–3, each walkthrough keeps the central operations from the source notebook but uses smaller deterministic inputs. The page is intentionally not a cell-for-cell reproduction: large matrices, repeated experiments, and advanced extensions stay in the linked Colab notebook. Every adaptation is labeled as a simplified teaching example. The browser explains prepared states and does not execute Python.
+For Chapter 2 and Labs 3.1–3.2, walkthroughs keep central operations from the source notebooks with smaller deterministic inputs. Lab 3.3 uses the exact 3 × 4 running matrix from Wooseok Ha’s **Lecture 3: Vector Spaces**, printed slides 17–31 (PDF pages 21–35 of `lec03.pdf`), and the solution-set theorem on printed slides 15–16. Its notation guide distinguishes input/output spaces, lecture and Python indices, coefficient and augmented matrices, and particular and homogeneous solutions. The browser explains prepared states and does not execute Python.
+
+Lab 3.3’s [companion notebook](notebooks/Ch3-3%20Solving%20Non-invertible%20Linear%20System.ipynb) is maintained here. It uses the same code, notation, reasoning, and understanding checks as the page. Regenerate it after editing the lab with `node scripts/sync-ch33-notebook.mjs`, then run all its code cells in Python/Colab. The lecture PDF is a reference and is not redistributed by this project.
 
 Chapter 3 follows one structural question: what does a matrix keep, collapse, and reach? Its three labs build a null-space direction, compare rotation with projection and reflection, and test reachable versus unreachable right-hand sides.
 
@@ -54,7 +56,7 @@ When adding or updating a lab:
 4. Use `Action / Shape / Operation` to connect syntax, dimensions, and the
    concrete calculation.
 5. Keep the visualization responsive; do not add fixed matrix widths or horizontal-scroll wrappers.
-6. Link the guided page to both the full source notebook and Colab.
+6. Link the guided page to both its source notebook and Colab; Lab 3.3 links to this repository’s companion notebook.
 
 ## Local development
 
@@ -73,7 +75,7 @@ npm run build
 
 ## Deployment
 
-The public project page is deployed through GitHub Pages after every push to `main`. The same source can also be published through OpenAI Sites using the existing hosting configuration.
+The maintained public project page is deployed through GitHub Pages after every push to `main`. Maintain and publish updates in this GitHub repository. The former OpenAI Sites configuration is retained for compatibility but is not an active publishing target. Do not update the upstream Foundations of LADS repository as part of this project’s maintenance; keep its links as attribution and references.
 
 ## Acknowledgment
 

@@ -1,3 +1,5 @@
+import { nonInvertibleNotebook } from '@/lib/chapter-three/non-invertible-system';
+
 const repositoryBase = 'https://github.com/kyunghyuncho/Foundations_of_LADS';
 const colabBase =
   'https://colab.research.google.com/github/kyunghyuncho/Foundations_of_LADS/blob/main';
@@ -216,8 +218,8 @@ export const courseGroups: CourseGroup[] = [
       {
         term: 'Rank deficiency',
         definition:
-          'Some output directions are missing because columns are dependent.',
-        relation: 'rank(A) < n',
+          'For A ∈ ℝᵐˣⁿ, rank below min(m,n) is rank deficiency. Dependent columns mean r < n; missing output directions mean r < m.',
+        relation: 'r = rank(A) < min(m,n)',
         watchFor: 'A plane may collapse to a line or point.',
       },
     ],
@@ -227,10 +229,11 @@ export const courseGroups: CourseGroup[] = [
         'Interpretable Linear Transformations',
         'Ch3-2 Interpretable Linear Transformations.ipynb',
       ),
-      notebook(
-        'Solving a Non-invertible Linear System',
-        'Ch3-3 Solving Non-invertible Linear System.ipynb',
-      ),
+      {
+        ...nonInvertibleNotebook,
+        title: 'Solving a Non-invertible Linear System · Lecture 3',
+        status: 'interactive',
+      },
     ],
   },
   {

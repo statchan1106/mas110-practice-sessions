@@ -51,6 +51,10 @@ jobs:
           test -f dist/client/chapter-2/block-matrices-graphs.html
           test -f dist/client/chapter-2/lu-decomposition.html
           test -f dist/client/chapter-2/gaussian-detail.html
+          test -f dist/client/chapter-3.html
+          test -f dist/client/chapter-3/null-space.html
+          test -f dist/client/chapter-3/linear-transformations.html
+          test -f dist/client/chapter-3/non-invertible-system.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
