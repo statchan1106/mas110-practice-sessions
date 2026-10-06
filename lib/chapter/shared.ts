@@ -24,6 +24,8 @@ export type ChapterSection = {
   colabUrl: string;
   notebookNote?: string;
   lectureNotes?: {
+    readingLabel?: string;
+    reasoningTitle?: string;
     reference: string;
     introduction: string;
     notation: Array<{ symbol: string; meaning: string }>;
@@ -33,6 +35,7 @@ export type ChapterSection = {
       equation?: string;
     }>;
     checks: Array<{ question: string; answer: string }>;
+    references?: Array<{ title: string; url: string }>;
   };
   optional?: boolean;
   primer: PrimerItem[];

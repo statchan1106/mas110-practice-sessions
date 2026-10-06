@@ -92,7 +92,10 @@ export function ChapterSectionPage({
             className="lecture-notation"
             aria-labelledby="notation-heading"
           >
-            <p className="section-kicker">Lecture 3 · Reading guide</p>
+            <p className="section-kicker">
+              {section.lectureNotes.readingLabel ??
+                `Lecture ${chapterNumber} · Reading guide`}
+            </p>
             <h2 id="notation-heading" className="section-title mt-3">
               Read the symbols first
             </h2>
@@ -149,7 +152,8 @@ export function ChapterSectionPage({
           >
             <p className="section-kicker">Connect the steps</p>
             <h2 id="reasoning-heading" className="section-title mt-3">
-              Why this gives every solution
+              {section.lectureNotes.reasoningTitle ??
+                'Why this gives every solution'}
             </h2>
             <div className="reasoning-ledger">
               {section.lectureNotes.reasoning.map((item, index) => (
@@ -176,6 +180,24 @@ export function ChapterSectionPage({
                 </details>
               ))}
             </div>
+            {section.lectureNotes.references && (
+              <p className="lecture-reference">
+                Code references:{' '}
+                {section.lectureNotes.references.map((reference, index) => (
+                  <span key={reference.url}>
+                    {index > 0 ? ' · ' : ''}
+                    <a
+                      className="text-link"
+                      href={reference.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {reference.title} ↗
+                    </a>
+                  </span>
+                ))}
+              </p>
+            )}
           </section>
         )}
 

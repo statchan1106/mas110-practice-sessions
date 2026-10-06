@@ -1,4 +1,5 @@
 import { nonInvertibleNotebook } from '@/lib/chapter-three/non-invertible-system';
+import { leastSquaresNotebook } from '@/lib/chapter-four/least-squares';
 
 const repositoryBase = 'https://github.com/kyunghyuncho/Foundations_of_LADS';
 const colabBase =
@@ -64,9 +65,10 @@ export const courseChapters: CourseChapter[] = [
     number: '04',
     title: 'Orthogonality and Approximation',
     summary:
-      'Inner products, projections, Gram-Schmidt, QR, matrix norms, and least squares.',
+      'Lecture 4 concepts and a guided least-squares lab; source notebooks for inner products, polynomials, and QR.',
     sourceNotebooks: 4,
-    status: 'preparing',
+    status: 'available',
+    href: '/chapter-4',
   },
   {
     number: '05',
@@ -250,17 +252,17 @@ export const courseGroups: CourseGroup[] = [
         watchFor: 'A zero inner product signals orthogonality.',
       },
       {
-        term: 'Orthogonal basis',
+        term: 'Orthonormal columns',
         definition:
-          'Independent directions that do not interfere with one another.',
-        relation: 'QᵀQ = I',
+          'Mutually perpendicular unit directions. Reduced Q may be rectangular; QQᵀ then projects onto its column space.',
+        relation: 'QᵀQ = Iₙ',
         watchFor: 'Coordinates separate into independent contributions.',
       },
       {
         term: 'Least squares',
         definition:
-          'The solution whose residual has the smallest Euclidean length.',
-        relation: 'Aᵀ(Ax − b) = 0',
+          'Coefficients minimizing the squared residual length. The fitted output is unique; the coefficients require independent columns to be unique.',
+        relation: 'Aᵀ(b − Aθ̂) = 0',
         watchFor: 'The residual becomes perpendicular to the column space.',
       },
     ],
@@ -274,7 +276,11 @@ export const courseGroups: CourseGroup[] = [
         'Ch4-2 Vectors Space of Polynomials.ipynb',
       ),
       notebook('QR-Decomposition', 'Ch4-3 QR-Decomposition.ipynb'),
-      notebook('Least Squares', 'Ch4-4 Least Squares.ipynb'),
+      {
+        ...leastSquaresNotebook,
+        title: 'Least Squares · Lecture 4',
+        status: 'interactive',
+      },
     ],
   },
   {

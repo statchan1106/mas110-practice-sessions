@@ -55,6 +55,8 @@ jobs:
           test -f dist/client/chapter-3/null-space.html
           test -f dist/client/chapter-3/linear-transformations.html
           test -f dist/client/chapter-3/non-invertible-system.html
+          test -f dist/client/chapter-4.html
+          test -f dist/client/chapter-4/least-squares.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

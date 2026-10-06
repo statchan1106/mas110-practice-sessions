@@ -26,6 +26,7 @@ const guidedNotebookRoutes: Record<string, string> = {
   'Ch2-3 Test LU-Decomposition.ipynb': '/chapter-2/lu-decomposition',
   'Ch2-4 Gaussian elimination in detail (Optional).ipynb':
     '/chapter-2/gaussian-detail',
+  'Ch4-4 Least Squares.ipynb': '/chapter-4/least-squares',
 };
 
 export function CourseLibrary() {

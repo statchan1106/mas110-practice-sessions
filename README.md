@@ -36,6 +36,10 @@ Lab 3.3’s [companion notebook](notebooks/Ch3-3%20Solving%20Non-invertible%20Li
 
 Chapter 3 follows one structural question: what does a matrix keep, collapse, and reach? Its three labs build a null-space direction, compare rotation with projection and reflection, and test reachable versus unreachable right-hand sides.
 
+Chapter 4 now includes **Lab 4.4: Least Squares as Orthogonal Projection**, based on Wooseok Ha’s `lec04.pdf`, printed slides 61–68 (PDF pages 71–78). It keeps the lecture’s 3 × 2 matrix and connects coefficients, fitted values, residuals, normal equations, projection, and reduced QR. The notes state the full-rank assumption for inverse formulas, prove optimality with an orthogonal error decomposition, and show dependent columns producing different minimizing coefficients with the same fitted output. The tangent-plane example also distinguishes a projected displacement from the final point. Sections 4.1–4.3 remain source-notebook references.
+
+Lab 4.4’s [companion notebook](notebooks/Ch4-4%20Least%20Squares.ipynb) is maintained here and shares the page’s code and explanations. Regenerate it with `node scripts/sync-ch44-notebook.mjs`, then run all cells in Python/Colab. Code semantics follow the official [NumPy lstsq](https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html) and [QR](https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html) documentation. The lecture PDF is referenced, not redistributed.
+
 ## Maintainer and questions
 
 Practice materials are prepared and maintained by **Seongchan Lee**. Questions about the materials or code can be sent to `statchan1106 [at] kaist.ac.kr`.
@@ -56,7 +60,7 @@ When adding or updating a lab:
 4. Use `Action / Shape / Operation` to connect syntax, dimensions, and the
    concrete calculation.
 5. Keep the visualization responsive; do not add fixed matrix widths or horizontal-scroll wrappers.
-6. Link the guided page to both its source notebook and Colab; Lab 3.3 links to this repository’s companion notebook.
+6. Link the guided page to both its source notebook and Colab; Labs 3.3 and 4.4 link to this repository’s companion notebooks.
 
 ## Local development
 

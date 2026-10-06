@@ -481,19 +481,31 @@ function PlaneView({
         ))}
 
         {(plane.segments ?? []).map((segment, index) => (
-          <line
-            key={`segment-${index}`}
-            x1={x(segment.from[0])}
-            y1={y(segment.from[1])}
-            x2={x(segment.to[0])}
-            y2={y(segment.to[1])}
-            className={cn(
-              'walk-plane-segment',
-              segment.tone && planeToneClass[segment.tone],
-              segment.dashed && 'is-dashed',
+          <g key={`segment-${index}`} aria-hidden="true">
+            <line
+              x1={x(segment.from[0])}
+              y1={y(segment.from[1])}
+              x2={x(segment.to[0])}
+              y2={y(segment.to[1])}
+              className={cn(
+                'walk-plane-segment',
+                segment.tone && planeToneClass[segment.tone],
+                segment.dashed && 'is-dashed',
+              )}
+            />
+            {segment.label && (
+              <text
+                x={x((segment.from[0] + segment.to[0]) / 2) + 7}
+                y={y((segment.from[1] + segment.to[1]) / 2) - 7}
+                className={cn(
+                  'walk-plane-label',
+                  segment.tone && planeToneClass[segment.tone],
+                )}
+              >
+                {segment.label}
+              </text>
             )}
-            aria-hidden="true"
-          />
+          </g>
         ))}
 
         {(plane.vectors ?? []).map((vector, index) => {
