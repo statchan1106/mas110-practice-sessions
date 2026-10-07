@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { CodeWalkthrough } from '@/components/code-walkthrough';
 import { ChapterFourExplorer } from '@/components/chapter-four-explorer';
+import { MathText } from '@/components/math-text';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import type { ChapterSection } from '@/lib/chapter/shared';
@@ -107,7 +108,9 @@ export function ChapterSectionPage({
             <dl className="notation-ledger">
               {section.lectureNotes.notation.map(({ symbol, meaning }) => (
                 <div key={symbol}>
-                  <dt>{symbol}</dt>
+                  <dt>
+                    <MathText>{symbol}</MathText>
+                  </dt>
                   <dd>{meaning}</dd>
                 </div>
               ))}
@@ -129,7 +132,7 @@ export function ChapterSectionPage({
               <div key={item.term}>
                 <dt>
                   <strong>{item.term}</strong>
-                  <code>{item.relation}</code>
+                  <MathText>{item.relation}</MathText>
                 </dt>
                 <dd>
                   <p>{item.definition}</p>
@@ -169,7 +172,9 @@ export function ChapterSectionPage({
                     <p key={paragraph}>{paragraph}</p>
                   ))}
                   {item.equation && (
-                    <p className="reasoning-equation">{item.equation}</p>
+                    <p className="reasoning-equation">
+                      <MathText>{item.equation}</MathText>
+                    </p>
                   )}
                 </article>
               ))}

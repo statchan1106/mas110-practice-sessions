@@ -60,6 +60,7 @@ jobs:
           test -f dist/client/chapter-4/polynomials.html
           test -f dist/client/chapter-4/qr-decomposition.html
           test -f dist/client/chapter-4/least-squares.html
+          node scripts/verify-math-export.mjs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

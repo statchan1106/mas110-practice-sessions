@@ -60,6 +60,7 @@ Practice materials are prepared and maintained by **Seongchan Lee**. Questions a
 - `lib/chapter-*` — lab goals, explanations, code traces, and visual states
 - `components/code-walkthrough.tsx` — shared line-by-line learning interface
 - `components/chapter-section-page.tsx` — shared lab-page structure
+- `components/math-text.tsx` and `lib/math-expressions.ts` — explicit TeX presentation of lesson formulas, with bundled KaTeX fonts and accessible MathML
 
 When adding or updating a lab:
 
@@ -70,6 +71,7 @@ When adding or updating a lab:
    concrete calculation.
 5. Keep the visualization responsive; do not add fixed matrix widths or horizontal-scroll wrappers.
 6. Link the guided page to both its source notebook and Colab; Lab 3.3 and all Chapter 4 labs link to this repository’s companion notebooks.
+7. Typeset mathematical labels and displayed equations with `MathText`. Add an explicit TeX entry in `lib/math-expressions.ts` or pass `tex` for a one-off formula; keep Python code and prose as text. Import KaTeX CSS in `app/layout.tsx` so Vite resolves its font assets correctly. The Pages workflow runs `scripts/verify-math-export.mjs` to check formula output and bundled fonts.
 
 ## Local development
 

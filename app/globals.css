@@ -639,11 +639,10 @@
       color-mix(in oklch, var(--foreground) 13%, transparent);
     padding-left: 1.1rem;
   }
+  .concept-ledger dd > .math-text,
   .concept-ledger dd code {
     color: var(--primary);
-    font-family: var(--font-heading);
     font-size: 1.1rem;
-    font-style: italic;
   }
   .concept-ledger dd p {
     color: var(--muted-foreground);
@@ -1003,6 +1002,49 @@
     font-family: var(--font-heading);
     font-size: 1rem;
     font-style: italic;
+  }
+  .primer-ledger dt > .math-text,
+  .primer-ledger dt > .math-plain {
+    color: var(--primary);
+    font-size: 1rem;
+  }
+
+  .math-text {
+    display: inline-block;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    padding-block: 0.35em;
+    vertical-align: middle;
+    font-style: normal;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+    overflow-wrap: normal;
+  }
+  .math-text .katex {
+    font-size: 1.08em;
+    text-align: left;
+    white-space: normal;
+  }
+  .math-plain {
+    font-family: var(--font-sans);
+    font-style: normal;
+  }
+  @media (max-width: 640px) {
+    .primer-ledger dt {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+  }
+  .concept-ledger dd,
+  .primer-ledger dt,
+  .notation-ledger dt,
+  .bridge-operations li,
+  .reasoning-equation,
+  .walk-equation {
+    min-width: 0;
   }
   .primer-ledger dd {
     color: var(--muted-foreground);

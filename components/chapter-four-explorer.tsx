@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { MathText } from '@/components/math-text';
 import {
   evaluatePolynomial,
   leastSquaresGeometry,
@@ -237,7 +238,7 @@ function Slider({
   return (
     <div className="geometry-field">
       <label htmlFor={id}>
-        {label} <output htmlFor={id}>{fmt(value)}</output>
+        <MathText>{label}</MathText> <output htmlFor={id}>{fmt(value)}</output>
       </label>
       <input
         id={id}
@@ -257,7 +258,9 @@ function Metrics({ items }: { items: Array<[string, string]> }) {
     <dl className="geometry-values" aria-live="polite">
       {items.map(([name, value]) => (
         <div key={name}>
-          <dt>{name}</dt>
+          <dt>
+            <MathText>{name}</MathText>
+          </dt>
           <dd>{value}</dd>
         </div>
       ))}
@@ -366,9 +369,12 @@ function PolynomialExplorer() {
   return (
     <>
       <p>
-        Project f(t) = tⁿ onto 𝒫ₖ using ∫₋₁¹ fg. Compare the target, its closest
-        polynomial, and the residual over the whole interval. The curve’s
-        vertical axis shows values, not coefficient coordinates.
+        Project <MathText tex={String.raw`f(t)=t^n`}>f(t) = tⁿ</MathText> onto{' '}
+        <MathText tex={String.raw`\mathcal P_k`}>𝒫ₖ</MathText> using{' '}
+        <MathText tex={String.raw`\int_{-1}^1f(t)g(t)\,dt`}>∫₋₁¹ fg</MathText>.
+        Compare the target, its closest polynomial, and the residual over the
+        whole interval. The curve’s vertical axis shows values, not coefficient
+        coordinates.
       </p>
       <div className="geometry-controls">
         <Slider

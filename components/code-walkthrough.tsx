@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronDown, RotateCcw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { MathText } from '@/components/math-text';
 import { cn } from '@/lib/utils';
 
 export type CellTone =
@@ -586,7 +587,9 @@ function VisualPanel({
         {visual.description}
       </p>
       {visual.equation && (
-        <div className="walk-equation">{visual.equation}</div>
+        <div className="walk-equation">
+          <MathText>{visual.equation}</MathText>
+        </div>
       )}
       {visual.graph && (
         <div className="mt-4">

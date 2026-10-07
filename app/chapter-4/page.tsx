@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
+import { MathText } from '@/components/math-text';
 import { chapterFourSections } from '@/lib/chapter-four-data';
 import { sitePath } from '@/lib/site-path';
 
@@ -81,7 +82,7 @@ export default function ChapterFourHome() {
                   {term}
                 </dt>
                 <dd>
-                  <code>{relation}</code>
+                  <MathText>{relation}</MathText>
                   <p>{copy}</p>
                 </dd>
               </div>
@@ -119,17 +120,17 @@ export default function ChapterFourHome() {
             <ol className="bridge-operations">
               <li>
                 <span>01</span>
-                <code>θ̂ = (2/3,4/3)ᵀ</code>
+                <MathText>θ̂ = (2/3,4/3)ᵀ</MathText>
                 <small>two coefficients</small>
               </li>
               <li>
                 <span>02</span>
-                <code>b̂ = Aθ̂</code>
+                <MathText>b̂ = Aθ̂</MathText>
                 <small>three fitted values</small>
               </li>
               <li>
                 <span>03</span>
-                <code>Aᵀ(b − b̂) = 0</code>
+                <MathText>Aᵀ(b − b̂) = 0</MathText>
                 <small>a perpendicular residual</small>
               </li>
             </ol>
@@ -137,7 +138,9 @@ export default function ChapterFourHome() {
               className="lecture-matrix is-result"
               aria-label="Residual e: 1/3, minus 1/3, 1/3"
             >
-              <figcaption>e = b − b̂</figcaption>
+              <figcaption>
+                <MathText>e = b − b̂</MathText>
+              </figcaption>
               {[['1/3'], ['−1/3'], ['1/3']].map((row, i) => (
                 <div key={i}>
                   {row.map((value, j) => (
@@ -196,7 +199,9 @@ export default function ChapterFourHome() {
           </h2>
           <dl className="notation-ledger">
             <div>
-              <dt>⟨·,·⟩ and ‖·‖</dt>
+              <dt>
+                <MathText>⟨·,·⟩ and ‖·‖</MathText>
+              </dt>
               <dd>
                 The stated inner product determines the norm. In 4.1, 4.3, and
                 4.4 use the Euclidean dot product; in 4.2 use the integral on
@@ -204,7 +209,9 @@ export default function ChapterFourHome() {
               </dd>
             </div>
             <div>
-              <dt>φ and θ̂</dt>
+              <dt>
+                <MathText>φ and θ̂</MathText>
+              </dt>
               <dd>
                 φ denotes an angle. θ and θ̂ are candidate and minimizing model
                 coefficients. Polynomial coordinate vectors use c,d instead of
@@ -212,7 +219,9 @@ export default function ChapterFourHome() {
               </dd>
             </div>
             <div>
-              <dt>A and G</dt>
+              <dt>
+                <MathText>A and G</MathText>
+              </dt>
               <dd>
                 A stores Euclidean input columns. G is a Gram matrix of inner
                 products: the polynomial metric in 4.2, and AᵀA in 4.4. The
@@ -220,7 +229,9 @@ export default function ChapterFourHome() {
               </dd>
             </div>
             <div>
-              <dt>Q, R, P</dt>
+              <dt>
+                <MathText>Q, R, P</MathText>
+              </dt>
               <dd>
                 Q stores orthonormal columns; R stores reconstruction
                 coefficients; P acts on ambient vectors as a projection. Reduced
