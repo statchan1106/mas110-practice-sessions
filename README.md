@@ -36,7 +36,16 @@ Lab 3.3’s [companion notebook](notebooks/Ch3-3%20Solving%20Non-invertible%20Li
 
 Chapter 3 follows one structural question: what does a matrix keep, collapse, and reach? Its three labs build a null-space direction, compare rotation with projection and reflection, and test reachable versus unreachable right-hand sides.
 
-Chapter 4 now includes **Lab 4.4: Least Squares as Orthogonal Projection**, based on Wooseok Ha’s `lec04.pdf`, printed slides 61–68 (PDF pages 71–78). It keeps the lecture’s 3 × 2 matrix and connects coefficients, fitted values, residuals, normal equations, projection, and reduced QR. The notes state the full-rank assumption for inverse formulas, prove optimality with an orthogonal error decomposition, and show dependent columns producing different minimizing coefficients with the same fitted output. The tangent-plane example also distinguishes a projected displacement from the final point. Sections 4.1–4.3 remain source-notebook references.
+Chapter 4 has four complete guided labs, with maintained notebooks and interactive geometry:
+
+- **4.1 Inner products:** lengths, angles, projection, orthogonal complements, and the meaning of rectangular QQᵀ. Rotate a vector or change its length, including the zero-vector case.
+- **4.2 Polynomials:** the lecture’s integral metric on [−1,1], ascending coefficient order, Gram matrices, corrected Gram–Schmidt, and continuous approximation. Change the target degree and approximation space to see the curves and integral error.
+- **4.3 QR:** the exact 3 × 2 lecture example, nested spans, triangular reconstruction coefficients, rank checks, and separate reconstruction/orthogonality errors. Step through subtraction and normalization and vary the column angle.
+- **4.4 Least squares:** coefficients, fitted values, residuals, rank assumptions, the full minimizer family, and the translated tangent-plane point. Change an observation or a null-space coefficient and compare the resulting fit.
+
+All labs cite the relevant slides of Wooseok Ha’s `lec04.pdf`. Across the chapter, φ denotes angles; θ denotes model coefficients; G denotes a Gram matrix; and normalized QR directions qⱼ are distinguished from remainders wⱼ. The polynomial metric satisfies CᵀGC = I; Euclidean orthonormal columns satisfy QᵀQ = I. The teaching trace shows prepared Python results, while the interactive explorers calculate directly in the browser. The maintained material corrects the original 4.1 QQᵀ description, the skipped predecessor in 4.2’s Gram–Schmidt loop, and the missing first-column guard in 4.3.
+
+Regenerate all four companion notebooks with `node scripts/sync-chapter4-notebooks.mjs`, then run their cells in Python/Colab. The 4.2 notebook uses the modern [NumPy polynomial API](https://numpy.org/doc/stable/reference/routines.polynomials.polynomial.html) with ascending coefficients and includes a closest-cubic exercise. The 4.3 notebook compares classical Gram–Schmidt, modified Gram–Schmidt, and library QR on the source’s near-dependent example. Only this repository is maintained; Foundations of LADS remains a credited reference.
 
 Lab 4.4’s [companion notebook](notebooks/Ch4-4%20Least%20Squares.ipynb) is maintained here and shares the page’s code and explanations. Regenerate it with `node scripts/sync-ch44-notebook.mjs`, then run all cells in Python/Colab. Code semantics follow the official [NumPy lstsq](https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html) and [QR](https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html) documentation. The lecture PDF is referenced, not redistributed.
 
@@ -60,7 +69,7 @@ When adding or updating a lab:
 4. Use `Action / Shape / Operation` to connect syntax, dimensions, and the
    concrete calculation.
 5. Keep the visualization responsive; do not add fixed matrix widths or horizontal-scroll wrappers.
-6. Link the guided page to both its source notebook and Colab; Labs 3.3 and 4.4 link to this repository’s companion notebooks.
+6. Link the guided page to both its source notebook and Colab; Lab 3.3 and all Chapter 4 labs link to this repository’s companion notebooks.
 
 ## Local development
 

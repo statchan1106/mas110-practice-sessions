@@ -3,6 +3,7 @@ import type {
   CodeWalkthroughData,
 } from '@/components/code-walkthrough';
 import type { PrimerItem } from '@/lib/course-data';
+import type { ExplorerKind } from '@/lib/chapter-four/geometry';
 
 const githubBase =
   'https://github.com/kyunghyuncho/Foundations_of_LADS/blob/main';
@@ -23,6 +24,7 @@ export type ChapterSection = {
   githubUrl: string;
   colabUrl: string;
   notebookNote?: string;
+  explorer?: ExplorerKind;
   lectureNotes?: {
     readingLabel?: string;
     reasoningTitle?: string;

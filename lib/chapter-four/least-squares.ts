@@ -41,6 +41,7 @@ export const leastSquaresSection: ChapterSection = {
   ...leastSquaresNotebook,
   notebookNote:
     'Run the lecture example and vary the observations. The companion notebook, including QR and dependent-column checks, is maintained in this project’s GitHub repository.',
+  explorer: 'least-squares',
   lectureNotes: leastSquaresLectureNotes,
   primer: [
     {

@@ -56,6 +56,9 @@ jobs:
           test -f dist/client/chapter-3/linear-transformations.html
           test -f dist/client/chapter-3/non-invertible-system.html
           test -f dist/client/chapter-4.html
+          test -f dist/client/chapter-4/inner-products.html
+          test -f dist/client/chapter-4/polynomials.html
+          test -f dist/client/chapter-4/qr-decomposition.html
           test -f dist/client/chapter-4/least-squares.html
 
       - name: Upload Pages artifact

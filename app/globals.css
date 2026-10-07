@@ -2394,3 +2394,171 @@
     animation: none;
   }
 }
+
+@layer components {
+  .geometry-explorer {
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .geometry-explorer > p {
+    max-width: 80ch;
+    margin-top: 1rem;
+    line-height: 1.8;
+  }
+  .geometry-controls {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 55rem;
+    margin-top: 1.8rem;
+  }
+  .geometry-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+  .geometry-field label {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .geometry-field output {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .geometry-field input {
+    width: 100%;
+    min-height: 2.75rem;
+    accent-color: var(--primary);
+  }
+  .geometry-field select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem;
+    background: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--input);
+  }
+  .geometry-field button {
+    align-self: flex-start;
+    min-height: 2.75rem;
+  }
+  .geometry-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 3rem;
+    margin-block: 1.75rem;
+    padding-block: 1rem;
+    border-block: 1px solid var(--border);
+  }
+  .geometry-values dt {
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+  }
+  .geometry-values dd {
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+  .geometry-plot {
+    width: 100%;
+    max-width: 55rem;
+  }
+  .geometry-plot svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .geometry-frame {
+    fill: none;
+    stroke: var(--border);
+  }
+  .geometry-grid {
+    stroke: color-mix(in oklch, var(--foreground) 8%, transparent);
+  }
+  .geometry-axis {
+    stroke: var(--border-strong);
+  }
+  .geometry-ticks,
+  .geometry-axis-label {
+    fill: var(--muted-foreground);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .geometry-series {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+  .geometry-series.is-dashed {
+    stroke-dasharray: 6 5;
+  }
+  .geometry-series.is-source {
+    stroke: var(--source-fg);
+  }
+  .geometry-series.is-target {
+    stroke: var(--target-fg);
+  }
+  .geometry-series.is-result {
+    stroke: var(--result-fg);
+  }
+  .geometry-series.is-neutral {
+    stroke: var(--muted-foreground);
+  }
+  .geometry-marker.is-source {
+    fill: var(--source-fg);
+  }
+  .geometry-marker.is-target {
+    fill: var(--target-fg);
+  }
+  .geometry-marker.is-result {
+    fill: var(--result-fg);
+  }
+  .geometry-marker.is-neutral {
+    fill: var(--muted-foreground);
+  }
+  .geometry-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+  }
+  .geometry-legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .geometry-legend i {
+    width: 1.5rem;
+    border-top: 3px solid var(--muted-foreground);
+  }
+  .geometry-legend i.is-source {
+    border-color: var(--source-fg);
+  }
+  .geometry-legend i.is-target {
+    border-color: var(--target-fg);
+  }
+  .geometry-legend i.is-result {
+    border-color: var(--result-fg);
+  }
+  .geometry-legend i.is-dashed {
+    border-top-style: dashed;
+  }
+  .geometry-result {
+    border-left: 2px solid var(--primary);
+    padding-left: 1rem;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 640px) {
+    .geometry-controls {
+      grid-template-columns: 1fr;
+    }
+    .geometry-values {
+      gap: 1rem 1.5rem;
+    }
+  }
+}

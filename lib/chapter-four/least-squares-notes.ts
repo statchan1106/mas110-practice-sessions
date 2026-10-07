@@ -11,6 +11,11 @@ export const leastSquaresLectureNotes: NonNullable<
     'Chapter 3 asked whether Aθ = b has an exact solution. Here b may lie outside Col(A), so we choose coefficients whose output is as close to b as possible. Throughout this lab, vectors and matrices are real and distance means the standard Euclidean distance. The running example is exactly the lecture’s 3 × 2 matrix, not a square system with an inverse.',
   notation: [
     {
+      symbol: 'φ; θ; qⱼ; wⱼ; G',
+      meaning:
+        'Across Chapter 4, φ denotes angles and θ denotes model coefficients. In 4.3, qⱼ names a normalized column while wⱼ is a remainder; the lecture previously labels normalized Gram–Schmidt vectors wᵢ. G always denotes a Gram matrix: here AᵀA, and in 4.2 the polynomial integral metric. The inner product being used determines which Gram matrix applies.',
+    },
+    {
       symbol: 'A ∈ ℝᵐˣⁿ; here m = 3, n = 2',
       meaning:
         'A is the design matrix: m measurements (rows) and n coefficients (columns). θ ∈ ℝⁿ is an input; Aθ and b ∈ ℝᵐ are outputs in measurement space. More rows than columns does not itself prove inconsistency; b ∉ Col(A) does.',

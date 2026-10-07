@@ -27,6 +27,10 @@ const guidedNotebookRoutes: Record<string, string> = {
   'Ch2-4 Gaussian elimination in detail (Optional).ipynb':
     '/chapter-2/gaussian-detail',
   'Ch4-4 Least Squares.ipynb': '/chapter-4/least-squares',
+  'Ch4-1 Inner Products in Euclidean Vector Spaces.ipynb':
+    '/chapter-4/inner-products',
+  'Ch4-2 Vector Spaces of Polynomials.ipynb': '/chapter-4/polynomials',
+  'Ch4-3 QR-Decomposition.ipynb': '/chapter-4/qr-decomposition',
 };
 
 export function CourseLibrary() {

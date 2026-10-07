@@ -1,5 +1,8 @@
 import { nonInvertibleNotebook } from '@/lib/chapter-three/non-invertible-system';
 import { leastSquaresNotebook } from '@/lib/chapter-four/least-squares';
+import { innerProductsNotebook } from '@/lib/chapter-four/inner-products';
+import { polynomialsNotebook } from '@/lib/chapter-four/polynomials';
+import { qrNotebook } from '@/lib/chapter-four/qr-decomposition';
 
 const repositoryBase = 'https://github.com/kyunghyuncho/Foundations_of_LADS';
 const colabBase =
@@ -65,7 +68,7 @@ export const courseChapters: CourseChapter[] = [
     number: '04',
     title: 'Orthogonality and Approximation',
     summary:
-      'Lecture 4 concepts and a guided least-squares lab; source notebooks for inner products, polynomials, and QR.',
+      'Four guided labs with interactive geometry: inner products, polynomial approximation, QR, and least squares.',
     sourceNotebooks: 4,
     status: 'available',
     href: '/chapter-4',
@@ -267,15 +270,17 @@ export const courseGroups: CourseGroup[] = [
       },
     ],
     notebooks: [
-      notebook(
-        'Inner Products in the Euclidean Vector Spaces',
-        'Ch4-1 Inner Products in Euclidean Vector Spaces.ipynb',
-      ),
-      notebook(
-        'Vector Spaces of Polynomials',
-        'Ch4-2 Vectors Space of Polynomials.ipynb',
-      ),
-      notebook('QR-Decomposition', 'Ch4-3 QR-Decomposition.ipynb'),
+      {
+        ...innerProductsNotebook,
+        title: 'Inner Products · Lecture 4',
+        status: 'interactive',
+      },
+      {
+        ...polynomialsNotebook,
+        title: 'Polynomial Inner Products · Lecture 4',
+        status: 'interactive',
+      },
+      { ...qrNotebook, title: 'Reduced QR · Lecture 4', status: 'interactive' },
       {
         ...leastSquaresNotebook,
         title: 'Least Squares · Lecture 4',

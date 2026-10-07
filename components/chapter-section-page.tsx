@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { CodeWalkthrough } from '@/components/code-walkthrough';
+import { ChapterFourExplorer } from '@/components/chapter-four-explorer';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import type { ChapterSection } from '@/lib/chapter/shared';
@@ -142,6 +143,8 @@ export function ChapterSectionPage({
             ))}
           </dl>
         </section>
+
+        {section.explorer && <ChapterFourExplorer kind={section.explorer} />}
 
         <CodeWalkthrough walkthrough={section.walkthrough} />
 

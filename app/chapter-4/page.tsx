@@ -2,15 +2,14 @@ import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
-import { leastSquaresSection } from '@/lib/chapter-four/least-squares';
-import { sourceLinks } from '@/lib/chapter/shared';
+import { chapterFourSections } from '@/lib/chapter-four-data';
 import { sitePath } from '@/lib/site-path';
 
 export const dynamic = 'force-static';
 export const metadata: Metadata = {
   title: 'Chapter 4 · Orthogonality and Approximation · KAIST MAS110',
   description:
-    'Lecture 4 notation and a guided least-squares example connecting normal equations, projections, QR, and rank.',
+    'Four guided Lecture 4 labs with consistent notation, runnable notebooks, and interactive geometry: inner products, polynomials, QR, and least squares.',
 };
 
 const concepts = [
@@ -20,9 +19,9 @@ const concepts = [
     'Use the standard Euclidean inner product to measure length and perpendicularity in this lab.',
   ],
   [
-    'Projection',
-    'b = Pb + (I − P)b',
-    'Split an observation into a reachable fitted output and a perpendicular residual.',
+    'Polynomial metric',
+    '⟨f,g⟩ = ∫₋₁¹ fg = cᵀGd',
+    'Change the inner product from a dot product to an integral while keeping the same projection logic.',
   ],
   [
     'Reduced QR',
@@ -34,23 +33,6 @@ const concepts = [
     'Aᵀ(b − Aθ̂) = 0',
     'Choose the nearest reachable output. Independent columns make the coefficients unique.',
   ],
-];
-const sources = [
-  {
-    number: '4.1',
-    title: 'Inner Products in Euclidean Vector Spaces',
-    filename: 'Ch4-1 Inner Products in Euclidean Vector Spaces.ipynb',
-  },
-  {
-    number: '4.2',
-    title: 'Vector Spaces of Polynomials',
-    filename: 'Ch4-2 Vectors Space of Polynomials.ipynb',
-  },
-  {
-    number: '4.3',
-    title: 'QR-Decomposition',
-    filename: 'Ch4-3 QR-Decomposition.ipynb',
-  },
 ];
 
 export default function ChapterFourHome() {
@@ -176,68 +158,84 @@ export default function ChapterFourHome() {
         <section aria-labelledby="labs-title">
           <div className="section-heading-row is-compact">
             <div>
-              <p className="section-kicker">Guided lab</p>
+              <p className="section-kicker">Four guided labs</p>
               <h2 id="labs-title" className="section-title">
-                Trace least squares step by step
+                Build the geometry, then fit the data
               </h2>
             </div>
           </div>
           <ol className="syllabus-list mt-8">
-            <li>
-              <a
-                className="chapter-lab-row group"
-                href={sitePath('/chapter-4/least-squares')}
-              >
-                <span className="syllabus-number">4.4</span>
-                <span className="min-w-0">
-                  <strong>{leastSquaresSection.title}</strong>
-                  <small>{leastSquaresSection.summary}</small>
-                </span>
-                <code>{leastSquaresSection.focus}</code>
-                <span className="syllabus-action">
-                  Open lab{' '}
-                  <ArrowRight className="size-3.5" aria-hidden="true" />
-                </span>
-              </a>
-            </li>
-          </ol>
-        </section>
-        <section className="py-12" aria-labelledby="sources-title">
-          <p className="section-kicker">Prerequisite notebooks</p>
-          <h2 id="sources-title" className="section-title mt-3">
-            Review the ideas used in 4.4
-          </h2>
-          <p className="mt-4 text-base leading-7 text-muted-foreground">
-            Sections 4.1–4.3 are available as source notebooks; the guided page
-            currently covers 4.4.
-          </p>
-          <ol className="syllabus-list mt-6">
-            {sources.map(({ number, title, filename }) => (
-              <li key={number}>
+            {chapterFourSections.map((section) => (
+              <li key={section.slug}>
                 <a
                   className="chapter-lab-row group"
-                  href={sourceLinks(filename).colabUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={sitePath(`/chapter-4/${section.slug}`)}
                 >
-                  <span className="syllabus-number">{number}</span>
+                  <span className="syllabus-number">{section.number}</span>
                   <span className="min-w-0">
-                    <strong>{title}</strong>
-                    <small>{filename}</small>
+                    <strong>{section.title}</strong>
+                    <small>{section.summary}</small>
                   </span>
-                  <span className="syllabus-action">Source in Colab ↗</span>
+                  <code>{section.focus}</code>
+                  <span className="syllabus-action">
+                    Open lab{' '}
+                    <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </span>
                 </a>
               </li>
             ))}
           </ol>
         </section>
+        <section
+          className="lecture-notation"
+          aria-labelledby="chapter-notation-heading"
+        >
+          <p className="section-kicker">One notation across the chapter</p>
+          <h2 id="chapter-notation-heading" className="section-title mt-3">
+            Keep the object and its coordinates separate
+          </h2>
+          <dl className="notation-ledger">
+            <div>
+              <dt>⟨·,·⟩ and ‖·‖</dt>
+              <dd>
+                The stated inner product determines the norm. In 4.1, 4.3, and
+                4.4 use the Euclidean dot product; in 4.2 use the integral on
+                [−1,1]. The lecture’s |v| is written ‖v‖ here.
+              </dd>
+            </div>
+            <div>
+              <dt>φ and θ̂</dt>
+              <dd>
+                φ denotes an angle. θ and θ̂ are candidate and minimizing model
+                coefficients. Polynomial coordinate vectors use c,d instead of
+                the function argument t.
+              </dd>
+            </div>
+            <div>
+              <dt>A and G</dt>
+              <dd>
+                A stores Euclidean input columns. G is a Gram matrix of inner
+                products: the polynomial metric in 4.2, and AᵀA in 4.4. The
+                lecture’s local polynomial Gram matrix A is renamed G here.
+              </dd>
+            </div>
+            <div>
+              <dt>Q, R, P</dt>
+              <dd>
+                Q stores orthonormal columns; R stores reconstruction
+                coefficients; P acts on ambient vectors as a projection. Reduced
+                Q is rectangular. QᵀQ = I does not imply QQᵀ = I.
+              </dd>
+            </div>
+          </dl>
+        </section>
         <aside className="source-note">
           <span>Lecture reference</span>
           <p>
-            Lab 4.4 follows Wooseok Ha’s Lecture 4, printed slides 61–68 (PDF
-            pages 71–78 of lec04.pdf), with projection and QR connections. Its
-            companion notebook is maintained in this project’s GitHub
-            repository.
+            All four labs follow Wooseok Ha’s Lecture 4 with section-specific
+            slide references. Read them in order or open any lab directly. Each
+            page has an interactive explorer, a code trace, and a maintained
+            notebook in this project’s GitHub repository.
           </p>
         </aside>
       </main>
