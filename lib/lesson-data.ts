@@ -31,8 +31,8 @@ export const gaussianLesson: Lesson = {
     'https://colab.research.google.com/github/kyunghyuncho/Foundations_of_LADS/blob/main/Ch2-1%20Gaussian%20Elimination.ipynb',
   steps: [
     {
-      label: 'Cancel the first entry in R₂',
-      shortLabel: 'Cancel R₂,₁',
+      label: 'Cancel the first entry in $R_{2}$',
+      shortLabel: 'Cancel $R_{2,1}$',
       matrix: [
         [1, 2, -1, 3],
         [2, -1, 1, 0],
@@ -42,16 +42,17 @@ export const gaussianLesson: Lesson = {
       targetRow: 1,
       pivotColumn: 0,
       code: 'factor = aug[1, 0] / aug[0, 0]\naug[1] = aug[1] - factor * aug[0]',
-      prompt: 'Which factor makes the first entry of R₂ become zero?',
+      prompt: 'Which factor makes the first entry of $R_{2}$ become zero?',
       choices: ['0.5', '2', '-2'],
       answer: '2',
-      operation: 'R₂ ← R₂ − 2R₁',
-      meaning: 'Subtracting twice the pivot row cancels the 2 in R₂. This changes the equation’s form, but not its solution set.',
-      completion: 'The first entry of R₂ is now zero.',
+      operation: '$R_{2}$ ← $R_{2} - 2R_{1}$',
+      meaning:
+        'Subtracting twice the pivot row cancels the 2 in $R_{2}$. This changes the equation’s form, but not its solution set.',
+      completion: 'The first entry of $R_{2}$ is now zero.',
     },
     {
-      label: 'Cancel the first entry in R₃',
-      shortLabel: 'Cancel R₃,₁',
+      label: 'Cancel the first entry in $R_{3}$',
+      shortLabel: 'Cancel $R_{3,1}$',
       matrix: [
         [1, 2, -1, 3],
         [0, -5, 3, -6],
@@ -64,13 +65,14 @@ export const gaussianLesson: Lesson = {
       prompt: 'Which factor cancels −1 using the pivot 1?',
       choices: ['1', '-1', '-0.5'],
       answer: '-1',
-      operation: 'R₃ ← R₃ + R₁',
-      meaning: 'Because the factor is −1, subtracting factor·R₁ means adding R₁. The −1 and 1 cancel to zero.',
+      operation: '$R_{3}$ ← $R_{3} + R_{1}$',
+      meaning:
+        'Because the factor is −1, subtracting factor$\\cdot R_{1}$ means adding $R_{1}$. The −1 and 1 cancel to zero.',
       completion: 'Everything below the first pivot is now zero.',
     },
     {
-      label: 'Cancel the second entry in R₃',
-      shortLabel: 'Cancel R₃,₂',
+      label: 'Cancel the second entry in $R_{3}$',
+      shortLabel: 'Cancel $R_{3,2}$',
       matrix: [
         [1, 2, -1, 3],
         [0, -5, 3, -6],
@@ -80,11 +82,12 @@ export const gaussianLesson: Lesson = {
       targetRow: 2,
       pivotColumn: 1,
       code: 'factor = aug[2, 1] / aug[1, 1]\naug[2] = aug[2] - factor * aug[1]',
-      prompt: 'What is factor = 3 ÷ (−5)?',
+      prompt: 'What is factor $= 3$ ÷ (−5)?',
       choices: ['0.6', '-0.6', '-1.67'],
       answer: '-0.6',
-      operation: 'R₃ ← R₃ + 0.6R₂',
-      meaning: 'Adding 0.6 times R₂ to R₃ cancels the 3: 3 + 0.6 × (−5) = 0.',
+      operation: '$R_{3}$ ← $R_{3} + 0.6R_{2}$',
+      meaning:
+        'Adding 0.6 times $R_{2}$ to $R_{3}$ cancels the $3: 3 + 0.6 \\times  (-5) = 0$.',
       completion: 'The matrix is now upper triangular.',
     },
     {
@@ -103,7 +106,8 @@ export const gaussianLesson: Lesson = {
       choices: [],
       answer: '',
       operation: 'Upper triangular form',
-      meaning: 'Every entry below the diagonal is zero, so we can solve from the last equation upward: x₃, then x₂, then x₁.',
+      meaning:
+        'Every entry below the diagonal is zero, so we can solve from the last equation upward: $x_{3}$, then $x_{2}$, then $x_{1}$.',
       completion: 'The system is ready for back substitution.',
     },
   ],

@@ -15,7 +15,7 @@ export const innerProductsSection: ChapterSection = {
   title: 'Inner Products, Angles, and Projection',
   shortTitle: 'Inner products',
   summary:
-    'Turn a dot product into length, angle, and a perpendicular residual. See why QQᵀ is a meaningful projection when Q is rectangular.',
+    'Turn a dot product into length, angle, and a perpendicular residual. See why $QQ^{\\mathsf T}$ is a meaningful projection when Q is rectangular.',
   focus: 'dot product → norm → angle → projection',
   learningGoal:
     'Compute lengths and angles, distinguish orthogonal from orthonormal, and derive a projection by making its residual perpendicular.',
@@ -27,7 +27,7 @@ export const innerProductsSection: ChapterSection = {
     'Projection onto a line',
   ],
   codeExtension:
-    'Replace unseeded random vectors with a reproducible 2D example; protect zero-vector normalization and interpret QQᵀ correctly.',
+    'Replace unseeded random vectors with a reproducible 2D example; protect zero-vector normalization and interpret $QQ^{\\mathsf T}$ correctly.',
   ...innerProductsNotebook,
   notebookNote: lectureNotebookNote,
   explorer: 'inner-products',
@@ -37,7 +37,7 @@ export const innerProductsSection: ChapterSection = {
     reference:
       'Wooseok Ha, MAS110 Lecture 4 (Fall 2026), lec04.pdf: printed slides 3–6, 12–25, 27, and 30 (PDF pages 5–8, 14–29, 31, and 34).',
     introduction:
-      'We keep all vectors real. An inner product is symmetric and bilinear, with ⟨u,u⟩ > 0 for every nonzero u. Here the standard inner product is uᵀv. Lab 4.2 keeps the same geometry but changes the inner product to an integral. Our deterministic example v = (2,1)ᵀ and u = (1,2)ᵀ makes every calculation inspectable.',
+      'We keep all vectors real. An inner product is symmetric and bilinear, with $\\langle u,u\\rangle  > 0$ for every nonzero u. Here the standard inner product is $u^{\\mathsf T}v$. Lab 4.2 keeps the same geometry but changes the inner product to an integral. Our deterministic example $v = (2,1)^{\\mathsf T}$ and $u = (1,2)^{\\mathsf T}$ makes every calculation inspectable.',
     notation: [
       ...realGeometryNotation,
       {
@@ -53,29 +53,29 @@ export const innerProductsSection: ChapterSection = {
       {
         symbol: 'p = λv; λ = uᵀv/(vᵀv); e = u − p',
         meaning:
-          'λ is a scalar coefficient, p is a vector on span{v}, and e is the perpendicular residual. For unit q the same vector is p = (qᵀu)q. The coefficients λ and qᵀu differ because their basis vectors have different lengths.',
+          '$\\lambda$ is a scalar coefficient, p is a vector on span{v}, and e is the perpendicular residual. For unit q the same vector is $p = (q^{\\mathsf T}u)q$. The coefficients $\\lambda$ and $q^{\\mathsf T}u$ differ because their basis vectors have different lengths.',
       },
       {
         symbol: 'Q ∈ ℝᵐˣᵏ; QᵀQ = Iₖ',
         meaning:
-          'Columns are orthonormal, so k ≤ m. QQᵀ is the m × m projection onto Col(Q), not a meaningless matrix. It equals Iₘ only when the orthonormal columns span all of ℝᵐ; an orthogonal matrix is square.',
+          'Columns are orthonormal, so $k \\le  m$. $QQ^{\\mathsf T}$ is the m × m projection onto Col(Q), not a meaningless matrix. It equals $I_{m}$ only when the orthonormal columns span all of $\\mathbb R^{m}$; an orthogonal matrix is square.',
       },
       {
         symbol: 'W⊥; V = W ⊕ W⊥',
         meaning:
-          'W⊥ contains all vectors perpendicular to every vector of W. In finite-dimensional inner-product spaces each vector has a unique decomposition into these two subspaces. Two perpendicular subspaces need not span the whole space.',
+          '$W^{\\perp}$ contains all vectors perpendicular to every vector of W. In finite-dimensional inner-product spaces each vector has a unique decomposition into these two subspaces. Two perpendicular subspaces need not span the whole space.',
       },
       {
         symbol: 'NumPy: @; np.outer; .T',
         meaning:
-          'For two 1D arrays @ is a dot product and returns a scalar. np.outer(q,q) makes the matrix qqᵀ. q.T alone still has shape (2,), so q @ q.T is a scalar, not the projection matrix.',
+          'For two 1D arrays `@` is a dot product and returns a scalar. `np.outer(q,q)` makes the matrix $qq^{\\mathsf T}$. `q.T` alone still has shape (2,), so `q @ q.T` is a scalar, not the projection matrix.',
       },
     ],
     reasoning: [
       {
         title: 'Cauchy–Schwarz makes the angle formula possible',
         paragraphs: [
-          'If v ≠ 0, 0 ≤ ‖u − tv‖₂² = ‖u‖₂² − 2t⟨u,v⟩ + t²‖v‖₂² for every real t. At t = ⟨u,v⟩/‖v‖₂², this implies ⟨u,v⟩² ≤ ‖u‖₂²‖v‖₂². The v = 0 case gives 0 ≤ 0 directly.',
+          'If $v \\ne  0, 0 \\le  \\Vert u - tv\\Vert _{2}^{2} = \\Vert u\\Vert _{2}^{2} - 2t\\langle u,v\\rangle  + t^{2}\\Vert v\\Vert _{2}^{2}$ for every real t. At $t = \\langle u,v\\rangle /\\Vert v\\Vert _{2}^{2}$, this implies $\\langle u,v\\rangle ^{2} \\le  \\Vert u\\Vert _{2}^{2}\\Vert v\\Vert _{2}^{2}$. The $v = 0$ case gives $0 \\le  0$ directly.',
           'Thus the cosine ratio lies in [−1,1] for nonzero vectors. Scaling a vector by a positive number changes its length, but not its angle with another vector. A negative scale reverses its direction.',
         ],
         equation: '|⟨u,v⟩| ≤ ‖u‖₂‖v‖₂; here cos φ = 4/5',
@@ -83,32 +83,33 @@ export const innerProductsSection: ChapterSection = {
       {
         title: 'A unit direction changes the coordinate, not the line',
         paragraphs: [
-          'The vectors v and q = v/‖v‖₂ span the same line. A coordinate along v is λ = 4/5, while the coordinate along q is qᵀu = 4/√5. Multiplying either coordinate by its associated basis vector gives p = (8/5,4/5)ᵀ.',
-          'Orthogonal only means a zero inner product. Orthonormal additionally means unit length. Projection by an inner product alone uses a unit direction; otherwise the denominator ⟨v,v⟩ must remain.',
+          'The vectors v and $q = v/\\Vert v\\Vert _{2}$ span the same line. A coordinate along v is $\\lambda  = 4/5$, while the coordinate along q is $q^{\\mathsf T}u = 4/\\sqrt{5}$. Multiplying either coordinate by its associated basis vector gives $p = (8/5,4/5)^{\\mathsf T}$.',
+          'Orthogonal only means a zero inner product. Orthonormal additionally means unit length. Projection by an inner product alone uses a unit direction; otherwise the denominator $\\langle v,v\\rangle$ must remain.',
         ],
         equation: 'p = (uᵀv)/(vᵀv) · v = (qᵀu)q',
       },
       {
         title: 'The perpendicular residual certifies the nearest point',
         paragraphs: [
-          'With e = u − λv and λ = ⟨u,v⟩/⟨v,v⟩, ⟨e,v⟩ = 0. Any other point μv differs from p only along the line, so its error is the sum of two perpendicular components.',
-          'Here e = (−3/5,6/5)ᵀ, with squared length 9/5. Every μ other than 4/5 adds a positive squared distance along the line.',
+          'With $e = u - \\lambda v$ and $\\lambda  = \\langle u,v\\rangle /\\langle v,v\\rangle , \\langle e,v\\rangle  = 0$. Any other point $\\mu v$ differs from p only along the line, so its error is the sum of two perpendicular components.',
+          'Here $e = (-3/5,6/5)^{\\mathsf T}$, with squared length 9/5. Every $\\mu$ other than 4/5 adds a positive squared distance along the line.',
         ],
         equation: '‖u − μv‖₂² = ‖e‖₂² + (μ − λ)²‖v‖₂²',
       },
       {
-        title: 'QQᵀ is a projection; completing Q changes its range',
+        title:
+          '$QQ^{\\mathsf T}$ is a projection; completing Q changes its range',
         paragraphs: [
-          'Because QᵀQ = Iₖ, P = QQᵀ satisfies Pᵀ = P and P² = Q(QᵀQ)Qᵀ = P. Also Pz lies in Col(Q) and Qᵀ(z − Pz) = 0. That is exactly orthogonal projection.',
-          'The original 4.1 notebook calls a rectangular Q’s QQᵀ meaningless. The corrected interpretation is a projection onto the chosen column space. Completing Q to a square orthogonal basis makes its range the whole space and QQᵀ = Iₘ.',
+          'Because $Q^{\\mathsf T}Q = I_{k}, P = QQ^{\\mathsf T}$ satisfies $P^{\\mathsf T} = P$ and $P^{2} = Q(Q^{\\mathsf T}Q)Q^{\\mathsf T} = P$. Also Pz lies in Col(Q) and $Q^{\\mathsf T}(z - Pz) = 0$. That is exactly orthogonal projection.',
+          'The original 4.1 notebook calls a rectangular Q’s $QQ^{\\mathsf T}$ meaningless. The corrected interpretation is a projection onto the chosen column space. Completing Q to a square orthogonal basis makes its range the whole space and $QQ^{\\mathsf T} = I_{m}$.',
         ],
         equation: 'q = (2,1)ᵀ/√5 ⇒ P = 1/5 · [[4,2],[2,1]] ≠ I₂',
       },
       {
         title: 'Perpendicular subspaces and complements are different claims',
         paragraphs: [
-          'For U = span{(1,0,0)ᵀ} and W = span{(0,1,0)ᵀ}, U ⊥ W. But U⊥ is the entire yz-plane; W is only one line in it. A complement must also account for the remaining direction.',
-          'For any finite-dimensional subspace W, projection gives u = Pu + (I − P)u. The intersection W ∩ W⊥ is {0}, since a vector perpendicular to itself has zero norm. This proves uniqueness of the decomposition.',
+          'For $U = \\operatorname{span}\\{(1,0,0)^{\\mathsf T}\\}$ and $W = \\operatorname{span}\\{(0,1,0)^{\\mathsf T}\\}, U \\perp  W$. But $U^{\\perp}$ is the entire yz-plane; W is only one line in it. A complement must also account for the remaining direction.',
+          'For any finite-dimensional subspace W, projection gives $u = Pu + (I - P)u$. The intersection W ∩ $W^{\\perp}$ is {0}, since a vector perpendicular to itself has zero norm. This proves uniqueness of the decomposition.',
         ],
       },
     ],
@@ -120,19 +121,20 @@ export const innerProductsSection: ChapterSection = {
           'Its dot product with v is zero, so it is orthogonal. The angle is undefined because its norm is zero. The explorer reports this case explicitly.',
       },
       {
-        question: 'Can you write the projection as (uᵀv)v?',
+        question: 'Can you write the projection as $(u^{\\mathsf T}v)v$?',
         answer:
-          'Only if v is a unit vector. Otherwise divide by vᵀv. For our v, this denominator is 5.',
+          'Only if v is a unit vector. Otherwise divide by $v^{\\mathsf T}v$. For our v, this denominator is 5.',
       },
       {
-        question: 'Are λ and p interchangeable?',
+        question: 'Are $\\lambda$ and p interchangeable?',
         answer:
-          'No. λ = 4/5 is one coordinate; p = λv = (8/5,4/5)ᵀ is the projected vector. Changing the basis vector’s length changes the coordinate but not p.',
+          'No. $\\lambda  = 4/5$ is one coordinate; $p = \\lambda v = (8/5,4/5)^{\\mathsf T}$ is the projected vector. Changing the basis vector’s length changes the coordinate but not p.',
       },
       {
-        question: 'Why is QQᵀ useful when Q has fewer columns than rows?',
+        question:
+          'Why is $QQ^{\\mathsf T}$ useful when Q has fewer columns than rows?',
         answer:
-          'It projects onto Col(Q). QᵀQ checks orthonormality in coordinate space; QQᵀ acts in the ambient space. They have different shapes and purposes.',
+          'It projects onto Col(Q). $Q^{\\mathsf T}Q$ checks orthonormality in coordinate space; $QQ^{\\mathsf T}$ acts in the ambient space. They have different shapes and purposes.',
       },
     ],
     references: [
@@ -170,7 +172,7 @@ export const innerProductsSection: ChapterSection = {
     eyebrow: 'Lab 4.1 · Euclidean geometry',
     title: 'From two vectors to a perpendicular residual',
     objective:
-      'Use u = (1,2)ᵀ and v = (2,1)ᵀ to inspect each scalar, vector, and matrix. The formulas are the lecture’s; the small values are a reproducible teaching example.',
+      'Use $u = (1,2)^{\\mathsf T}$ and $v = (2,1)^{\\mathsf T}$ to inspect each scalar, vector, and matrix. The formulas are the lecture’s; the small values are a reproducible teaching example.',
     source: {
       label: 'Maintained notebook',
       filename: innerProductsNotebook.filename,
@@ -205,16 +207,20 @@ export const innerProductsSection: ChapterSection = {
             'module',
             'np supplies arrays and linear algebra.',
           ),
-          line('Stores the vector to project.', 'u: (2,)', 'u = (1,2)ᵀ.'),
+          line(
+            'Stores the vector to project.',
+            'u: (2,)',
+            '$u = (1,2)^{\\mathsf T}$.',
+          ),
           line(
             'Stores the projection direction.',
             'v: (2,)',
-            'v = (2,1)ᵀ, with nonzero norm.',
+            '$v = (2,1)^{\\mathsf T}$, with nonzero norm.',
           ),
           line(
             'Takes the inner product.',
             '(2,) @ (2,) → scalar',
-            '1·2 + 2·1 = 4.',
+            '$1\\cdot 2 + 2\\cdot 1 = 4$.',
           ),
         ],
         after: {
@@ -237,17 +243,17 @@ export const innerProductsSection: ChapterSection = {
           line(
             'Computes the length of u.',
             '(2,) → scalar',
-            '√(1² + 2²) = √5.',
+            '$\\sqrt{1^{2} + 2^{2}} = \\sqrt{5}$.',
           ),
           line(
             'Computes the length of v.',
             '(2,) → scalar',
-            '√(2² + 1²) = √5 > 0.',
+            '$\\sqrt{2^{2} + 1^{2}} = \\sqrt{5} > 0$.',
           ),
           line(
             'Normalizes the nonzero direction.',
             '(2,) / scalar → (2,)',
-            'q = (2/√5,1/√5)ᵀ and qᵀq = 1.',
+            '$q = (2/\\sqrt{5},1/\\sqrt{5})^{\\mathsf T}$ and $q^{\\mathsf T}q = 1$.',
           ),
         ],
         after: {
@@ -269,12 +275,12 @@ export const innerProductsSection: ChapterSection = {
           line(
             'Computes a direction-only comparison.',
             'scalar / scalar → scalar',
-            'cos φ = 4/5 = 0.8. Both norms here are nonzero.',
+            '$\\cos  \\varphi  = 4/5 = 0.8$. Both norms here are nonzero.',
           ),
           line(
             'Converts cosine to an angle.',
             'scalar radians → scalar degrees',
-            'φ ≈ 36.869898°. arccos returns radians; degrees converts units.',
+            '$\\varphi  \\approx  36.869898^\\circ$. arccos returns radians; degrees converts units.',
           ),
         ],
         after: {
@@ -288,34 +294,35 @@ export const innerProductsSection: ChapterSection = {
       {
         title: 'Project onto the line',
         explanation:
-          'The scalar qᵀu is the coordinate along the unit direction. Multiplying by q returns to ambient vector space.',
+          'The scalar $q^{\\mathsf T}u$ is the coordinate along the unit direction. Multiplying by q returns to ambient vector space.',
         watchFor: 'Which value is a coordinate, and which is a vector?',
         code: 'coordinate = q @ u\nprojected = coordinate * q\nresidual = u - projected\nperpendicular = q @ residual',
         lineNotes: [
           line(
             'Finds the coordinate along q.',
             '(2,) @ (2,) → scalar',
-            'qᵀu = 4/√5.',
+            '$q^{\\mathsf T}u = 4/\\sqrt{5}$.',
           ),
           line(
             'Forms the projected vector.',
             'scalar × (2,) → (2,)',
-            'p = (8/5,4/5)ᵀ.',
+            '$p = (8/5,4/5)^{\\mathsf T}$.',
           ),
           line(
             'Keeps the part not explained by the line.',
             '(2,) − (2,) → (2,)',
-            'e = (−3/5,6/5)ᵀ.',
+            '$e = (-3/5,6/5)^{\\mathsf T}$.',
           ),
           line(
             'Checks perpendicularity.',
             '(2,) @ (2,) → scalar',
-            'qᵀe ≈ 0 within floating-point tolerance.',
+            '$q^{\\mathsf T}e \\approx  0$ within floating-point tolerance.',
           ),
         ],
         after: {
           title: 'Along the line plus perpendicular to it',
-          description: 'u = p + e, with p on span{v} and e perpendicular to v.',
+          description:
+            '$u = p + e$, with p on span{v} and e perpendicular to v.',
           equation: 'u = p + e; vᵀe = 0',
           matrices: [
             {
@@ -364,23 +371,23 @@ export const innerProductsSection: ChapterSection = {
           line(
             'Forms the ambient projection.',
             '(2, 1) @ (1, 2) → (2, 2)',
-            'P = qqᵀ = [[4,2],[2,1]]/5.',
+            '$P=qq^{\\mathsf T}=\\frac15\\begin{pmatrix}4&2\\\\2&1\\end{pmatrix}$.',
           ),
           line(
             'Applies the map to u.',
             '(2, 2) @ (2,) → (2,)',
-            'P @ u gives (8/5,4/5)ᵀ again.',
+            'P @ u gives $(8/5,4/5)^{\\mathsf T}$ again.',
           ),
           line(
             'Checks two defining matrix properties.',
             'two comparisons → boolean',
-            'Pᵀ ≈ P and P² ≈ P; projector_check = True.',
+            '$P^{\\mathsf T}\\approx P$ and $P^2\\approx P$; `projector_check` is `True`.',
           ),
         ],
         after: {
-          title: 'QQᵀ projects onto the column space',
+          title: '$QQ^{\\mathsf T}$ projects onto the column space',
           description:
-            'QᵀQ = I₁ but QQᵀ = P ≠ I₂. The range is a line, not all of ℝ².',
+            '$Q^{\\mathsf T}Q = I_{1}$ but $QQ^{\\mathsf T} = P \\ne  I_{2}$. The range is a line, not all of $\\mathbb R^{2}$.',
           equation: 'QᵀQ = [1]; QQᵀ = P',
           matrices: [
             {
@@ -404,28 +411,28 @@ export const innerProductsSection: ChapterSection = {
           line(
             'Computes two squared lengths.',
             'two scalars → (2,)',
-            '‖p‖₂² = 16/5 and ‖e‖₂² = 9/5.',
+            '$\\Vert p\\Vert _{2}^{2} = 16/5$ and $\\Vert e\\Vert _{2}^{2} = 9/5$.',
           ),
           line(
             'Checks Pythagoras.',
             'scalar comparison → boolean',
-            '16/5 + 9/5 = 5 = ‖u‖₂².',
+            '$16/5 + 9/5 = 5 = \\Vert u\\Vert _{2}^{2}$.',
           ),
           line(
             'Chooses a unit perpendicular direction.',
             '(2,)',
-            'Rotate q by 90°: (−1/√5,2/√5)ᵀ.',
+            'Rotate q by $90^\\circ: (-1/\\sqrt{5},2/\\sqrt{5})^{\\mathsf T}$.',
           ),
           line(
             'Completes an orthonormal basis.',
             'two (2,) columns → (2, 2)',
-            'Q_full is square; both Q_fullᵀQ_full and Q_fullQ_fullᵀ equal I₂.',
+            'Q_full is square; both $Q_{\\mathrm{full}}^{\\mathsf T}Q_{\\mathrm{full}}$ and $Q_{\\mathrm{full}}Q_{\\mathrm{full}}^{\\mathsf T}$ equal $I_{2}$.',
           ),
         ],
         after: {
           title: 'Completing the basis explains the identity',
           description:
-            'Adding the perpendicular direction fills ℝ². The earlier line projection remains useful as one part of this decomposition.',
+            'Adding the perpendicular direction fills $\\mathbb R^{2}$. The earlier line projection remains useful as one part of this decomposition.',
           equation: '‖u‖₂² = 16/5 + 9/5 = 5; Q_fullQ_fullᵀ = I₂',
           matrices: [
             { label: 'squared parts · not lengths', values: [['16/5', '9/5']] },

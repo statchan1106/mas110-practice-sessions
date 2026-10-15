@@ -1,3 +1,4 @@
+import { renderMathProse } from '@/components/math-prose';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { CodeWalkthrough } from '@/components/code-walkthrough';
@@ -22,7 +23,7 @@ export function ChapterSectionPage({
   const next =
     sectionIndex < sections.length - 1 ? sections[sectionIndex + 1] : undefined;
 
-  return (
+  return renderMathProse(
     <div
       className={
         section.lectureNotes
@@ -280,6 +281,6 @@ export function ChapterSectionPage({
         </nav>
       </main>
       <SiteFooter />
-    </div>
+    </div>,
   );
 }

@@ -42,7 +42,7 @@ export const nonInvertibleSystemSection: ChapterSection = {
     'Follow Lecture 3’s 3 × 4 matrix from elimination to a consistency condition and the complete two-parameter solution.',
   focus: 'eliminate → test existence → find every solution',
   learningGoal:
-    'Solve Ax = b without an inverse: identify pivot and free variables, test whether b is reachable, and describe the entire solution set.',
+    'Solve $Ax = b$ without an inverse: identify pivot and free variables, test whether b is reachable, and describe the entire solution set.',
   lectureConcepts: [
     'Row echelon form',
     'Pivot and free variables',
@@ -61,32 +61,36 @@ export const nonInvertibleSystemSection: ChapterSection = {
       term: 'Column space: existence',
       definition:
         'Col(A) contains every possible output Ax. A solution exists precisely when the target b belongs to that set.',
-      relation: 'Col(A) = {Ax : x ∈ ℝ⁴} ⊆ ℝ³',
-      watchFor: 'Here the reachable outputs form the plane 5b₁ − 2b₂ + b₃ = 0.',
+      relation:
+        '$\\operatorname{Col}(A) = \\{Ax : x \\in  \\mathbb R^{4}\\}$ ⊆ $\\mathbb R^{3}$',
+      watchFor:
+        'Here the reachable outputs form the plane $5b_{1} - 2b_{2} + b_{3} = 0$.',
     },
     {
       term: 'Null space: freedom in the input',
       definition:
         'Null(A) contains the inputs sent to zero. Adding one to a solution leaves its output unchanged.',
-      relation: 'Null(A) = {z ∈ ℝ⁴ : Az = 0}',
+      relation:
+        '$\\operatorname{Null}(A) = \\{z \\in  \\mathbb R^{4} : Az = 0\\}$',
       watchFor:
-        'The zero on the right belongs to ℝ³; the null-space vectors belong to ℝ⁴.',
+        'The zero on the right belongs to $\\mathbb R^{3}$; the null-space vectors belong to $\\mathbb R^{4}$.',
     },
     {
       term: 'Pivot and free variables',
       definition:
         'In echelon form, the first nonzero entry of each nonzero row is its pivot. Solve for the pivot variables; choose the others freely in a consistent system.',
-      relation: 'pivot: u, w; free: v = α, y = β',
+      relation: 'pivot: u, w; free: $v = \\alpha , y = \\beta$',
       watchFor:
         'The second pivot is in column 3. A pivot need not lie on the diagonal or equal 1.',
     },
     {
       term: 'The complete solution',
       definition:
-        'Once a particular solution xₚ exists, add every linear combination of the null-space basis vectors n₁ and n₂.',
-      relation: 'x = xₚ + αn₁ + βn₂, α, β ∈ ℝ',
+        'Once a particular solution $x_{p}$ exists, add every linear combination of the null-space basis vectors $n_{1}$ and $n_{2}$.',
+      relation:
+        '$x = x_{p} + \\alpha n_{1} + \\beta n_{2}, \\alpha , \\beta  \\in  \\mathbb R$',
       watchFor:
-        'There are n − r = 4 − 2 = 2 free parameters. One null direction would miss solutions.',
+        'There are $n - r = 4 - 2 = 2$ free parameters. One null direction would miss solutions.',
     },
   ],
   walkthrough: {
@@ -104,7 +108,8 @@ export const nonInvertibleSystemSection: ChapterSection = {
       title: 'Three equations, four unknowns',
       description:
         'Columns correspond to input coordinates u, v, w, y; rows correspond to equations. A rectangular matrix has no two-sided inverse.',
-      equation: 'A ∈ ℝ³ˣ⁴, x = (u,v,w,y)ᵀ ∈ ℝ⁴, b ∈ ℝ³',
+      equation:
+        '$A \\in  \\mathbb R^{3\\times 4}, x = (u,v,w,y)^{\\mathsf T} \\in  \\mathbb R^{4}, b \\in  \\mathbb R^{3}$',
       matrices: [{ label: 'A · lecture running example', values: A }],
       callout:
         'Column 2 is 3 times column 1. Elimination will reveal another dependent column and two free variables.',
@@ -134,14 +139,14 @@ export const nonInvertibleSystemSection: ChapterSection = {
         title: 'Keep A and a working copy',
         explanation:
           'A represents the original map. U starts as a copy and will become its row echelon form. Python counts from 0; the lecture counts from 1.',
-        watchFor: 'Which array should check the original equation Ax = b?',
+        watchFor: 'Which array should check the original equation $Ax = b$?',
         after: {
           title: 'Same values, separate arrays',
           description:
             'Both arrays are initially 3 × 4. Row operations will change only U.',
           matrices: [
             { label: 'A · original', values: A },
-            { label: 'U = A.copy()', values: A },
+            { label: '$U = A$.copy()', values: A },
           ],
           callout: 'U[1] is row 2; U[1, 2] is the entry in row 2, column 3.',
         },
@@ -153,19 +158,19 @@ export const nonInvertibleSystemSection: ChapterSection = {
             action: 'Clears the 2 below the first pivot.',
             shape: '(4,) − scalar × (4,) → (4,)',
             operation:
-              'row₂ ← row₂ − 2 row₁: [2,6,9,7] − 2[1,3,3,2] = [0,0,3,3].',
+              '$R_2\\leftarrow R_2-2R_1$: $[2,6,9,7]-2[1,3,3,2]=[0,0,3,3]$.',
           },
           {
             action: 'Clears the −1 below the first pivot.',
             shape: '(4,) + (4,) → (4,)',
             operation:
-              'row₃ ← row₃ + row₁: [−1,−3,3,4] + [1,3,3,2] = [0,0,6,6].',
+              '$R_3\\leftarrow R_3+R_1$: $[-1,-3,3,4]+[1,3,3,2]=[0,0,6,6]$.',
           },
           {
             action: 'Uses the updated row 2 and its pivot in column 3.',
             shape: '(4,) − scalar × (4,) → (4,)',
             operation:
-              'row₃ ← row₃ − 2 row₂: [0,0,6,6] − 2[0,0,3,3] = [0,0,0,0].',
+              '$R_3\\leftarrow R_3-2R_2$: $[0,0,6,6]-2[0,0,3,3]=[0,0,0,0]$.',
           },
         ],
         title: 'Eliminate downward and skip a column without a pivot',
@@ -181,14 +186,14 @@ export const nonInvertibleSystemSection: ChapterSection = {
           {
             name: 'r = rank(A)',
             value: '2',
-            meaning: 'Two pivots leave 4 − 2 = 2 free variables.',
+            meaning: 'Two pivots leave $4 - 2 = 2$ free variables.',
           },
         ],
         after: {
           title: 'U is in row echelon form',
           description:
             'Pivots are at (1,1) and (2,3); the zero row is at the bottom. U is rectangular, so use the term row echelon form.',
-          equation: 'U = EA, where E = L⁻¹ is invertible',
+          equation: '$U = EA$, where $E = L^{-1}$ is invertible',
           matrices: [
             {
               label: 'U · two pivots',
@@ -196,7 +201,7 @@ export const nonInvertibleSystemSection: ChapterSection = {
               cellTones: { ...toneRow(2, 4, 'muted'), ...pivots },
             },
           ],
-          callout: 'For Ax = b, the same row operations must act on b.',
+          callout: 'For $Ax = b$, the same row operations must act on b.',
         },
       },
       {
@@ -210,22 +215,24 @@ export const nonInvertibleSystemSection: ChapterSection = {
           {
             action: 'Scales the second pivot to 1.',
             shape: '(4,) ÷ scalar → (4,)',
-            operation: '[0,0,3,3] / 3 = [0,0,1,1].',
+            operation: '$[0,0,3,3] / 3 = [0,0,1,1]$.',
           },
           {
             action: 'Clears the entry above the second pivot.',
             shape: '(4,) − scalar × (4,) → (4,)',
-            operation: '[1,3,3,2] − 3[0,0,1,1] = [1,3,0,−1].',
+            operation: '$[1,3,3,2] - 3[0,0,1,1] = [1,3,0,-1]$.',
           },
         ],
         title: 'Read the homogeneous equations from R',
         explanation:
-          'Each pivot is 1 and the only nonzero entry in its column. Rx = 0 says u + 3v − y = 0 and w + y = 0. Solve for u and w in terms of v and y.',
+          'Each pivot is 1 and the only nonzero entry in its column. $Rx = 0$ says $u + 3v - y = 0$ and $w + y = 0$. Solve for u and w in terms of v and y.',
         watchFor: 'If v and y are chosen, what determines u and w?',
         after: {
           title: 'Two pivot variables, two free variables',
-          description: 'Set v = α and y = β, with any real α and β.',
-          equation: 'u = −3α + β, v = α, w = −β, y = β',
+          description:
+            'Set $v = \\alpha$ and $y = \\beta$, with any real $\\alpha$ and $\\beta$.',
+          equation:
+            '$u = -3\\alpha  + \\beta , v = \\alpha , w = -\\beta , y = \\beta$',
           matrices: [
             {
               label: 'R · reduced row echelon form',
@@ -238,45 +245,48 @@ export const nonInvertibleSystemSection: ChapterSection = {
             },
           ],
           callout:
-            'Null(A) = Null(U) = Null(R). This does not mean Col(A) = Col(R).',
+            '$\\operatorname{Null}(A) = \\operatorname{Null}(U) = \\operatorname{Null}(R)$. This does not mean $\\operatorname{Col}(A) = \\operatorname{Col}(R)$.',
         },
       },
       {
         code: 'n1 = np.array([-3., 1., 0., 0.])\nn2 = np.array([1., 0., -1., 1.])\nN = np.column_stack((n1, n2))\nnull_check = A @ N',
         lineNotes: [
           {
-            action: 'Sets free coordinates (v,y) = (1,0).',
+            action: 'Sets free coordinates $(v,y) = (1,0)$.',
             shape: '4 values → n1: (4,)',
-            operation: 'u = −3, w = 0: n₁ = (−3,1,0,0)ᵀ.',
+            operation: '$u = -3, w = 0: n_{1} = (-3,1,0,0)^{\\mathsf T}$.',
           },
           {
-            action: 'Sets free coordinates (v,y) = (0,1).',
+            action: 'Sets free coordinates $(v,y) = (0,1)$.',
             shape: '4 values → n2: (4,)',
-            operation: 'u = 1, w = −1: n₂ = (1,0,−1,1)ᵀ.',
+            operation: '$u = 1, w = -1: n_{2} = (1,0,-1,1)^{\\mathsf T}$.',
           },
           {
             action: 'Stores the basis vectors as columns.',
             shape: 'two (4,) arrays → N: (4, 2)',
-            operation: 'N @ [α,β] computes αn₁ + βn₂.',
+            operation:
+              '$N \\mathbin{\\mathtt{@}} [\\alpha ,\\beta ]$ computes $\\alpha n_{1} + \\beta n_{2}$.',
           },
           {
             action: 'Checks both vectors against the original A.',
             shape: '(3, 4) @ (4, 2) → (3, 2)',
-            operation: 'Each output column is zero: An₁ = An₂ = 0.',
+            operation: 'Each output column is zero: $An_1=An_2=0$.',
           },
         ],
         title: 'Build the null-space basis',
         explanation:
-          'Every homogeneous solution is αn₁ + βn₂. These vectors are independent: the v and y coordinates of their combination are exactly α and β.',
-        watchFor: 'If αn₁ + βn₂ = 0, what must α and β be?',
+          'Every homogeneous solution is $\\alpha n_{1} + \\beta n_{2}$. These vectors are independent: the v and y coordinates of their combination are exactly $\\alpha$ and $\\beta$.',
+        watchFor:
+          'If $\\alpha n_{1} + \\beta n_{2} = 0$, what must $\\alpha$ and $\\beta$ be?',
         after: {
-          title: 'Null(A) is a plane inside ℝ⁴',
+          title: 'Null(A) is a plane inside $\\mathbb R^{4}$',
           description:
             'N has four rows because its columns are inputs; AN has three rows because these map into the output space.',
-          equation: 'Null(A) = span{n₁,n₂}; dim Null(A) = 2',
+          equation:
+            '$\\operatorname{Null}(A) = \\operatorname{span}\\{n_{1},n_{2}\\}$; dim $\\operatorname{Null}(A) = 2$',
           matrices: [
             {
-              label: 'N = [n₁ | n₂]',
+              label: '$N = [n_{1} | n_{2}]$',
               values: [
                 [-3, 1],
                 [1, 0],
@@ -286,7 +296,7 @@ export const nonInvertibleSystemSection: ChapterSection = {
               dividerBefore: 1,
             },
             {
-              label: 'AN = [An₁ | An₂]',
+              label: '$AN=[An_1\\mid An_2]$',
               values: [
                 [0, 0],
                 [0, 0],
@@ -296,7 +306,7 @@ export const nonInvertibleSystemSection: ChapterSection = {
             },
           ],
           callout:
-            'Build the null-space basis from Ax = 0, even when the target problem has b ≠ 0.',
+            'Build the null-space basis from $Ax = 0$, even when the target problem has $b \\ne  0$.',
         },
       },
       {
@@ -306,34 +316,36 @@ export const nonInvertibleSystemSection: ChapterSection = {
             action: 'Collects the downward row operations.',
             shape: 'E: (3, 3)',
             operation:
-              'E = L⁻¹ and E @ A = U. E acts on three equations, not four variables.',
+              '$E = L^{-1}$ and $E \\mathbin{\\mathtt{@}} A = U$. E acts on three equations, not four variables.',
           },
           {
             action: 'Chooses a reachable target.',
             shape: 'b_good: (3,)',
-            operation: '5b₁ − 2b₂ + b₃ = 5 − 10 + 5 = 0.',
+            operation: '$5b_{1} - 2b_{2} + b_{3} = 5 - 10 + 5 = 0$.',
           },
           {
             action: 'Changes the third output coordinate.',
             shape: 'b_bad: (3,)',
-            operation: '5b₁ − 2b₂ + b₃ = 5 − 10 + 6 = 1.',
+            operation: '$5b_{1} - 2b_{2} + b_{3} = 5 - 10 + 6 = 1$.',
           },
           {
             action: 'Applies the same elimination to both targets.',
             shape: 'two (3, 3) @ (3,) products → two (3,) arrays',
-            operation: 'c_good = [1,3,0]; c_bad = [1,3,1].',
+            operation:
+              '$\\mathtt{c\\_good} = [1,3,0]; \\mathtt{c\\_bad} = [1,3,1]$.',
           },
         ],
         title: 'Transform b before testing consistency',
         explanation:
-          'Ax = b is equivalent to Ux = c with c = Eb. The last row requires 0 = c₃, so a solution exists exactly when 5b₁ − 2b₂ + b₃ = 0.',
+          '$Ax = b$ is equivalent to $Ux = c$ with $c = Eb$. The last row requires $0 = c_{3}$, so a solution exists exactly when $5b_{1} - 2b_{2} + b_{3} = 0$.',
         watchFor:
           'Which transformed right-hand side makes the zero coefficient row contradictory?',
         after: {
-          title: 'Distinguish 0 = 0 from 0 = 1',
+          title: 'Distinguish $0 = 0$ from $0 = 1$',
           description:
             'These matrices are [U | c], not [A | b]. The reachable target gives a redundant last equation.',
-          equation: 'c = (b₁, b₂ − 2b₁, 5b₁ − 2b₂ + b₃)ᵀ',
+          equation:
+            '$c = (b_{1}, b_{2} - 2b_{1}, 5b_{1} - 2b_{2} + b_{3})^{\\mathsf T}$',
           matrices: [
             {
               label: '[U | c_good]',
@@ -369,22 +381,24 @@ export const nonInvertibleSystemSection: ChapterSection = {
           {
             action: 'Computes the numerical rank of A.',
             shape: '(3, 4) → scalar',
-            operation: 'rank_A = 2 agrees with the pivot count.',
+            operation: '$\\mathtt{rank\\_A} = 2$ agrees with the pivot count.',
           },
           {
             action: 'Appends b_good as an extra column.',
             shape: '(3, 5) → scalar',
-            operation: 'rank_good = 2: no new independent output direction.',
+            operation:
+              '$\\mathtt{rank\\_good} = 2$: no new independent output direction.',
           },
           {
             action: 'Appends b_bad instead.',
             shape: '(3, 5) → scalar',
-            operation: 'rank_bad = 3: the new column lies outside Col(A).',
+            operation:
+              '$\\mathtt{rank\\_bad} = 3$: the new column lies outside Col(A).',
           },
         ],
         title: 'Connect consistency to column space and rank',
         explanation:
-          'Take pivot column indices 1 and 3, then select those columns from the original A. They form a basis of Col(A), the plane 5b₁ − 2b₂ + b₃ = 0.',
+          'Take pivot column indices 1 and 3, then select those columns from the original A. They form a basis of Col(A), the plane $5b_{1} - 2b_{2} + b_{3} = 0$.',
         watchFor: 'Why do we take the basis columns from A rather than R?',
         variables: [
           {
@@ -398,10 +412,11 @@ export const nonInvertibleSystemSection: ChapterSection = {
           title: 'Equivalent existence tests',
           description:
             'Appending a reachable b leaves the column span unchanged.',
-          equation: 'b ∈ Col(A) ⇔ rank([A | b]) = rank(A) ⇔ 5b₁ − 2b₂ + b₃ = 0',
+          equation:
+            '$b \\in  \\operatorname{Col}(A) \\Longleftrightarrow  \\operatorname{rank}([A | b]) = \\operatorname{rank}(A) \\Longleftrightarrow  5b_{1} - 2b_{2} + b_{3} = 0$',
           matrices: [
             {
-              label: 'Basis columns a₁, a₃ of A',
+              label: 'Basis columns $a_{1}, a_{3}$ of A',
               values: [
                 [1, 3],
                 [2, 9],
@@ -420,39 +435,41 @@ export const nonInvertibleSystemSection: ChapterSection = {
           {
             action: 'Continues with the consistent target.',
             shape: 'b: (3,)',
-            operation: 'b = [1,5,5]. b_bad has no particular solution.',
+            operation: '$b = [1,5,5]$. b_bad has no particular solution.',
           },
           {
-            action: 'Sets v = y = 0 and solves row 2.',
+            action: 'Sets $v = y = 0$ and solves row 2.',
             shape: 'scalar ÷ scalar → scalar',
-            operation: '3w = 3, so w = 1. U[1, 2] is the second pivot.',
+            operation: '$3w = 3$, so $w = 1$. U[1, 2] is the second pivot.',
           },
           {
             action: 'Back-substitutes into row 1.',
             shape: 'scalar arithmetic → scalar',
-            operation: 'u + 3w = 1, so u = −2.',
+            operation: '$u + 3w = 1$, so $u = -2$.',
           },
           {
             action: 'Restores the coordinate order (u,v,w,y).',
             shape: '4 values → x_particular: (4,)',
-            operation: 'xₚ = (−2,0,1,0)ᵀ.',
+            operation: '$x_{p} = (-2,0,1,0)^{\\mathsf T}$.',
           },
         ],
         title: 'Find a particular solution',
         explanation:
-          'Setting free variables to zero gives one convenient solution, not a uniquely preferred one. For any consistent b, substitution gives u = 3b₁ − b₂ and w = (b₂ − 2b₁)/3.',
-        watchFor: 'Why must consistency be checked before constructing xₚ?',
+          'Setting free variables to zero gives one convenient solution, not a uniquely preferred one. For any consistent b, substitution gives $u = 3b_{1} - b_{2}$ and $w = (b_{2} - 2b_{1})/3$.',
+        watchFor:
+          'Why must consistency be checked before constructing $x_{p}$?',
         after: {
           title: 'One input reaches b_good',
           description:
             'Add null-space vectors next to obtain the remaining solutions.',
-          equation: 'xₚ = (3b₁ − b₂, 0, (b₂ − 2b₁)/3, 0)ᵀ',
+          equation:
+            '$x_{p} = (3b_{1} - b_{2}, 0, (b_{2} - 2b_{1})/3, 0)^{\\mathsf T}$',
           matrices: [
-            { label: 'xₚ', values: [[-2], [0], [1], [0]] },
-            { label: 'Axₚ = b_good', values: [[1], [5], [5]] },
+            { label: '$x_{p}$', values: [[-2], [0], [1], [0]] },
+            { label: '$Ax_{p} = \\mathtt{b\\_good}$', values: [[1], [5], [5]] },
           ],
           callout:
-            'This formula assumes 5b₁ − 2b₂ + b₃ = 0. It does not solve an inconsistent system.',
+            'This formula assumes $5b_{1} - 2b_{2} + b_{3} = 0$. It does not solve an inconsistent system.',
         },
       },
       {
@@ -461,17 +478,17 @@ export const nonInvertibleSystemSection: ChapterSection = {
           {
             action: 'Chooses the two free coordinates.',
             shape: 'two scalars',
-            operation: 'v = α = 2; y = β = −1.',
+            operation: '$v = \\alpha  = 2; y = \\beta  = -1$.',
           },
           {
-            action: 'Adds a homogeneous solution to xₚ.',
+            action: 'Adds a homogeneous solution to $x_{p}$.',
             shape: '(4,) + scalar × (4,) + scalar × (4,) → (4,)',
-            operation: '[−2,0,1,0] + 2[−3,1,0,0] − [1,0,−1,1] = [−9,2,2,−1].',
+            operation: '$[-2,0,1,0] + 2[-3,1,0,0] - [1,0,-1,1] = [-9,2,2,-1]$.',
           },
           {
             action: 'Checks the original equation.',
             shape: '(3, 4) @ (4,) → (3,)',
-            operation: 'A @ [−9,2,2,−1] = [1,5,5].',
+            operation: '$A \\mathbin{\\mathtt{@}} [-9,2,2,-1] = [1,5,5]$.',
           },
           {
             action: 'Checks an explicit absolute tolerance.',
@@ -482,14 +499,15 @@ export const nonInvertibleSystemSection: ChapterSection = {
         ],
         title: 'Describe every solution with two parameters',
         explanation:
-          'Any real α and β change only the null-space part, keeping Ax = b. Conversely, subtracting xₚ from any solution produces a null-space vector.',
+          'Any real $\\alpha$ and $\\beta$ change only the null-space part, keeping $Ax = b$. Conversely, subtracting $x_{p}$ from any solution produces a null-space vector.',
         watchFor:
-          'If α or β changes, which input coordinates change and which output stays fixed?',
+          'If $\\alpha$ or $\\beta$ changes, which input coordinates change and which output stays fixed?',
         after: {
           title: 'An affine plane of inputs reaches one output',
           description:
-            'The solution set is a plane inside ℝ⁴. This diagram shows parameter coordinates (α,β), not the four-dimensional input space.',
-          equation: 'x = xₚ + αn₁ + βn₂, α, β ∈ ℝ; Ax = (1,5,5)ᵀ',
+            'The solution set is a plane inside $\\mathbb R^{4}$. This diagram shows parameter coordinates $(\\alpha ,\\beta )$, not the four-dimensional input space.',
+          equation:
+            '$x = x_{p} + \\alpha n_{1} + \\beta n_{2}, \\alpha , \\beta  \\in  \\mathbb R; Ax = (1,5,5)^{\\mathsf T}$',
           plane: {
             xRange: [-1, 3],
             yRange: [-2, 2],
@@ -504,9 +522,12 @@ export const nonInvertibleSystemSection: ChapterSection = {
             ],
           },
           matrices: [
-            { label: 'x · input in ℝ⁴', values: [[-9], [2], [2], [-1]] },
             {
-              label: 'Ax | b · output in ℝ³',
+              label: 'x · input in $\\mathbb R^{4}$',
+              values: [[-9], [2], [2], [-1]],
+            },
+            {
+              label: 'Ax | b · output in $\\mathbb R^{3}$',
               values: [
                 [1, 1],
                 [5, 5],
@@ -516,7 +537,7 @@ export const nonInvertibleSystemSection: ChapterSection = {
             },
           ],
           callout:
-            'xₚ corresponds to (α,β) = (0,0). Every point of the entire parameter plane specifies a solution, not only the two marked points.',
+            '$x_{p}$ corresponds to $(\\alpha ,\\beta ) = (0,0)$. Every point of the entire parameter plane specifies a solution, not only the two marked points.',
         },
       },
     ],

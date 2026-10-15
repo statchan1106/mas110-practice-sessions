@@ -21,12 +21,12 @@ export const realGeometryNotation = [
   {
     symbol: '⟨u,v⟩; ‖u‖; u ⊥ v',
     meaning:
-      'An inner product gives one real number, ‖u‖ = √⟨u,u⟩ is its induced norm, and u ⊥ v means ⟨u,v⟩ = 0. The lecture writes |u| for this norm. In Euclidean space the default is uᵀv and the norm is ‖u‖₂; for polynomials it is the stated integral norm.',
+      'An inner product gives one real number, $\\Vert u\\Vert  = \\sqrt{\\langle u,u\\rangle}$ is its induced norm, and $u \\perp  v$ means $\\langle u,v\\rangle  = 0$. The lecture writes |u| for this norm. In Euclidean space the default is $u^{\\mathsf T}v$ and the norm is $\\Vert u\\Vert _{2}$; for polynomials it is the stated integral norm.',
   },
   {
     symbol: 'φ; θ; θ̂',
     meaning:
-      'This chapter uses φ for an angle and θ for model coefficients in Lab 4.4. The lecture sometimes uses θ for the angle too; the distinction here prevents mixing an angle with a coefficient vector. A hat marks a minimizing coefficient, not a unit vector.',
+      'This chapter uses $\\varphi$ for an angle and $\\theta$ for model coefficients in Lab 4.4. The lecture sometimes uses $\\theta$ for the angle too; the distinction here prevents mixing an angle with a coefficient vector. A hat marks a minimizing coefficient, not a unit vector.',
   },
   {
     symbol: 'A; G; Q; R; P',

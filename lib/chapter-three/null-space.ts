@@ -34,22 +34,22 @@ export const nullSpaceSection: ChapterSection = {
       term: 'Null space',
       definition:
         'The null space contains every input vector that A sends to the zero output.',
-      relation: 'Null(A) = {x : Ax = 0}',
+      relation: '$\\operatorname{Null}(A) = \\{x : Ax = 0\\}$',
       watchFor: 'It lives in the input space, so its vectors have n entries.',
     },
     {
       term: 'Free variable',
       definition:
         'A non-pivot variable can be chosen first; the pivot variables then adjust to satisfy the equations.',
-      relation: 'pivot part = −Uₚ⁻¹U𝒻 · free part',
+      relation: 'pivot part $= -U_{p}^{-1}U$𝒻 · free part',
       watchFor: 'One free variable creates one independent null direction.',
     },
     {
       term: 'Rank–nullity',
       definition:
         'The input coordinates split between pivot directions and null directions.',
-      relation: 'rank(A) + nullity(A) = n',
-      watchFor: 'Here 2 pivot columns + 1 free column = 3 inputs.',
+      relation: '$\\operatorname{rank}(A) + \\operatorname{nullity}(A) = n$',
+      watchFor: 'Here 2 pivot columns + 1 free column $= 3$ inputs.',
     },
   ],
   walkthrough: {
@@ -65,8 +65,9 @@ export const nullSpaceSection: ChapterSection = {
     initial: {
       title: 'Three input coordinates, two output coordinates',
       description:
-        'Because A maps R³ into R², we look for an input direction that collapses to zero.',
-      equation: 'A: R³ → R² · rank(A) + nullity(A) = 3',
+        'Because A maps $R^{3}$ into $R^{2}$, we look for an input direction that collapses to zero.',
+      equation:
+        '$A: R^{3} \\to  R^{2} \\cdot  \\operatorname{rank}(A) + \\operatorname{nullity}(A) = 3$',
     },
     steps: [
       {
@@ -136,7 +137,7 @@ export const nullSpaceSection: ChapterSection = {
         ],
         title: 'Expose the pivot pattern',
         explanation:
-          'An invertible row operation changes the equations’ appearance but not the solutions of Ax = 0.',
+          'An invertible row operation changes the equations’ appearance but not the solutions of $Ax = 0$.',
         watchFor: 'The first entry of the second row should become zero.',
         variables: [
           {
@@ -149,7 +150,8 @@ export const nullSpaceSection: ChapterSection = {
           title: 'U has two visible pivots',
           description:
             'The second row changes; the homogeneous solutions do not.',
-          equation: 'R₂ ← R₂ − 0.5R₁ · Null(A) = Null(U)',
+          equation:
+            '$R_{2}$ ← $R_{2} - 0.5R_{1} \\cdot  \\operatorname{Null}(A) = \\operatorname{Null}(U)$',
           matrices: [
             {
               label: 'U · row echelon form',
@@ -164,7 +166,7 @@ export const nullSpaceSection: ChapterSection = {
             },
           ],
           callout:
-            'Row operations are reversible, so an input solves Ax = 0 exactly when it solves Ux = 0.',
+            'Row operations are reversible, so an input solves $Ax = 0$ exactly when it solves $Ux = 0$.',
         },
       },
       {
@@ -173,7 +175,8 @@ export const nullSpaceSection: ChapterSection = {
           {
             action: 'Counts the independent rows and pivot columns.',
             shape: 'U: (2, 3) → rank_u: scalar',
-            operation: 'Both rows are independent, so rank_u = 2.',
+            operation:
+              'Both rows are independent, so $\\mathtt{rank\\_u} = 2$.',
           },
           {
             action: 'Records the two pivot-column indices.',
@@ -183,7 +186,8 @@ export const nullSpaceSection: ChapterSection = {
           {
             action: 'Records the remaining free-column index.',
             shape: 'free: list of 1 scalar index',
-            operation: 'Column 2 has no new pivot, so x₃ may be chosen freely.',
+            operation:
+              'Column 2 has no new pivot, so $x_{3}$ may be chosen freely.',
           },
         ],
         title: 'Separate pivot and free variables',
@@ -199,7 +203,8 @@ export const nullSpaceSection: ChapterSection = {
           title: 'Pivot columns retained; one column is free',
           description:
             'Blue columns determine the pivot coordinates. The dashed column supplies the free coordinate.',
-          equation: 'pivot variables: x₁, x₂ · free variable: x₃',
+          equation:
+            'pivot variables: $x_{1}, x_{2} \\cdot$ free variable: $x_{3}$',
           matrices: [
             {
               label: 'U · columns classified',
@@ -233,22 +238,23 @@ export const nullSpaceSection: ChapterSection = {
             action:
               'Solves for the pivot coordinates when the free value is 1.',
             shape: '(2, 2) solve (2, 1) → X_pivot: (2, 1)',
-            operation: 'U_pivot X_pivot = −U_free → X_pivot = [1, −1]ᵀ.',
+            operation:
+              '$\\mathtt{U\\_pivot} \\mathtt{X\\_pivot} = -\\mathtt{U\\_free} \\to  \\mathtt{X\\_pivot} = [1, -1]^{\\mathsf T}$.',
           },
           {
             action: 'Starts the basis with 1 in the free-variable row.',
             shape: 'I₃: (3, 3) → N: (3, 1)',
-            operation: 'Selecting column 2 produces [0, 0, 1]ᵀ.',
+            operation: 'Selecting column 2 produces $[0, 0, 1]^{\\mathsf T}$.',
           },
           {
             action: 'Inserts the solved pivot coordinates.',
             shape: 'X_pivot: (2, 1) → selected rows of N: (2, 1)',
-            operation: 'N becomes [1, −1, 1]ᵀ.',
+            operation: 'N becomes $[1, -1, 1]^{\\mathsf T}$.',
           },
           {
             action: 'Verifies that the basis vector disappears under A.',
             shape: '(2, 3) @ (3, 1) → check: (2, 1)',
-            operation: 'A @ N = [0, 0]ᵀ.',
+            operation: '$A \\mathbin{\\mathtt{@}} N = [0, 0]^{\\mathsf T}$.',
           },
         ],
         title: 'Construct and verify the null basis',
@@ -271,7 +277,8 @@ export const nullSpaceSection: ChapterSection = {
           title: 'The three weighted columns cancel',
           description:
             'Every null vector is a scalar multiple of this one basis vector.',
-          equation: 'N = [1, −1, 1]ᵀ · A N = a₁ − a₂ + a₃ = 0',
+          equation:
+            '$N = [1, -1, 1]^{\\mathsf T} \\cdot  A N = a_{1} - a_{2} + a_{3} = 0$',
           matrices: [
             {
               label: 'X_pivot',
@@ -310,8 +317,7 @@ export const nullSpaceSection: ChapterSection = {
               ),
             },
           ],
-          callout:
-            'Scaling N by any t keeps the output zero: A(tN) = t(AN) = 0.',
+          callout: 'Scaling N by any t keeps the output zero: $A(tN)=t(AN)=0$.',
         },
       },
     ],

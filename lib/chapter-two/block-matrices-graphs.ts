@@ -54,20 +54,20 @@ export const blockMatricesGraphsSection: ChapterSection = {
       term: 'Compatible blocks',
       definition:
         'Blocks in one block row need the same height; blocks in one block column need the same width.',
-      relation: 'X = [[A, B], [C, D]]',
+      relation: '$X = [[A, B], [C, D]]$',
       watchFor: 'The divider is a boundary, not another matrix entry.',
     },
     {
       term: 'Block multiplication',
       definition:
         'The usual row-by-column rule still applies when each entry is itself a compatible matrix.',
-      relation: 'top-left = A E + B G',
+      relation: 'top-left $= A E + B G$',
       watchFor: 'Keep the multiplication order.',
     },
     {
       term: 'Adjacency power',
       definition:
-        'Entry (i,j) of G² counts the length-two walks from vertex i to vertex j.',
+        'Entry (i,j) of $G^{2}$ counts the length-two walks from vertex i to vertex j.',
       relation: '(adj²)ᵢⱼ = # two-step walks',
       watchFor: 'A walk may revisit a vertex; it is not always a path.',
     },
@@ -205,10 +205,10 @@ export const blockMatricesGraphsSection: ChapterSection = {
           title: 'Block multiplication is ordinary multiplication',
           description:
             'The right matrix shows the block boundaries in the same result.',
-          equation: 'A E + B G = top-left output block',
+          equation: '$AE+BG$ is the top-left output block',
           matrices: [
             {
-              label: 'direct = X @ Y',
+              label: 'direct $= X \\mathbin{\\mathtt{@}} Y$',
               values: [
                 [6, 12],
                 [9, 16],
@@ -301,12 +301,13 @@ export const blockMatricesGraphsSection: ChapterSection = {
               'Squares the adjacency matrix to combine two consecutive edges.',
             shape: '(4, 4) @ (4, 4) → adj2: (4, 4)',
             operation:
-              'adj2[i,j] = Σₖ adj[i,k]adj[k,j]; k chooses the middle vertex.',
+              'adj$2[i,j] = \\sum _{k}$ adj[i,k]adj[k,j]; k chooses the middle vertex.',
           },
           {
             action: 'Reads the count from vertex 1 to vertex 4.',
             shape: 'adj2[0, 3] → scalar',
-            operation: '0·0 + 1·1 + 1·1 + 0·0 = 2, via vertices 2 and 3.',
+            operation:
+              '$0\\cdot 0 + 1\\cdot 1 + 1\\cdot 1 + 0\\cdot 0 = 2$, via vertices 2 and 3.',
           },
         ],
         title: 'Count two-step walks',
@@ -337,7 +338,7 @@ export const blockMatricesGraphsSection: ChapterSection = {
               cellTones: toneCells([[0, 3]], 'result'),
             },
           ],
-          callout: 'adj2[0,3] = 2: via vertex 2 or via vertex 3.',
+          callout: 'adj$2[0,3] = 2$: via vertex 2 or via vertex 3.',
         },
       },
     ],

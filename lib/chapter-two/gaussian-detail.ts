@@ -30,14 +30,14 @@ export const gaussianDetailSection: ChapterSection = {
       term: 'Partial pivoting',
       definition:
         'Choose the largest absolute candidate in the active column and move it into the pivot position.',
-      relation: 'pivot = arg max_{i ≥ r} |U[i,j]|',
+      relation: '$p=\\operatorname*{arg\\,max}_{i\\ge r}|U[i,j]|$',
       watchFor: 'The first pivot moves from row 2 to row 1.',
     },
     {
       term: 'Multiplier',
       definition:
         'Divide the target entry by the pivot to find how much of the pivot row to subtract.',
-      relation: 'm = target / pivot',
+      relation: '$m = \\text{target}/\\text{pivot}$',
       watchFor: 'Both nonzero multipliers in this example are 0.5.',
     },
     {
@@ -62,7 +62,7 @@ export const gaussianDetailSection: ChapterSection = {
       title: 'Look below the diagonal',
       description:
         'Gaussian elimination will turn the two highlighted lower-triangle positions into zeros.',
-      equation: 'goal: U[2,0] = 0 and U[2,1] = 0',
+      equation: 'goal: $U[2,0] = 0$ and $U[2,1] = 0$',
     },
     steps: [
       {
@@ -168,7 +168,7 @@ export const gaussianDetailSection: ChapterSection = {
         ],
         title: 'Cancel below the first pivot',
         explanation:
-          'Because 2 − 0.5×4 = 0, the first entry of the last row disappears.',
+          'Because $2 - 0.5\\times 4 = 0$, the first entry of the last row disappears.',
         watchFor: 'The target row changes from [2, 3, 2] to [0, 1, 2].',
         variables: [
           {
@@ -180,7 +180,7 @@ export const gaussianDetailSection: ChapterSection = {
         after: {
           title: 'The first lower entry is zero',
           description: 'Only the last row changed.',
-          equation: '[2, 3, 2] − 0.5[4, 4, 0] = [0, 1, 2]',
+          equation: '$[2, 3, 2] - 0.5[4, 4, 0] = [0, 1, 2]$',
           matrices: [
             {
               label: 'U · after column 1',
@@ -220,7 +220,7 @@ export const gaussianDetailSection: ChapterSection = {
         ],
         title: 'Cancel below the second pivot',
         explanation:
-          'The same rule repeats one column to the right: 1 − 0.5×2 = 0.',
+          'The same rule repeats one column to the right: $1 - 0.5\\times 2 = 0$.',
         watchFor: 'The last row becomes [0, 0, 1].',
         variables: [
           { name: 'm', value: '0.5', meaning: 'The second multiplier.' },
@@ -234,7 +234,7 @@ export const gaussianDetailSection: ChapterSection = {
           title: 'U is upper triangular',
           description:
             'The two required zeros are now visible below the diagonal.',
-          equation: 'is_upper = True',
+          equation: '`is_upper` is `True`',
           matrices: [
             {
               label: 'U · final',

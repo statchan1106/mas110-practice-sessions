@@ -24,22 +24,23 @@ export const gaussianEliminationSection: ChapterSection = {
       term: 'Row permutation',
       definition:
         'Pivoting reorders the equations, so the same row order must be applied to b.',
-      relation: 'Q A = L U_raw; rhs = Q b',
+      relation: '$Q A = L \\mathtt{U\\_raw}$; rhs $= Q b$',
       watchFor: 'Q swaps the first two rows in this example.',
     },
     {
       term: 'Diagonal scaling',
       definition:
         'The pivots of U_raw become a diagonal matrix; the remaining upper factor has ones on its diagonal.',
-      relation: 'U_raw = D U_unit',
+      relation: '$\\mathtt{U\\_raw} = D \\mathtt{U\\_unit}$',
       watchFor: 'pivot_values is a vector; D is a matrix.',
     },
     {
       term: 'Triangular solve',
       definition:
         'Solve from left to right through L, D, and U_unit instead of forming an inverse.',
-      relation: 'L y = Qb → D z = y → U_unit x = z',
-      watchFor: 'The final vector x must satisfy A @ x = b.',
+      relation: '$L y = Qb \\to  D z = y \\to  \\mathtt{U\\_unit} x = z$',
+      watchFor:
+        'The final vector x must satisfy $A \\mathbin{\\mathtt{@}} x = b$.',
     },
   ],
   walkthrough: {
@@ -55,7 +56,7 @@ export const gaussianEliminationSection: ChapterSection = {
     initial: {
       title: 'Start with one question',
       description: 'Find the vector x that makes A @ x equal b.',
-      equation: 'A x = b',
+      equation: '$A x = b$',
     },
     steps: [
       {
@@ -120,7 +121,7 @@ export const gaussianEliminationSection: ChapterSection = {
           },
           {
             action:
-              'Transposes P so the course identity reads Q @ A = L @ U_raw.',
+              'Transposes P so the course identity reads $Q \\mathbin{\\mathtt{@}} A = L \\mathbin{\\mathtt{@}} \\mathtt{U\\_raw}$.',
             shape: 'P: (3, 3) → Q: (3, 3)',
             operation:
               'Exchanges row and column indices; this one-swap P happens to stay unchanged.',
@@ -135,7 +136,8 @@ export const gaussianEliminationSection: ChapterSection = {
           title: 'Pivoted LU separates three jobs',
           description:
             'Q reorders, L records elimination, and U_raw holds the pivots.',
-          equation: 'Q @ A = L @ U_raw',
+          equation:
+            '$Q \\mathbin{\\mathtt{@}} A = L \\mathbin{\\mathtt{@}} \\mathtt{U\\_raw}$',
           matrices: [
             {
               label: 'Q @ A',
@@ -172,7 +174,7 @@ export const gaussianEliminationSection: ChapterSection = {
             },
           ],
           callout:
-            'Here P happens to equal Q because one row-swap matrix is symmetric. Q = P.T is the general convention.',
+            'Here P happens to equal Q because one row-swap matrix is symmetric. $Q = P$.T is the general convention.',
         },
       },
       {
@@ -213,7 +215,8 @@ export const gaussianEliminationSection: ChapterSection = {
           title: 'U_raw becomes D @ U_unit',
           description:
             'D carries scale; U_unit carries the upper-triangular pattern.',
-          equation: 'Q @ A = L @ D @ U_unit',
+          equation:
+            '$Q \\mathbin{\\mathtt{@}} A = L \\mathbin{\\mathtt{@}} D \\mathbin{\\mathtt{@}} \\mathtt{U\\_unit}$',
           matrices: [
             {
               label: 'pivot_values · shape (3,)',
@@ -277,19 +280,22 @@ export const gaussianEliminationSection: ChapterSection = {
             operation: '[10, 12, 14] becomes [12, 10, 14].',
           },
           {
-            action: 'Solves the lower-triangular system L @ y = rhs.',
+            action: 'Solves the lower-triangular system $Ly=\\mathtt{rhs}$.',
             shape: 'L: (3, 3), rhs: (3,) → y: (3,)',
-            operation: 'Returns y = [12, 10, 3] without forming L⁻¹.',
+            operation: 'Returns $y = [12, 10, 3]$ without forming $L^{-1}$.',
           },
           {
-            action: 'Divides out the pivot scales through D @ z = y.',
+            action:
+              'Divides out the pivot scales through $D \\mathbin{\\mathtt{@}} z = y$.',
             shape: 'D: (3, 3), y: (3,) → z: (3,)',
             operation: '[12/4, 10/2, 3/1] → [3, 5, 3].',
           },
           {
-            action: 'Solves the upper-triangular system U_unit @ x = z.',
+            action:
+              'Solves the upper-triangular system $\\mathtt{U\\_unit} \\mathbin{\\mathtt{@}} x = z$.',
             shape: 'U_unit: (3, 3), z: (3,) → x: (3,)',
-            operation: 'Solves from the bottom row upward → x = [1, 2, 3].',
+            operation:
+              'Solves from the bottom row upward $\\to  x = [1, 2, 3]$.',
           },
         ],
         title: 'Solve one simple factor at a time',

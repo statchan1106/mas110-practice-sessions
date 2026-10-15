@@ -164,14 +164,14 @@ export const gaussianPrimer: PrimerItem[] = [
     term: 'Elimination factor',
     definition:
       'Choose the multiplier that makes target − factor × pivot equal exactly zero.',
-    relation: 'm = target / pivot',
+    relation: '$m = \\text{target}/\\text{pivot}$',
     watchFor: 'The two contributions cancel in the highlighted column.',
   },
   {
     term: 'Row equivalence',
     definition:
       'Subtracting a multiple of one row from another rewrites the equations without changing their solutions.',
-    relation: 'Rᵢ ← Rᵢ − mRⱼ',
+    relation: '$R_{i}$ ← $R_{i} -$ mRⱼ',
     watchFor: 'Only the target row changes; the solution set does not.',
   },
 ];
@@ -210,21 +210,21 @@ export const courseGroups: CourseGroup[] = [
       {
         term: 'Null space',
         definition: 'All input vectors sent to zero by a matrix.',
-        relation: 'Ax = 0',
+        relation: '$Ax = 0$',
         watchFor: 'Different inputs can collapse onto the same output.',
       },
       {
         term: 'Linear map',
         definition:
           'A rule that preserves vector addition and scalar multiplication.',
-        relation: 'A(cx + y) = cAx + Ay',
+        relation: '$A(cx+y)=cAx+Ay$',
         watchFor: 'Grid lines remain straight and parallel.',
       },
       {
         term: 'Rank deficiency',
         definition:
-          'For A ∈ ℝᵐˣⁿ, rank below min(m,n) is rank deficiency. Dependent columns mean r < n; missing output directions mean r < m.',
-        relation: 'r = rank(A) < min(m,n)',
+          'For $A \\in  \\mathbb R^{m\\times n}$, rank below min(m,n) is rank deficiency. Dependent columns mean r < n; missing output directions mean r < m.',
+        relation: '$r = \\operatorname{rank}(A) < \\min (m,n)$',
         watchFor: 'A plane may collapse to a line or point.',
       },
     ],
@@ -251,14 +251,14 @@ export const courseGroups: CourseGroup[] = [
         term: 'Inner product',
         definition:
           'A number that measures alignment and induces length and angle.',
-        relation: '⟨x, y⟩ = xᵀy',
+        relation: '$\\langle x, y\\rangle  = x^{\\mathsf T}y$',
         watchFor: 'A zero inner product signals orthogonality.',
       },
       {
         term: 'Orthonormal columns',
         definition:
-          'Mutually perpendicular unit directions. Reduced Q may be rectangular; QQᵀ then projects onto its column space.',
-        relation: 'QᵀQ = Iₙ',
+          'Mutually perpendicular unit directions. Reduced Q may be rectangular; $QQ^{\\mathsf T}$ then projects onto its column space.',
+        relation: '$Q^{\\mathsf T}Q = I_{n}$',
         watchFor: 'Coordinates separate into independent contributions.',
       },
       {
@@ -297,13 +297,13 @@ export const courseGroups: CourseGroup[] = [
       {
         term: 'Singular directions',
         definition: 'Special input and output directions aligned by a matrix.',
-        relation: 'A = UΣVᵀ',
+        relation: '$A = U\\sum V^{\\mathsf T}$',
         watchFor: 'Rotate, scale, then rotate again.',
       },
       {
         term: 'Projection',
         definition: 'The closest point in a chosen subspace.',
-        relation: 'P = QQᵀ',
+        relation: '$P = QQ^{\\mathsf T}$',
         watchFor: 'The discarded component is perpendicular to the subspace.',
       },
       {
@@ -345,7 +345,7 @@ export const courseGroups: CourseGroup[] = [
         term: 'Low-rank structure',
         definition:
           'A few directions explain most of the observable variation.',
-        relation: 'A ≈ UₖΣₖVₖᵀ',
+        relation: '$A \\approx  U_{k}\\sum _{k}V_{k}^{\\mathsf T}$',
         watchFor: 'Compress while preserving the dominant pattern.',
       },
       {
@@ -371,21 +371,21 @@ export const courseGroups: CourseGroup[] = [
       {
         term: 'Eigenpair',
         definition: 'A direction that a matrix scales without turning.',
-        relation: 'Av = λv',
+        relation: '$Av = \\lambda v$',
         watchFor: 'The vector keeps its line while its length or sign changes.',
       },
       {
         term: 'Positive definite',
         definition:
           'A symmetric matrix whose quadratic energy is positive in every nonzero direction.',
-        relation: 'xᵀAx > 0',
+        relation: '$x^{\\mathsf T}Ax > 0$',
         watchFor: 'Every principal curvature points upward.',
       },
       {
         term: 'Canonical form',
         definition:
           'A simpler representation that exposes the transformation’s essential structure.',
-        relation: 'A = SJS⁻¹',
+        relation: '$A = SJS^{-1}$',
         watchFor: 'Coupled behavior separates into invariant blocks.',
       },
     ],

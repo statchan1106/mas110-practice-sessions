@@ -1,3 +1,4 @@
+import { renderMathProse } from '@/components/math-prose';
 import { ArrowRight } from 'lucide-react';
 
 import { SiteFooter } from '@/components/site-footer';
@@ -15,7 +16,7 @@ const pageFunctions = [
 ];
 
 export default function CourseHome() {
-  return (
+  return renderMathProse(
     <div className="min-h-screen">
       <SiteHeader />
       <main id="main-content">
@@ -140,7 +141,7 @@ export default function CourseHome() {
                   </>
                 );
 
-                return (
+                return renderMathProse(
                   <li key={chapter.number}>
                     {chapter.href ? (
                       <a
@@ -157,7 +158,7 @@ export default function CourseHome() {
                         {content}
                       </div>
                     )}
-                  </li>
+                  </li>,
                 );
               })}
             </ol>
@@ -206,6 +207,6 @@ export default function CourseHome() {
         </div>
       </main>
       <SiteFooter />
-    </div>
+    </div>,
   );
 }

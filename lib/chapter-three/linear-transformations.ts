@@ -35,22 +35,22 @@ export const linearTransformationsSection: ChapterSection = {
       term: 'Matrix as a map',
       definition:
         'The columns of a matrix show where the standard basis vectors move; every other vector follows by linearity.',
-      relation: 'A[x₁, x₂]ᵀ = x₁a₁ + x₂a₂',
+      relation: '$A[x_{1}, x_{2}]^{\\mathsf T} = x_{1}a_{1} + x_{2}a_{2}$',
       watchFor: 'Each output coordinate is one row–vector dot product.',
     },
     {
       term: 'Projection',
       definition:
         'Projection keeps the component along a chosen subspace and removes the perpendicular component.',
-      relation: 'P = uuᵀ for a unit vector u',
-      watchFor: 'Applying P twice makes no further change: P² = P.',
+      relation: '$P=uu^{\\mathsf T}$ for a unit vector u',
+      watchFor: 'Applying P twice makes no further change: $P^{2} = P$.',
     },
     {
       term: 'Reflection',
       definition:
         'Reflection across span(u) keeps the projected component and reverses the perpendicular component.',
-      relation: 'H = 2P − I',
-      watchFor: 'Applying H twice returns the original vector: H² = I.',
+      relation: '$H = 2P - I$',
+      watchFor: 'Applying H twice returns the original vector: $H^{2} = I$.',
     },
   ],
   walkthrough: {
@@ -66,8 +66,8 @@ export const linearTransformationsSection: ChapterSection = {
     initial: {
       title: 'Start with one visible input',
       description:
-        'The same vector v = [2,1] will make rotation, projection, and reflection directly comparable.',
-      equation: 'v = 2e₁ + 1e₂',
+        'The same vector $v = [2,1]$ will make rotation, projection, and reflection directly comparable.',
+      equation: '$v = 2e_{1} + 1e_{2}$',
       plane: {
         ...basePlane,
         vectors: [{ to: [2, 1], label: 'v = (2,1)', tone: 'source' }],
@@ -90,7 +90,7 @@ export const linearTransformationsSection: ChapterSection = {
           {
             action: 'Stores a quarter-turn angle in radians.',
             shape: 'theta: scalar',
-            operation: 'π ÷ 2 radians equals 90 degrees.',
+            operation: '$\\pi$ ÷ 2 radians equals 90 degrees.',
           },
         ],
         title: 'Choose one vector and angle',
@@ -104,8 +104,8 @@ export const linearTransformationsSection: ChapterSection = {
         ],
         after: {
           title: 'The input has two coordinates',
-          description: 'Its length is √5 and its endpoint is (2,1).',
-          equation: '‖v‖ = √(2² + 1²) = √5',
+          description: 'Its length is $\\sqrt{5}$ and its endpoint is (2,1).',
+          equation: '$\\Vert v\\Vert  = \\sqrt{2^{2} + 1^{2}} = \\sqrt{5}$',
           plane: {
             ...basePlane,
             vectors: [{ to: [2, 1], label: 'v', tone: 'source' }],
@@ -118,12 +118,14 @@ export const linearTransformationsSection: ChapterSection = {
           {
             action: 'Computes the cosine and sine of the angle.',
             shape: 'theta: scalar → c, s: scalars',
-            operation: 'cos(π/2) ≈ 0 and sin(π/2) = 1.',
+            operation:
+              '$\\cos (\\pi /2) \\approx  0$ and $\\sin (\\pi /2) = 1$.',
           },
           {
             action: 'Builds the 2-D rotation matrix.',
             shape: '4 scalars → R: (2, 2)',
-            operation: 'The columns become Re₁ = [0,1] and Re₂ = [−1,0].',
+            operation:
+              'The columns become $Re_{1} = [0,1]$ and $Re_{2} = [-1,0]$.',
           },
           {
             action: 'Applies the rotation to v.',
@@ -147,7 +149,8 @@ export const linearTransformationsSection: ChapterSection = {
           title: 'Rotation changes direction, not length',
           description:
             'The muted arrow is the input; the green arrow is its rotated image.',
-          equation: 'R[2,1]ᵀ = [−1,2]ᵀ · ‖Rv‖ = ‖v‖ = √5',
+          equation:
+            '$R[2,1]^{\\mathsf T} = [-1,2]^{\\mathsf T} \\cdot  \\Vert Rv\\Vert  = \\Vert v\\Vert  = \\sqrt{5}$',
           plane: {
             ...basePlane,
             vectors: [
@@ -179,17 +182,17 @@ export const linearTransformationsSection: ChapterSection = {
           {
             action: 'Chooses the direction of the projection line.',
             shape: '2 values → u: (2,)',
-            operation: 'Starts with the direction [1,1], parallel to y = x.',
+            operation: 'Starts with the direction [1,1], parallel to $y = x$.',
           },
           {
             action: 'Normalizes the direction to unit length.',
             shape: 'u: (2,) ÷ scalar → u: (2,)',
-            operation: '[1,1] ÷ √2 → [1/√2, 1/√2].',
+            operation: '[1,1] ÷ $\\sqrt{2} \\to  [1/\\sqrt{2}, 1/\\sqrt{2}]$.',
           },
           {
             action: 'Builds the projection matrix from all coordinate pairs.',
             shape: 'outer product (2,) × (2,) → P: (2, 2)',
-            operation: 'P[i,j] = u[i]u[j], giving 0.5 in all four entries.',
+            operation: '$P[i,j] = u[i]u[j]$, giving 0.5 in all four entries.',
           },
           {
             action: 'Keeps only the component of v along u.',
@@ -199,9 +202,9 @@ export const linearTransformationsSection: ChapterSection = {
         ],
         title: 'Project onto one line',
         explanation:
-          'The point moves perpendicularly to y = x. Its parallel component remains; the residual disappears.',
+          'The point moves perpendicularly to $y = x$. Its parallel component remains; the residual disappears.',
         watchFor:
-          'Which part of v is removed when the endpoint lands on y = x?',
+          'Which part of v is removed when the endpoint lands on $y = x$?',
         variables: [
           {
             name: 'v_proj',
@@ -212,8 +215,8 @@ export const linearTransformationsSection: ChapterSection = {
         after: {
           title: 'Projection removes the perpendicular component',
           description:
-            'The dashed segment is the residual v − Pv = [0.5,−0.5].',
-          equation: 'v = Pv + (v − Pv) · uᵀ(v − Pv) = 0',
+            'The dashed segment is the residual $v - Pv = [0.5,-0.5]$.',
+          equation: '$v = Pv + (v - Pv) \\cdot  u^{\\mathsf T}(v - Pv) = 0$',
           plane: {
             ...basePlane,
             lines: [
@@ -283,14 +286,14 @@ export const linearTransformationsSection: ChapterSection = {
           {
             name: 'v_ref',
             value: '≈ [1, 2]',
-            meaning: 'The mirror image across y = x, rounded for display.',
+            meaning: 'The mirror image across $y = x$, rounded for display.',
           },
         ],
         after: {
           title: 'The perpendicular component changes sign',
           description:
             'Pv is the midpoint between v and its reflected image Hv.',
-          equation: 'Hv = 2Pv − v = [1,2]ᵀ',
+          equation: '$Hv = 2Pv - v = [1,2]^{\\mathsf T}$',
           plane: {
             ...basePlane,
             lines: [
@@ -317,7 +320,7 @@ export const linearTransformationsSection: ChapterSection = {
           },
           matrices: [
             {
-              label: 'H = 2P − I',
+              label: '$H = 2P - I$',
               values: [
                 [0, 1],
                 [1, 0],
@@ -332,7 +335,7 @@ export const linearTransformationsSection: ChapterSection = {
             },
           ],
           callout:
-            'The source notebook’s plotted line and executable code use H = 2P − I; that is the convention followed here.',
+            'The source notebook’s plotted line and executable code use $H = 2P - I$; that is the convention followed here.',
         },
       },
       {
@@ -347,7 +350,7 @@ export const linearTransformationsSection: ChapterSection = {
             action: 'Checks whether two reflections undo each other.',
             shape: '(2, 2) @ (2, 2) vs I₂: (2, 2) → reflection_undoes: bool',
             operation:
-              'H @ H is numerically equal to I₂, so the check is True.',
+              'H @ H is numerically equal to $I_{2}$, so the check is True.',
           },
         ],
         title: 'Check what each map preserves',
@@ -358,19 +361,19 @@ export const linearTransformationsSection: ChapterSection = {
           {
             name: 'projection_stays',
             value: 'True',
-            meaning: 'P² = P.',
+            meaning: '$P^{2} = P$.',
           },
           {
             name: 'reflection_undoes',
             value: 'True',
-            meaning: 'H² = I.',
+            meaning: '$H^{2} = I$.',
           },
         ],
         after: {
           title: 'Two short identities summarize the behavior',
           description:
             'These checks distinguish a projection from an invertible reflection.',
-          equation: 'P² ≈ P · H² ≈ I₂',
+          equation: '$P^{2} \\approx  P \\cdot  H^{2} \\approx  I_{2}$',
           callout:
             'np.allclose treats tiny floating-point round-off as numerical equality.',
         },

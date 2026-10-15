@@ -1,4 +1,6 @@
 'use client';
+import { renderMathProse } from '@/components/math-prose';
+
 
 import { useMemo, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Eye, RotateCcw } from 'lucide-react';
@@ -17,13 +19,13 @@ function formatNumber(value: number) {
 
 function RowVector({ values }: { values: number[] }) {
   return (
-    <span className="mini-row" aria-label={values.map(formatNumber).join(', ')}>
+    renderMathProse(<span className="mini-row" aria-label={values.map(formatNumber).join(', ')}>
       {values.map((value, index) => (
         <span key={`${value}-${index}`} className={cn(index === values.length - 1 && 'mini-row-augmented')}>
           {formatNumber(value)}
         </span>
       ))}
-    </span>
+    </span>)
   );
 }
 
@@ -89,7 +91,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
   }
 
   return (
-    <Card className="lesson-shell bg-card/94 py-0 backdrop-blur-sm">
+    renderMathProse(<Card className="lesson-shell bg-card/94 py-0 backdrop-blur-sm">
       <CardHeader className="border-b px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
@@ -115,7 +117,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
               const active = index === stepIndex;
               const done = index < stepIndex;
               return (
-                <li key={item.label}>
+                renderMathProse(<li key={item.label}>
                   <button
                     type="button"
                     onClick={() => {
@@ -145,7 +147,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
                     <span className="hidden leading-5 lg:block">{item.label}</span>
                     <span className="leading-5 lg:hidden">{item.shortLabel}</span>
                   </button>
-                </li>
+                </li>)
               );
             })}
           </ol>
@@ -175,7 +177,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
                   const target = rowIndex === step.targetRow;
                   const eliminated = target && columnIndex === step.pivotColumn;
                   return (
-                    <span
+                    renderMathProse(<span
                       key={`${rowIndex}-${columnIndex}`}
                       className={cn(
                         'matrix-cell',
@@ -188,7 +190,7 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
                       )}
                     >
                       {formatNumber(value)}
-                    </span>
+                    </span>)
                   );
                 }),
               )}
@@ -329,6 +331,6 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
           </div>
         </section>
       </CardContent>
-    </Card>
+    </Card>)
   );
 }

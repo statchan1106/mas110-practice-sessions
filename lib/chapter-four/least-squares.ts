@@ -47,10 +47,10 @@ export const leastSquaresSection: ChapterSection = {
     {
       term: 'Objective and minimizer',
       definition:
-        'Aθ is the prediction for candidate coefficients θ. Choose θ̂ to minimize the sum of squared differences between predictions and observations.',
+        '$A\\theta$ is the prediction for candidate coefficients $\\theta$. Choose $\\hat{\\theta}$ to minimize the sum of squared differences between predictions and observations.',
       relation: 'f(θ) = ‖Aθ − b‖₂²; θ̂ ∈ arg min f',
       watchFor:
-        'The coefficient θ̂ is a vector; the minimum squared error f(θ̂) is a scalar.',
+        'The coefficient $\\hat{\\theta}$ is a vector; the minimum squared error $f(\\hat{\\theta})$ is a scalar.',
     },
     {
       term: 'Normal equations',
@@ -63,10 +63,10 @@ export const leastSquaresSection: ChapterSection = {
     {
       term: 'Fitted values and residual',
       definition:
-        'The fitted vector b̂ belongs to the reachable subspace; the remaining part e belongs to its orthogonal complement.',
+        'The fitted vector $\\hat{b}$ belongs to the reachable subspace; the remaining part e belongs to its orthogonal complement.',
       relation: 'b = b̂ + e; b̂ ∈ Col(A), e ∈ Null(Aᵀ)',
       watchFor:
-        'Orthogonality does not mean the residual is zero. Here b̂ and e live in ℝ³, while θ̂ lives in ℝ².',
+        'Orthogonality does not mean the residual is zero. Here $\\hat{b}$ and e live in $\\mathbb R^{3}$, while $\\hat{\\theta}$ lives in $\\mathbb R^{2}$.',
     },
     {
       term: 'Uniqueness',
@@ -91,8 +91,9 @@ export const leastSquaresSection: ChapterSection = {
     initial: {
       title: 'Three observations, two coefficients',
       description:
-        'For θ = (θ₁,θ₂)ᵀ, Aθ = (−θ₁ + θ₂, θ₂, θ₁)ᵀ. The last two observations would force θ₂ = θ₁ = 1, making the first prediction 0 rather than 1.',
-      equation: 'Aθ = b has no exact solution for b = (1,1,1)ᵀ',
+        'For $\\theta  = (\\theta _{1},\\theta _{2})^{\\mathsf T}, A\\theta  = (-\\theta _{1} + \\theta _{2}, \\theta _{2}, \\theta _{1})^{\\mathsf T}$. The last two observations would force $\\theta _{2} = \\theta _{1} = 1$, making the first prediction 0 rather than 1.',
+      equation:
+        '$A\\theta  = b$ has no exact solution for $b = (1,1,1)^{\\mathsf T}$',
       matrices: [
         { label: 'A · lecture design matrix', values: A },
         { label: 'b · observed output', values: b },
@@ -112,7 +113,8 @@ export const leastSquaresSection: ChapterSection = {
           {
             action: 'Stores the lecture matrix by rows.',
             shape: '3 rows × 2 features → A: (3, 2)',
-            operation: 'A @ theta will output (−θ₁ + θ₂, θ₂, θ₁).',
+            operation:
+              'A @ theta will output $(-\\theta _{1} + \\theta _{2}, \\theta _{2}, \\theta _{1})$.',
           },
           {
             action: 'Stores three observed responses.',
@@ -122,28 +124,35 @@ export const leastSquaresSection: ChapterSection = {
           {
             action: 'Chooses a normal to the reachable plane.',
             shape: 'left_normal: (3,)',
-            operation: 'ℓ = (1,−1,1)ᵀ is perpendicular to each column of A.',
+            operation:
+              '$\\ell  = (1,-1,1)^{\\mathsf T}$ is perpendicular to each column of A.',
           },
           {
             action: 'Checks that b is outside that plane.',
             shape: '(2, 3) @ (3,) → (2,); (3,) @ (3,) → scalar',
             operation:
-              'Aᵀℓ = (0,0)ᵀ but ℓᵀb = 1. Every Aθ has ℓᵀAθ = 0, so none equals b.',
+              '$A^{\\mathsf T}\\ell  = (0,0)^{\\mathsf T}$ but $\\ell ^{\\mathsf T}b = 1$. Every $A\\theta$ has $\\ell ^{\\mathsf T}A\\theta  = 0$, so none equals b.',
           },
         ],
         title: 'Show why the exact system is inconsistent',
         explanation:
-          'The normal vector ℓ detects an unreachable component of b. The rows are measurements and the columns are feature directions in measurement space.',
+          'The normal vector $\\ell$ detects an unreachable component of b. The rows are measurements and the columns are feature directions in measurement space.',
         watchFor:
-          'If every Aθ has zero inner product with ℓ, can an output with ℓᵀb = 1 be reached?',
+          'If every $A\\theta$ has zero inner product with $\\ell$, can an output with $\\ell ^{\\mathsf T}b = 1$ be reached?',
         after: {
-          title: 'A certificate that b ∉ Col(A)',
+          title: 'A certificate that $b \\notin  \\operatorname{Col}(A)$',
           description:
-            'The reachable plane satisfies z₁ − z₂ + z₃ = 0. The observation b does not satisfy that equation.',
+            'The reachable plane satisfies $z_{1} - z_{2} + z_{3} = 0$. The observation b does not satisfy that equation.',
           equation: 'Aᵀℓ = 0; ℓᵀb = 1 ≠ 0',
           matrices: [
-            { label: 'Aᵀℓ · orthogonal to both columns', values: [[0], [0]] },
-            { label: 'ℓᵀb · nonzero component', values: [[1]] },
+            {
+              label: '$A^{\\mathsf T}\\ell  \\cdot$ orthogonal to both columns',
+              values: [[0], [0]],
+            },
+            {
+              label: '$\\ell ^{\\mathsf T}b \\cdot$ nonzero component',
+              values: [[1]],
+            },
           ],
           callout:
             'Least squares asks for the nearest point on this plane, not an exact solution to the inconsistent system.',
@@ -155,23 +164,23 @@ export const leastSquaresSection: ChapterSection = {
           {
             action: 'Chooses a simple candidate coefficient.',
             shape: 'theta_trial: (2,)',
-            operation: 'The trial coefficient θ = (0,0)ᵀ.',
+            operation: 'The trial coefficient $\\theta  = (0,0)^{\\mathsf T}$.',
           },
           {
             action: 'Computes three predictions.',
             shape: '(3, 2) @ (2,) → fitted_trial: (3,)',
-            operation: 'Aθ = (0,0,0)ᵀ.',
+            operation: '$A\\theta  = (0,0,0)^{\\mathsf T}$.',
           },
           {
             action: 'Subtracts predictions from observations.',
             shape: '(3,) − (3,) → residual_trial: (3,)',
-            operation: 'b − Aθ = (1,1,1)ᵀ.',
+            operation: '$b - A\\theta  = (1,1,1)^{\\mathsf T}$.',
           },
           {
             action: 'Adds the squared residual entries.',
             shape: '(3,) @ (3,) → scalar',
             operation:
-              '1² + 1² + 1² = 3; this is the sum of squared errors (SSE).',
+              '$1^{2} + 1^{2} + 1^{2} = 3$; this is the sum of squared errors (SSE).',
           },
         ],
         title: 'Separate the candidate, its output, and its error',
@@ -189,10 +198,13 @@ export const leastSquaresSection: ChapterSection = {
         after: {
           title: 'A baseline squared error of 3',
           description:
-            'Choosing θ = 0 reaches the origin. We can reduce the error by moving the fitted output within Col(A).',
+            'Choosing $\\theta  = 0$ reaches the origin. We can reduce the error by moving the fitted output within Col(A).',
           equation: 'f(0) = ‖b‖₂² = 3',
           matrices: [
-            { label: 'θ_trial · coefficients', values: [[0], [0]] },
+            {
+              label: String.raw`$\theta_{\mathrm{trial}}$ · coefficients`,
+              values: [[0], [0]],
+            },
             {
               label: 'fitted_trial | residual_trial',
               values: [
@@ -214,27 +226,28 @@ export const leastSquaresSection: ChapterSection = {
             action: 'Forms the Gram matrix from column dot products.',
             shape: '(2, 3) @ (3, 2) → G: (2, 2)',
             operation:
-              'G = [[2,−1],[−1,2]]. Its determinant is 3, so it is invertible here.',
+              '$G = [[2,-1],[-1,2]]$. Its determinant is 3, so it is invertible here.',
           },
           {
             action: 'Forms the normal-equation right-hand side.',
             shape: '(2, 3) @ (3,) → h: (2,)',
             operation:
-              'h = (0,2)ᵀ collects the inner products of b with A’s columns.',
+              '$h = (0,2)^{\\mathsf T}$ collects the inner products of b with A’s columns.',
           },
           {
-            action: 'Solves Gθ = h for the coefficients.',
+            action: 'Solves $G\\theta  = h$ for the coefficients.',
             shape: 'solve((2, 2), (2,)) → theta_normal: (2,)',
-            operation: '2θ₁ − θ₂ = 0 and −θ₁ + 2θ₂ = 2 give θ̂ = (2/3,4/3)ᵀ.',
+            operation:
+              '$2\\theta _{1} - \\theta _{2} = 0$ and $-\\theta _{1} + 2\\theta _{2} = 2$ give $\\hat{\\theta} = (2/3,4/3)^{\\mathsf T}$.',
           },
         ],
         title: 'Solve the lecture’s normal equations',
         explanation:
-          'A zero gradient gives AᵀAθ̂ = Aᵀb. The columns are independent here, making G positive definite. solve computes the coefficient without explicitly forming an inverse.',
+          'A zero gradient gives $A^{\\mathsf T}A\\hat{\\theta} = A^{\\mathsf T}b$. The columns are independent here, making G positive definite. solve computes the coefficient without explicitly forming an inverse.',
         watchFor:
           'Why is G a 2 × 2 matrix even though there are three measurements?',
         after: {
-          title: 'One minimizing coefficient in ℝ²',
+          title: 'One minimizing coefficient in $\\mathbb R^{2}$',
           description:
             'The normal equations are a system for coefficients, not three fitted values. Invertibility of G depends on independent columns.',
           equation: 'Gθ̂ = h; θ̂ = (2/3,4/3)ᵀ',
@@ -247,7 +260,10 @@ export const leastSquaresSection: ChapterSection = {
               ],
               dividerBefore: 2,
             },
-            { label: 'θ_normal', values: [['2/3'], ['4/3']] },
+            {
+              label: '$\\theta _{\\mathrm{normal}}$',
+              values: [['2/3'], ['4/3']],
+            },
           ],
           callout:
             'This step explains the formula for a small full-rank example. General computations later use lstsq directly on A.',
@@ -259,48 +275,53 @@ export const leastSquaresSection: ChapterSection = {
           {
             action: 'Maps coefficients to the best fitted output.',
             shape: '(3, 2) @ (2,) → fitted: (3,)',
-            operation: 'b̂ = (−2/3 + 4/3, 4/3, 2/3)ᵀ = (2/3,4/3,2/3)ᵀ.',
+            operation:
+              '$\\hat{b} = (-2/3 + 4/3, 4/3, 2/3)^{\\mathsf T} = (2/3,4/3,2/3)^{\\mathsf T}$.',
           },
           {
             action: 'Computes the remaining output error.',
             shape: '(3,) − (3,) → residual: (3,)',
             operation:
-              'e = (1/3,−1/3,1/3)ᵀ. Negative e₂ means observation 2 is below its prediction.',
+              '$e = (1/3,-1/3,1/3)^{\\mathsf T}$. Negative $e_{2}$ means observation 2 is below its prediction.',
           },
           {
             action: 'Checks perpendicularity to both feature columns.',
             shape: '(2, 3) @ (3,) → orthogonality: (2,)',
             operation:
-              'Aᵀe ≈ (0,0)ᵀ in floating point; exact fractions give zero.',
+              '$A^{\\mathsf T}e \\approx  (0,0)^{\\mathsf T}$ in floating point; exact fractions give zero.',
           },
           {
             action: 'Measures the minimum squared error.',
             shape: '(3,) @ (3,) → scalar',
             operation:
-              '(1/3)² + (−1/3)² + (1/3)² = 1/3, compared with baseline 3.',
+              '$(1/3)^{2} + (-1/3)^{2} + (1/3)^{2} = 1/3$, compared with baseline 3.',
           },
         ],
         title: 'Check the fitted vector and perpendicular residual',
         explanation:
           'The residual need not vanish. Its perpendicularity proves that moving the fit along any column-space direction only adds squared error; the proof below uses Pythagoras.',
-        watchFor: 'Does Aᵀe = 0 say that every measurement is fitted exactly?',
+        watchFor:
+          'Does $A^{\\mathsf T}e = 0$ say that every measurement is fitted exactly?',
         variables: [
           {
             name: 'sse',
             value: '1/3 ≈ 0.333333',
             meaning:
-              'Minimum sum of squared errors; the minimum residual length is 1/√3.',
+              'Minimum sum of squared errors; the minimum residual length is $1/\\sqrt{3}$.',
           },
         ],
         after: {
           title: 'Reachable part plus perpendicular part',
           description:
-            'The diagram is a 2D orthonormal slice through b̂ and e inside ℝ³. Its axes point along these two perpendicular directions; they are not the measurement coordinates b₁ and b₂.',
+            'The diagram is a 2D orthonormal slice through $\\hat{b}$ and e inside $\\mathbb R^{3}$. Its axes point along these two perpendicular directions; they are not the measurement coordinates $b_{1}$ and $b_{2}$.',
           equation: 'b = b̂ + e; Aᵀe = 0; min f = 1/3',
           matrices: [
-            { label: 'b̂ · fitted output', values: fitted },
+            { label: '$\\hat{b} \\cdot$ fitted output', values: fitted },
             { label: 'e · observed minus fitted', values: residual },
-            { label: 'Aᵀe · exact value', values: [[0], [0]] },
+            {
+              label: '$A^{\\mathsf T}e \\cdot$ exact value',
+              values: [[0], [0]],
+            },
           ],
           plane: {
             xRange: [-0.2, 2],
@@ -333,7 +354,7 @@ export const leastSquaresSection: ChapterSection = {
             ],
           },
           callout:
-            'Aᵀe = 0 is a statement about two inner products, not three residual entries. Exact values are shown; numerical checks use a tolerance.',
+            '$A^{\\mathsf T}e = 0$ is a statement about two inner products, not three residual entries. Exact values are shown; numerical checks use a tolerance.',
         },
       },
       {
@@ -343,18 +364,18 @@ export const leastSquaresSection: ChapterSection = {
             action: 'Constructs the projection map in output space.',
             shape: '(3, 2) @ solve((2, 2), (2, 3)) → P: (3, 3)',
             operation:
-              'The solved factor is G⁻¹Aᵀ, so P = AG⁻¹Aᵀ without forming G⁻¹ explicitly.',
+              'The solved factor is $G^{-1}A^{\\mathsf T}$, so $P = AG^{-1}A^{\\mathsf T}$ without forming $G^{-1}$ explicitly.',
           },
           {
             action: 'Projects the target b.',
             shape: '(3, 3) @ (3,) → projected: (3,)',
-            operation: 'Pb = (2/3,4/3,2/3)ᵀ = b̂.',
+            operation: '$Pb = (2/3,4/3,2/3)^{\\mathsf T} = \\hat{b}$.',
           },
           {
             action: 'Checks symmetry and idempotence numerically.',
             shape: 'two matrix comparisons → boolean',
             operation:
-              'Pᵀ ≈ P and P² ≈ P; exact algebra gives equality. projector_ok = True.',
+              '$P^{\\mathsf T}\\approx P$ and $P^2\\approx P$; exact algebra gives equality. `projector_ok` is `True`.',
           },
         ],
         title: 'See least squares as an orthogonal projection',
@@ -364,7 +385,7 @@ export const leastSquaresSection: ChapterSection = {
         after: {
           title: 'One projection, independent of the chosen basis',
           description:
-            'P projects onto Col(A); I₃ − P projects onto its orthogonal complement. Their outputs sum to b.',
+            'P projects onto $\\operatorname{Col}(A); I_{3} - P$ projects onto its orthogonal complement. Their outputs sum to b.',
           equation: 'Pᵀ = P; P² = P; Pb = b̂; (I₃ − P)b = e',
           matrices: [
             {
@@ -375,7 +396,7 @@ export const leastSquaresSection: ChapterSection = {
                 ['−1/3', '1/3', '2/3'],
               ],
             },
-            { label: 'projected = Pb', values: fitted },
+            { label: 'projected $= Pb$', values: fitted },
           ],
           callout:
             'This full-rank formula is valid because G is invertible. Projection itself remains defined when the columns are dependent.',
@@ -387,36 +408,41 @@ export const leastSquaresSection: ChapterSection = {
           {
             action: 'Normalizes A’s first column.',
             shape: '(3,) ÷ scalar → q1: (3,)',
-            operation: 'q₁ = (−1,0,1)ᵀ/√2 has unit length.',
+            operation:
+              '$q_{1} = (-1,0,1)^{\\mathsf T}/\\sqrt{2}$ has unit length.',
           },
           {
             action: 'Uses the second lecture Gram–Schmidt direction.',
             shape: '(3,) ÷ scalar → q2: (3,)',
             operation:
-              'q₂ = (1,2,1)ᵀ/√6 has unit length and is perpendicular to q₁.',
+              '$q_{2} = (1,2,1)^{\\mathsf T}/\\sqrt{6}$ has unit length and is perpendicular to $q_{1}$.',
           },
           {
             action: 'Stores the orthonormal basis as columns.',
             shape: 'two (3,) arrays → Q: (3, 2)',
-            operation: 'QᵀQ = I₂ and Col(Q) = Col(A).',
+            operation:
+              '$Q^{\\mathsf T}Q = I_{2}$ and $\\operatorname{Col}(Q) = \\operatorname{Col}(A)$.',
           },
           {
             action: 'Computes the coefficient matrix of A in that basis.',
             shape: '(2, 3) @ (3, 2) → R: (2, 2)',
-            operation: 'R = [[√2,−1/√2],[0,√6/2]]; its diagonal is nonzero.',
+            operation:
+              '$R = [[\\sqrt{2},-1/\\sqrt{2}],[0,\\sqrt{6}/2]]$; its diagonal is nonzero.',
           },
           {
             action: 'Solves the smaller triangular system.',
             shape: 'solve((2, 2), (2,)) → theta_qr: (2,)',
-            operation: 'Rθ̂ = Qᵀb gives the same (2/3,4/3)ᵀ.',
+            operation:
+              '$R\\hat{\\theta} = Q^{\\mathsf T}b$ gives the same $(2/3,4/3)^{\\mathsf T}$.',
           },
         ],
         title: 'Recover the same fit from reduced QR',
         explanation:
-          'Use the lecture’s explicit Q to keep the signs familiar. Orthonormal coordinates reduce least squares to Rθ̂ = Qᵀb, and the fitted vector is QQᵀb.',
-        watchFor: 'QᵀQ is I₂. Does that make QQᵀ equal to I₃?',
+          'Use the lecture’s explicit Q to keep the signs familiar. Orthonormal coordinates reduce least squares to $R\\hat{\\theta} = Q^{\\mathsf T}b$, and the fitted vector is $QQ^{\\mathsf T}b$.',
+        watchFor:
+          '$Q^{\\mathsf T}Q$ is $I_{2}$. Does that make $QQ^{\\mathsf T}$ equal to $I_{3}$?',
         after: {
-          title: 'A = QR and P = QQᵀ',
+          title: '$A = QR$ and $P = QQ^{\\mathsf T}$',
           description:
             'Q is a rectangular matrix with orthonormal columns. R is a square upper triangular matrix; the two factors reconstruct A.',
           equation: 'θ_qr = θ_normal; QQᵀ = P ≠ I₃',
@@ -438,7 +464,7 @@ export const leastSquaresSection: ChapterSection = {
             },
           ],
           callout:
-            'A library QR may flip matching signs in Q and R. The product A and the projection QQᵀ remain the same.',
+            'A library QR may flip matching signs in Q and R. The product A and the projection $QQ^{\\mathsf T}$ remain the same.',
         },
       },
       {
@@ -448,7 +474,7 @@ export const leastSquaresSection: ChapterSection = {
             action: 'Solves least squares directly from A and b.',
             shape: '(3, 2), (3,) → (2,), (1,), scalar, (2,)',
             operation:
-              'Returns θ̂, a squared-residual summary [1/3], rank 2, and singular values [√3,1]. rcond=None uses NumPy’s numerical rank cutoff.',
+              'Returns $\\hat{\\theta}$, a squared-residual summary [1/3], rank 2, and singular values $[\\sqrt{3},1]$. rcond=None uses NumPy’s numerical rank cutoff.',
           },
           {
             action: 'Checks agreement with the normal equations.',
@@ -459,12 +485,12 @@ export const leastSquaresSection: ChapterSection = {
             action: 'Computes the squared error from the actual residual.',
             shape: '(3,) @ (3,) → scalar',
             operation:
-              'sse_direct ≈ 1/3. This remains meaningful even when the summary array is empty.',
+              '$\\mathtt{sse\\_direct} \\approx  1/3$. This remains meaningful even when the summary array is empty.',
           },
         ],
         title: 'Use lstsq for the computation and interpret all four returns',
         explanation:
-          'The lecture’s formulas explain the answer. lstsq computes it without explicitly building AᵀA, and also handles dependent columns. Its second return is a summary of squared errors, not a residual vector.',
+          'The lecture’s formulas explain the answer. lstsq computes it without explicitly building $A^{\\mathsf T}A$, and also handles dependent columns. Its second return is a summary of squared errors, not a residual vector.',
         watchFor:
           'What is the shape of sums_squared here, and why is it different from e.shape?',
         variables: [
@@ -483,11 +509,12 @@ export const leastSquaresSection: ChapterSection = {
         after: {
           title: 'Three computations agree',
           description:
-            'Normal equations, reduced QR, and lstsq all yield θ̂ = (2/3,4/3)ᵀ in this example. Each produces the same fitted vector.',
+            'Normal equations, reduced QR, and lstsq all yield $\\hat{\\theta} = (2/3,4/3)^{\\mathsf T}$ in this example. Each produces the same fitted vector.',
           equation: 'θ_normal ≈ θ_qr ≈ θ_hat; ‖b − Aθ̂‖₂² ≈ 1/3',
           matrices: [
             {
-              label: 'θ_normal | θ_qr | θ_hat',
+              label:
+                '$\\theta _{\\mathrm{normal}} | \\theta _{\\mathrm{qr}} | \\theta _{\\mathrm{hat}}$',
               values: [
                 ['2/3', '2/3', '2/3'],
                 ['4/3', '4/3', '4/3'],
@@ -496,7 +523,7 @@ export const leastSquaresSection: ChapterSection = {
             },
           ],
           callout:
-            'For general data, avoid forming AᵀA just to fit the model; it can worsen conditioning. Direct least-squares solvers are the practical computation path.',
+            'For general data, avoid forming $A^{\\mathsf T}A$ just to fit the model; it can worsen conditioning. Direct least-squares solvers are the practical computation path.',
         },
       },
       {
@@ -506,35 +533,37 @@ export const leastSquaresSection: ChapterSection = {
             action: 'Duplicates the second feature column.',
             shape: '(3, 2) + (3,) → A_dep: (3, 3)',
             operation:
-              'Column 3 equals column 2, so rank(A_dep) = 2 < 3; the output space is unchanged.',
+              'Column 3 equals column 2, so $\\operatorname{rank}(\\mathtt{A\\_dep}) = 2 < 3$; the output space is unchanged.',
           },
           {
             action: 'Fits with dependent columns.',
             shape: '(3, 3), (3,) → (3,), (0,), scalar, (3,)',
             operation:
-              'lstsq returns the minimum-norm coefficient (2/3,2/3,2/3)ᵀ, rank 2, and an empty sums_dep.',
+              'lstsq returns the minimum-norm coefficient $(2/3,2/3,2/3)^{\\mathsf T}$, rank 2, and an empty sums_dep.',
           },
           {
             action: 'Finds a direction that disappears.',
             shape: 'null_direction: (3,)',
-            operation: 'A_dep @ (0,1,−1)ᵀ = column 2 − column 3 = 0.',
+            operation:
+              '$\\mathtt{A\\_dep}\\begin{pmatrix}0\\\\1\\\\-1\\end{pmatrix}=0$: column 2 minus column 3 is zero.',
           },
           {
             action: 'Makes a different minimizing coefficient.',
             shape: '(3,) + (3,) → (3,)',
             operation:
-              'θ_shifted = (2/3,5/3,−1/3)ᵀ. Any real multiple of this null direction could be added.',
+              '$\\theta _{\\mathrm{shifted}} = (2/3,5/3,-1/3)^{\\mathsf T}$. Any real multiple of this null direction could be added.',
           },
           {
             action: 'Compares the two fitted outputs.',
             shape: 'two (3,) arrays → fits_dep: (3, 2)',
-            operation: 'Both output columns equal (2/3,4/3,2/3)ᵀ.',
+            operation:
+              'Both output columns equal $(2/3,4/3,2/3)^{\\mathsf T}$.',
           },
           {
             action: 'Computes the error despite the empty summary.',
             shape: '(3,) @ (3,) → scalar',
             operation:
-              'sse_dep ≈ 1/3, not zero. The same column space gives the same projection.',
+              '$\\mathtt{sse\\_dep} \\approx  1/3$, not zero. The same column space gives the same projection.',
           },
         ],
         title: 'Change coefficients without changing the best output',
@@ -565,7 +594,8 @@ export const leastSquaresSection: ChapterSection = {
               ),
             },
             {
-              label: 'θ_dep | θ_shifted',
+              label:
+                '$\\theta _{\\mathrm{dep}} | \\theta _{\\mathrm{shifted}}$',
               values: [
                 ['2/3', '2/3'],
                 ['2/3', '5/3'],
@@ -584,7 +614,7 @@ export const leastSquaresSection: ChapterSection = {
             },
           ],
           callout:
-            'Here Null(A_dep) = span{(0,1,−1)ᵀ}. lstsq chooses the smallest coefficient norm among this family; ordinary least squares minimizes the residual norm.',
+            'Here $\\operatorname{Null}(\\mathtt{A\\_dep}) = \\operatorname{span}\\{(0,1,-1)^{\\mathsf T}\\}$. lstsq chooses the smallest coefficient norm among this family; ordinary least squares minimizes the residual norm.',
         },
       },
     ],

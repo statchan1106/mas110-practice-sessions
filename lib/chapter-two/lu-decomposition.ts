@@ -13,7 +13,7 @@ export const luDecompositionSection: ChapterSection = {
     'Build one deterministic rank-2 matrix, read SciPy’s LU factors, and verify the result.',
   focus: 'low rank → LU → check',
   learningGoal:
-    'See what SciPy returns, why Q = P.T gives Q @ A = L @ U, and where rank deficiency appears.',
+    'See what SciPy returns, why $Q = P$.T gives $Q \\mathbin{\\mathtt{@}} A = L \\mathbin{\\mathtt{@}} U$, and where rank deficiency appears.',
   lectureConcepts: [
     'Rank of a product',
     'Rectangular LU',
@@ -29,21 +29,21 @@ export const luDecompositionSection: ChapterSection = {
       term: 'Rank bound',
       definition:
         'A product with a two-dimensional middle space cannot have rank larger than two.',
-      relation: 'A = X Y ⇒ rank(A) ≤ 2',
+      relation: '$A = X Y \\Rightarrow  \\operatorname{rank}(A) \\le  2$',
       watchFor: 'The third row of A will depend on another row.',
     },
     {
       term: 'Pivoted LU',
       definition:
-        'SciPy returns A = P L U. Setting Q = P.T gives the course form Q A = L U.',
-      relation: 'A = P L U ⇔ Q A = L U',
+        'SciPy returns $A = P L U$. Setting $Q = P$.T gives the course form $Q A = L U$.',
+      relation: '$A = P L U \\Longleftrightarrow  Q A = L U$',
       watchFor: 'Q changes row order but not rank.',
     },
     {
       term: 'Residual',
       definition:
         'The residual compresses the reconstruction difference into one nonnegative number.',
-      relation: '‖Q A − L U‖',
+      relation: '$\\Vert Q A - L U\\Vert$',
       watchFor: 'Use a tolerance for floating-point calculations.',
     },
   ],
@@ -96,7 +96,7 @@ export const luDecompositionSection: ChapterSection = {
           title: 'The factors are compatible',
           description:
             'The inner dimensions match and disappear in the product.',
-          equation: 'X.shape = (3,2) · Y.shape = (2,4)',
+          equation: 'X.shape $= (3,2) \\cdot  Y$.shape $= (2,4)$',
           matrices: [
             {
               label: 'X',
@@ -122,18 +122,18 @@ export const luDecompositionSection: ChapterSection = {
           {
             action: 'Multiplies the two factors to create A.',
             shape: '(3, 2) @ (2, 4) → A: (3, 4)',
-            operation: 'Forms A, with A[2] = 2 × A[1].',
+            operation: 'Forms A, with $A[2] = 2 \\times  A[1]$.',
           },
           {
             action: 'Counts the independent directions in A.',
             shape: 'A: (3, 4) → scalar',
-            operation: 'rank_A = 2.',
+            operation: '$\\mathtt{rank\\_A} = 2$.',
           },
         ],
         title: 'Create a rank-2 matrix',
         explanation:
           'The last row is twice the second row, so A has only two independent rows.',
-        watchFor: 'A[2] = 2 × A[1].',
+        watchFor: '$A[2] = 2 \\times  A[1]$.',
         variables: [
           {
             name: 'A.shape',
@@ -147,7 +147,7 @@ export const luDecompositionSection: ChapterSection = {
           description: 'The highlighted row is twice the row above it.',
           matrices: [
             {
-              label: 'A = X @ Y',
+              label: '$A = X \\mathbin{\\mathtt{@}} Y$',
               values: [
                 [1, 2, 3, 4],
                 [2, 5, 7, 9],
@@ -156,7 +156,7 @@ export const luDecompositionSection: ChapterSection = {
               cellTones: toneRow(2, 4, 'target'),
             },
           ],
-          callout: 'rank(A) = 2, not 3.',
+          callout: '$\\operatorname{rank}(A) = 2$, not 3.',
         },
       },
       {
@@ -165,13 +165,14 @@ export const luDecompositionSection: ChapterSection = {
           {
             action: 'Computes SciPy’s permutation, lower, and upper factors.',
             shape: 'A: (3, 4) → P, L: (3, 3); U: (3, 4)',
-            operation: 'Factors A = P @ L @ U.',
+            operation:
+              'Factors $A = P \\mathbin{\\mathtt{@}} L \\mathbin{\\mathtt{@}} U$.',
           },
           {
             action:
-              'Transposes P to express the factorization as Q @ A = L @ U.',
+              'Transposes P to express the factorization as $Q \\mathbin{\\mathtt{@}} A = L \\mathbin{\\mathtt{@}} U$.',
             shape: 'P: (3, 3) → Q: (3, 3)',
-            operation: 'Q row order = [3, 1, 2] (one-based); Q @ A = L @ U.',
+            operation: 'Q row order is $[3,1,2]$ (one-based); $QA=LU$.',
           },
         ],
         title: 'Read the LU factors',
@@ -182,7 +183,7 @@ export const luDecompositionSection: ChapterSection = {
           title: 'U carries the rank deficiency',
           description:
             'L remains invertible, while U has only two nonzero rows.',
-          equation: 'Q @ A = L @ U',
+          equation: '$Q \\mathbin{\\mathtt{@}} A = L \\mathbin{\\mathtt{@}} U$',
           matrices: [
             {
               label: 'Q @ A',
@@ -218,12 +219,13 @@ export const luDecompositionSection: ChapterSection = {
           {
             action: 'Measures the size of the reconstruction difference.',
             shape: '(3, 4) − (3, 4) → scalar',
-            operation: '‖Q @ A − L @ U‖ = 0.',
+            operation:
+              '$\\Vert Q \\mathbin{\\mathtt{@}} A - L \\mathbin{\\mathtt{@}} U\\Vert  = 0$.',
           },
           {
             action: 'Computes the rank visible in U.',
             shape: 'U: (3, 4) → scalar',
-            operation: 'rank_U = 2.',
+            operation: '$\\mathtt{rank\\_U} = 2$.',
           },
           {
             action: 'Checks the two reconstructed matrices within a tolerance.',
@@ -234,7 +236,7 @@ export const luDecompositionSection: ChapterSection = {
             action:
               'Combines the rank and reconstruction claims into one result.',
             shape: 'two ranks + one bool → bool',
-            operation: '(2 == 2 == 2) and True → True.',
+            operation: '$(2 == 2 == 2)$ and True → True.',
           },
         ],
         title: 'Test the mathematical claims',

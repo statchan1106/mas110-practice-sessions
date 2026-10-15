@@ -225,7 +225,7 @@
     padding-block: 0.9rem;
   }
 
-  .schedule-time span {
+  .schedule-time > span {
     color: var(--muted-foreground);
     font-family: var(--font-mono);
     font-size: 0.68rem;
@@ -504,7 +504,7 @@
       color-mix(in oklch, var(--foreground) 18%, transparent);
     padding: 0.35rem 1.25rem 0.75rem;
   }
-  .method-step span {
+  .method-step > span {
     display: block;
     color: var(--primary);
     font-family: var(--font-mono);
@@ -585,6 +585,14 @@
     border-bottom: 1px solid var(--foreground);
     padding-block: 2.5rem 3rem;
   }
+  .chapter-header > div {
+    min-width: 0;
+  }
+  @media (max-width: 360px) {
+    .course-title {
+      font-size: 2.65rem;
+    }
+  }
 
   .chapter-question {
     align-self: end;
@@ -592,7 +600,7 @@
     padding-left: 1rem;
   }
 
-  .chapter-question span,
+  .chapter-question > span,
   .source-note > span {
     color: var(--primary);
     font-family: var(--font-mono);
@@ -627,7 +635,7 @@
     font-size: 0.95rem;
     font-weight: 650;
   }
-  .concept-ledger dt span {
+  .concept-ledger dt > span:first-child {
     color: var(--primary);
     font-family: var(--font-mono);
     font-size: 0.75rem;
@@ -686,7 +694,7 @@
     text-align: center;
   }
 
-  .lecture-matrix span {
+  .lecture-matrix > div > span {
     padding: 0.45rem 0.25rem;
   }
 
@@ -723,7 +731,7 @@
     border-bottom: 0;
   }
 
-  .bridge-operations span,
+  .bridge-operations li > span:not(.math-text):not(.inline-math),
   .bridge-operations small {
     color: var(--primary);
     font-family: var(--font-mono);
@@ -748,7 +756,7 @@
     font-size: 0.86rem;
   }
 
-  .bridge-conclusion span {
+  .bridge-conclusion > span {
     color: var(--muted-foreground);
     font-family: var(--font-mono);
     text-transform: uppercase;
@@ -830,7 +838,7 @@
   }
 
   .lab-concepts > strong,
-  .lab-concepts > p span {
+  .lab-concepts > p > span:first-child {
     color: var(--primary);
     font-family: var(--font-mono);
     font-size: 0.78rem;
@@ -861,7 +869,7 @@
     line-height: 1.45rem;
   }
 
-  .lab-concepts > p span {
+  .lab-concepts > p > span:first-child {
     display: block;
     margin-bottom: 0.2rem;
     color: var(--target-fg);
@@ -944,7 +952,7 @@
     font-weight: 650;
     line-height: 1.5;
   }
-  .reasoning-ledger h3 span {
+  .reasoning-ledger h3 > span:first-child {
     margin-right: 0.75rem;
     color: var(--muted-foreground);
     font-size: 0.875rem;
@@ -1031,6 +1039,24 @@
     font-family: var(--font-sans);
     font-style: normal;
   }
+  .inline-math {
+    display: inline;
+    font-style: normal;
+    font-weight: normal;
+    letter-spacing: normal;
+    text-transform: none;
+    vertical-align: baseline;
+    white-space: normal;
+  }
+  .inline-math .katex {
+    font-size: 1em;
+    line-height: normal;
+    text-align: start;
+    white-space: normal;
+  }
+  .inline-math .katex .base {
+    margin-block: 0.1em;
+  }
   @media (max-width: 640px) {
     .primer-ledger dt {
       flex-direction: column;
@@ -1055,7 +1081,7 @@
     display: block;
     margin-top: 0.65rem;
   }
-  .primer-ledger dd small span {
+  .primer-ledger dd small > span:first-child {
     margin-right: 0.55rem;
     color: oklch(0.48 0.12 63);
     font-family: var(--font-mono);
@@ -1098,7 +1124,7 @@
   .lesson-pagination > a:hover strong {
     color: var(--primary);
   }
-  .lesson-pagination span {
+  .lesson-pagination a > span {
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -1379,7 +1405,7 @@
     border-left: 2px solid var(--target-fg);
     padding: 0.1rem 0.75rem;
   }
-  .trace-prediction span {
+  .trace-prediction > span {
     color: var(--target-fg);
     font-family: var(--font-mono);
     font-size: 0.76rem;
@@ -1440,7 +1466,7 @@
     padding: 1rem;
     text-align: center;
   }
-  .state-prediction span {
+  .state-prediction > span {
     display: grid;
     width: 2rem;
     height: 2rem;
@@ -1488,12 +1514,12 @@
     font-size: 0.82rem;
     font-weight: 700;
   }
-  .variable-ledger span {
+  .variable-ledger > div > span {
     text-align: right;
     font-family: var(--font-mono);
     font-size: 0.82rem;
   }
-  .variable-ledger span b {
+  .variable-ledger > div > span > b {
     margin-inline: 0.25rem;
     color: var(--muted-foreground);
   }

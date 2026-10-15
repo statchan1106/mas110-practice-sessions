@@ -1,3 +1,4 @@
+import { renderMathProse } from '@/components/math-prose';
 import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 import { SiteFooter } from '@/components/site-footer';
@@ -27,7 +28,7 @@ const concepts = [
   [
     'Reduced QR',
     'A = QR; QᵀQ = Iₙ',
-    'Orthonormal columns give simple projection coordinates. For m > n, QQᵀ is a projection, not Iₘ.',
+    'Orthonormal columns give simple projection coordinates. For $m > n, QQ^{\\mathsf T}$ is a projection, not $I_{m}$.',
   ],
   [
     'Least squares',
@@ -37,7 +38,7 @@ const concepts = [
 ];
 
 export default function ChapterFourHome() {
-  return (
+  return renderMathProse(
     <div className="min-h-screen">
       <SiteHeader />
       <main
@@ -98,9 +99,9 @@ export default function ChapterFourHome() {
               A best fit still has a residual
             </h2>
             <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
-              For A = [[−1,1],[0,1],[1,0]] and b = (1,1,1)ᵀ, no coefficient
-              gives an exact fit. The nearest reachable output is b̂ =
-              (2/3,4/3,2/3)ᵀ.
+              {
+                'For $A = [[-1,1],[0,1],[1,0]]$ and $b = (1,1,1)^{\\mathsf T}$, no coefficient gives an exact fit. The nearest reachable output is $\\hat{b} = (2/3,4/3,2/3)^{\\mathsf T}$.'
+              }
             </p>
           </div>
           <div className="bridge-flow">
@@ -203,9 +204,9 @@ export default function ChapterFourHome() {
                 <MathText>⟨·,·⟩ and ‖·‖</MathText>
               </dt>
               <dd>
-                The stated inner product determines the norm. In 4.1, 4.3, and
-                4.4 use the Euclidean dot product; in 4.2 use the integral on
-                [−1,1]. The lecture’s |v| is written ‖v‖ here.
+                {
+                  'The stated inner product determines the norm. In 4.1, 4.3, and 4.4 use the Euclidean dot product; in 4.2 use the integral on [−1,1]. The lecture’s |v| is written $\\Vert v\\Vert$ here.'
+                }
               </dd>
             </div>
             <div>
@@ -213,9 +214,9 @@ export default function ChapterFourHome() {
                 <MathText>φ and θ̂</MathText>
               </dt>
               <dd>
-                φ denotes an angle. θ and θ̂ are candidate and minimizing model
-                coefficients. Polynomial coordinate vectors use c,d instead of
-                the function argument t.
+                {
+                  '$\\varphi$ denotes an angle. $\\theta$ and $\\hat{\\theta}$ are candidate and minimizing model coefficients. Polynomial coordinate vectors use c,d instead of the function argument t.'
+                }
               </dd>
             </div>
             <div>
@@ -223,9 +224,9 @@ export default function ChapterFourHome() {
                 <MathText>A and G</MathText>
               </dt>
               <dd>
-                A stores Euclidean input columns. G is a Gram matrix of inner
-                products: the polynomial metric in 4.2, and AᵀA in 4.4. The
-                lecture’s local polynomial Gram matrix A is renamed G here.
+                {
+                  'A stores Euclidean input columns. G is a Gram matrix of inner products: the polynomial metric in 4.2, and $A^{\\mathsf T}A$ in 4.4. The lecture’s local polynomial Gram matrix A is renamed G here.'
+                }
               </dd>
             </div>
             <div>
@@ -233,9 +234,9 @@ export default function ChapterFourHome() {
                 <MathText>Q, R, P</MathText>
               </dt>
               <dd>
-                Q stores orthonormal columns; R stores reconstruction
-                coefficients; P acts on ambient vectors as a projection. Reduced
-                Q is rectangular. QᵀQ = I does not imply QQᵀ = I.
+                {
+                  'Q stores orthonormal columns; R stores reconstruction coefficients; P acts on ambient vectors as a projection. Reduced Q is rectangular. $Q^{\\mathsf T}Q = I$ does not imply $QQ^{\\mathsf T} = I$.'
+                }
               </dd>
             </div>
           </dl>
@@ -251,6 +252,6 @@ export default function ChapterFourHome() {
         </aside>
       </main>
       <SiteFooter />
-    </div>
+    </div>,
   );
 }

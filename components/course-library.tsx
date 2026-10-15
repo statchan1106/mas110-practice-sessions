@@ -1,4 +1,7 @@
 'use client';
+import { MathText } from '@/components/math-text';
+
+import { renderMathProse } from '@/components/math-prose';
 
 import { BookOpenText, Code2, ExternalLink } from 'lucide-react';
 
@@ -34,7 +37,7 @@ const guidedNotebookRoutes: Record<string, string> = {
 };
 
 export function CourseLibrary() {
-  return (
+  return renderMathProse(
     <div>
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border bg-card/80 p-4">
@@ -107,11 +110,11 @@ export function CourseLibrary() {
                       key={item.term}
                       className="rounded-xl border bg-muted/30 p-4"
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 flex-col items-start gap-2">
                         <h4 className="font-semibold">{item.term}</h4>
-                        <code className="shrink-0 rounded bg-background px-2 py-1 text-[11px] text-primary">
-                          {item.relation}
-                        </code>
+                        <div className="min-w-0 max-w-full text-sm text-primary">
+                          <MathText>{item.relation}</MathText>
+                        </div>
                       </div>
                       <p className="mt-2 text-xs leading-5 text-muted-foreground">
                         {item.definition}
@@ -130,7 +133,7 @@ export function CourseLibrary() {
               <div className="mt-5 overflow-hidden rounded-xl border">
                 {group.notebooks.map((item, notebookIndex) => {
                   const guidedRoute = guidedNotebookRoutes[item.filename];
-                  return (
+                  return renderMathProse(
                     <div
                       key={item.filename}
                       className={cn(
@@ -201,7 +204,7 @@ export function CourseLibrary() {
                           />
                         </a>
                       </div>
-                    </div>
+                    </div>,
                   );
                 })}
               </div>
@@ -209,6 +212,6 @@ export function CourseLibrary() {
           </AccordionItem>
         ))}
       </Accordion>
-    </div>
+    </div>,
   );
 }

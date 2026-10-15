@@ -1,4 +1,6 @@
 'use client';
+import { renderMathProse } from '@/components/math-prose';
+import { plainMathProse } from '@/lib/math-prose';
 
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronDown, RotateCcw } from 'lucide-react';
@@ -174,7 +176,7 @@ function collectVisualTones(visual: WalkthroughVisual) {
 function MatrixView({ matrix }: { matrix: WalkthroughMatrix }) {
   const columnCount = matrix.values[0]?.length ?? 1;
   const spokenValues = matrix.values.map((row) => row.join(', ')).join('; ');
-  return (
+  return renderMathProse(
     <div className={cn('walk-matrix-card', columnCount >= 6 && 'is-dense')}>
       <p className="walk-matrix-label">{matrix.label}</p>
       <div className="walk-matrix-frame">
@@ -183,7 +185,7 @@ function MatrixView({ matrix }: { matrix: WalkthroughMatrix }) {
           style={{
             gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
           }}
-          aria-label={`${matrix.label}: ${spokenValues}`}
+          aria-label={`${plainMathProse(matrix.label)}: ${spokenValues}`}
         >
           {matrix.values.flatMap((row, rowIndex) =>
             row.map((value, columnIndex) => {
@@ -208,7 +210,7 @@ function MatrixView({ matrix }: { matrix: WalkthroughMatrix }) {
           )}
         </figure>
       </div>
-    </div>
+    </div>,
   );
 }
 
@@ -225,7 +227,7 @@ function GraphView({
     .filter((edge) => edge.active)
     .map((edge) => `${edge.from} to ${edge.to}`)
     .join(', ');
-  return (
+  return renderMathProse(
     <figure
       className="walk-graph"
       aria-label={`${label}. ${graph.nodes.length} nodes and ${graph.edges.length} edges.${activeEdges ? ` Active edges: ${activeEdges}.` : ''}`}
@@ -272,7 +274,7 @@ function GraphView({
           </g>
         ))}
       </svg>
-    </figure>
+    </figure>,
   );
 }
 
@@ -354,7 +356,7 @@ function PlaneView({
     return () => observer.disconnect();
   }, []);
 
-  return (
+  return renderMathProse(
     <figure ref={figureRef} className="walk-plane">
       <svg
         viewBox={`0 0 ${width} ${height}`}
@@ -567,7 +569,7 @@ function PlaneView({
         {marks.length} vector or line marks and {plane.points?.length ?? 0}
         points are shown.
       </span>
-    </figure>
+    </figure>,
   );
 }
 
@@ -580,7 +582,7 @@ function VisualPanel({
   stateKey: string;
   showCallout?: boolean;
 }) {
-  return (
+  return renderMathProse(
     <div key={stateKey} className="walk-visual-enter">
       <h4 className="font-semibold">{visual.title}</h4>
       <p className="mt-1 text-base leading-7 text-muted-foreground">
@@ -593,11 +595,17 @@ function VisualPanel({
       )}
       {visual.graph && (
         <div className="mt-4">
-          <GraphView graph={visual.graph} label={visual.description} />
+          <GraphView
+            graph={visual.graph}
+            label={plainMathProse(visual.description)}
+          />
         </div>
       )}
       {visual.plane && (
-        <PlaneView plane={visual.plane} label={visual.description} />
+        <PlaneView
+          plane={visual.plane}
+          label={plainMathProse(visual.description)}
+        />
       )}
       {visual.matrices && (
         <div className="walk-matrix-list">
@@ -611,7 +619,7 @@ function VisualPanel({
           {visual.callout.replace(/^Think first:\s*/i, '')}
         </p>
       )}
-    </div>
+    </div>,
   );
 }
 
@@ -758,7 +766,7 @@ function SourceList({
       number: offset + currentLine + 1,
     }));
   });
-  return (
+  return renderMathProse(
     <ol className="trace-source" aria-label="Teaching example code lines">
       {sourceLines.map(({ step, currentStep, currentLine, line, number }) => {
         const available = currentStep <= unlockedThrough;
@@ -794,7 +802,7 @@ function SourceList({
           </li>
         );
       })}
-    </ol>
+    </ol>,
   );
 }
 
@@ -808,7 +816,7 @@ function MeaningLedger({
   explanation: string;
 }) {
   const hasLineDetails = Boolean(lineNote?.shape || lineNote?.operation);
-  return (
+  return renderMathProse(
     <div>
       <dl className={cn('line-meaning', hasLineDetails && 'has-line-details')}>
         {hasLineDetails ? (
@@ -845,7 +853,7 @@ function MeaningLedger({
           </>
         )}
       </dl>
-    </div>
+    </div>,
   );
 }
 
@@ -857,7 +865,7 @@ function VariableLedger({
   revealed: boolean;
 }) {
   if (!step.variables?.length) return null;
-  return (
+  return renderMathProse(
     <div className="variable-ledger">
       {step.variables.map((variable) => (
         <div key={variable.name}>
@@ -871,7 +879,7 @@ function VariableLedger({
           <small>{variable.meaning}</small>
         </div>
       ))}
-    </div>
+    </div>,
   );
 }
 
@@ -892,7 +900,7 @@ function StateComparison({
   ]);
   const legendTones = toneOrder.filter((tone) => usedTones.has(tone));
 
-  return (
+  return renderMathProse(
     <div className="state-compare-grid">
       <section className="state-sheet" aria-label={`Before step ${stepNumber}`}>
         <span className="state-sheet-label">Before</span>
@@ -926,7 +934,7 @@ function StateComparison({
           ))}
         </div>
       )}
-    </div>
+    </div>,
   );
 }
 
@@ -1002,8 +1010,11 @@ export function CodeWalkthrough({
         ? 'Next step'
         : 'Trace again';
 
-  return (
-    <section className="trace-workbench" aria-label={walkthrough.title}>
+  return renderMathProse(
+    <section
+      className="trace-workbench"
+      aria-label={plainMathProse(walkthrough.title)}
+    >
       <header className="trace-header">
         <div>
           <p className="section-kicker">{walkthrough.eyebrow}</p>
@@ -1140,6 +1151,6 @@ export function CodeWalkthrough({
           </div>
         </section>
       </div>
-    </section>
+    </section>,
   );
 }

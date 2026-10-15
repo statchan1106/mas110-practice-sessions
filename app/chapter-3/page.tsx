@@ -1,3 +1,5 @@
+import { renderMathProse } from '@/components/math-prose';
+import { MathText } from '@/components/math-text';
 import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 
@@ -17,28 +19,28 @@ export const dynamic = 'force-static';
 const concepts = [
   [
     'Reachability',
-    'b ∈ Col(A)',
+    '$b \\in  \\operatorname{Col}(A)$',
     'A solution exists exactly when b is reachable from the columns of A.',
   ],
   [
     'Uniqueness',
-    'Null(A) = {0}',
+    '$\\operatorname{Null}(A) = \\{0\\}$',
     'If a solution exists, it is unique exactly when no nonzero input direction disappears.',
   ],
   [
     'Dimension',
-    'rank(A) + nullity(A) = n',
-    'For A ∈ ℝᵐˣⁿ, the number of pivots plus the number of free variables equals n, the number of input coordinates.',
+    '$\\operatorname{rank}(A) + \\operatorname{nullity}(A) = n$',
+    'For $A \\in  \\mathbb R^{m\\times n}$, the number of pivots plus the number of free variables equals n, the number of input coordinates.',
   ],
   [
     'Linear map',
-    'A(cx + y) = cAx + Ay',
+    '$A(cx+y)=cAx+Ay$',
     'A matrix preserves vector addition and scalar multiplication.',
   ],
 ];
 
 export default function ChapterThreeHome() {
-  return (
+  return renderMathProse(
     <div className="min-h-screen">
       <SiteHeader />
       <main
@@ -85,7 +87,7 @@ export default function ChapterThreeHome() {
                   {term}
                 </dt>
                 <dd>
-                  <code>{relation}</code>
+                  <MathText>{relation}</MathText>
                   <p>{copy}</p>
                 </dd>
               </div>
@@ -100,9 +102,9 @@ export default function ChapterThreeHome() {
               Different inputs can reach the same output
             </h2>
             <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
-              For A = [[1,2],[2,4]], the nonzero direction z = (−2,1)ᵀ
-              disappears. Adding z to an input cannot change the output. Each
-              row in the display below lists one vector’s coordinates.
+              {
+                'For $A = [[1,2],[2,4]]$, the nonzero direction $z = (-2,1)^{\\mathsf T}$ disappears. Adding z to an input cannot change the output. Each row in the display below lists one vector’s coordinates.'
+              }
             </p>
           </div>
           <div className="bridge-flow">
@@ -207,6 +209,6 @@ export default function ChapterThreeHome() {
         </aside>
       </main>
       <SiteFooter />
-    </div>
+    </div>,
   );
 }

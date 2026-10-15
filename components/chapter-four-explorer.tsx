@@ -1,4 +1,6 @@
 'use client';
+import { renderMathProse } from '@/components/math-prose';
+import { plainMathProse } from '@/lib/math-prose';
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -78,15 +80,15 @@ function Plot({
     lo + span * 0.5,
     lo + span * 0.9,
   ];
-  return (
+  return renderMathProse(
     <div ref={ref} className="geometry-plot">
       <svg
         viewBox={`0 0 ${width} ${height}`}
         aria-labelledby={`${id}-title ${id}-desc`}
       >
-        <title id={`${id}-title`}>{summary}</title>
+        <title id={`${id}-title`}>{plainMathProse(summary)}</title>
         <desc id={`${id}-desc`}>
-          {series.map((s) => s.label).join('; ')}.{' '}
+          {series.map((s) => plainMathProse(s.label)).join('; ')}.{' '}
           {equalUnits
             ? 'Both axes use the same scale.'
             : 'Function values are plotted against their argument.'}
@@ -215,7 +217,7 @@ function Plot({
           </li>
         ))}
       </ul>
-    </div>
+    </div>,
   );
 }
 
@@ -235,7 +237,7 @@ function Slider({
   onChange: (value: number) => void;
 }) {
   const id = useId();
-  return (
+  return renderMathProse(
     <div className="geometry-field">
       <label htmlFor={id}>
         <MathText>{label}</MathText> <output htmlFor={id}>{fmt(value)}</output>
@@ -249,12 +251,12 @@ function Slider({
         step={step}
         onChange={(e) => onChange(Number(e.target.value))}
       />
-    </div>
+    </div>,
   );
 }
 
 function Metrics({ items }: { items: Array<[string, string]> }) {
-  return (
+  return renderMathProse(
     <dl className="geometry-values" aria-live="polite">
       {items.map(([name, value]) => (
         <div key={name}>
@@ -264,7 +266,7 @@ function Metrics({ items }: { items: Array<[string, string]> }) {
           <dd>{value}</dd>
         </div>
       ))}
-    </dl>
+    </dl>,
   );
 }
 
@@ -272,11 +274,12 @@ function InnerProductExplorer() {
   const [angle, setAngle] = useState(36.86989764584402);
   const [magnitude, setMagnitude] = useState(Math.sqrt(5));
   const g = vectorGeometry(angle, magnitude);
-  return (
+  return renderMathProse(
     <>
       <p>
-        Keep v = (2,1)ᵀ fixed. Rotate u relative to v or change its length. At
-        90° the projection vanishes; at length zero the angle is undefined.
+        {
+          'Keep $v = (2,1)^{\\mathsf T}$ fixed. Rotate u relative to v or change its length. At 90° the projection vanishes; at length zero the angle is undefined.'
+        }
       </p>
       <div className="geometry-controls">
         <Slider
@@ -339,10 +342,15 @@ function InnerProductExplorer() {
         ]}
       />
       <p className="geometry-result">
-        u = {tuple(g.u)}; p = {tuple(g.projected)}; e = {tuple(g.residual)}. The
-        perpendicularity check stays zero as the input changes.
+        {'$u =$ '}
+        {tuple(g.u)}
+        {'; $p =$ '}
+        {tuple(g.projected)}
+        {'; $e =$ '}
+        {tuple(g.residual)}. The perpendicularity check stays zero as the input
+        changes.
       </p>
-    </>
+    </>,
   );
 }
 
@@ -366,12 +374,10 @@ function PolynomialExplorer() {
       .filter(Boolean)
       .join(' + ')
       .replace(/\+ -/g, '− ') || '0';
-  return (
+  return renderMathProse(
     <>
       <p>
-        Project <MathText tex={String.raw`f(t)=t^n`}>f(t) = tⁿ</MathText> onto{' '}
-        <MathText tex={String.raw`\mathcal P_k`}>𝒫ₖ</MathText> using{' '}
-        <MathText tex={String.raw`\int_{-1}^1f(t)g(t)\,dt`}>∫₋₁¹ fg</MathText>.
+        {String.raw`Project $f(t)=t^n$ onto $\mathcal P_k$ using $\int_{-1}^1f(t)g(t)\,dt$. `}
         Compare the target, its closest polynomial, and the residual over the
         whole interval. The curve’s vertical axis shows values, not coefficient
         coordinates.
@@ -412,7 +418,7 @@ function PolynomialExplorer() {
         equalUnits={false}
         series={[
           {
-            label: `f(t) = t^${degree}`,
+            label: `$f(t)=t^{${degree}}$`,
             points: sample(g.target),
             tone: 'target',
           },
@@ -430,12 +436,12 @@ function PolynomialExplorer() {
         ]}
       />
       <p className="geometry-result">
-        p(t) = {equation}.{' '}
+        {`$p(t)=${equation.replaceAll('−', '-')}$`}.{' '}
         {g.error < 1e-10
           ? 'The approximation space contains this target, so the residual is zero.'
           : 'The residual is orthogonal in the integral inner product, even where the curves have different heights.'}
       </p>
-    </>
+    </>,
   );
 }
 
@@ -445,13 +451,13 @@ function QRExplorer() {
   const g = qrGeometry(angle);
   const series: Series[] = [
     {
-      label: 'a₁ · first column',
+      label: '$a_1$ · first column',
       points: [[0, 0], g.a1],
       tone: 'neutral',
       vector: true,
     },
     {
-      label: 'a₂ · second column',
+      label: '$a_2$ · second column',
       points: [[0, 0], g.a2],
       tone: 'target',
       vector: true,
@@ -460,13 +466,13 @@ function QRExplorer() {
   if (phase >= 1)
     series.push(
       {
-        label: 'r₁₂q₁ · old component',
+        label: '$r_{12}q_1$ · old component',
         points: [[0, 0], g.old],
         tone: 'source',
         vector: true,
       },
       {
-        label: 'w₂ · perpendicular remainder',
+        label: '$w_2$ · perpendicular remainder',
         points: [g.old, g.a2],
         tone: 'result',
         dashed: true,
@@ -475,18 +481,17 @@ function QRExplorer() {
     );
   if (phase >= 2 && g.q2)
     series.push({
-      label: 'q₂ · normalized remainder',
+      label: '$q_2$ · normalized remainder',
       points: [[0, 0], g.q2],
       tone: 'result',
       vector: true,
     });
-  return (
+  return renderMathProse(
     <>
       <p>
-        This is the plane of the lecture’s columns, shown in its orthonormal
-        q₁,q₂ coordinates. The initial angle 120° gives the lecture’s exact
-        components. Change the angle to see when the second column adds a new
-        direction.
+        {
+          'This is the plane of the lecture’s columns, shown in its orthonormal $q_{1},q_{2}$ coordinates. The initial angle 120° gives the lecture’s exact components. Change the angle to see when the second column adds a new direction.'
+        }
       </p>
       <div className="geometry-controls">
         <Slider
@@ -528,9 +533,9 @@ function QRExplorer() {
       <p className="geometry-result" role={g.dependent ? 'status' : undefined}>
         {g.dependent
           ? 'The remainder is zero. Do not normalize it; there is no second column-space direction. A QR factorization can still exist with singular R.'
-          : `a₂ = ${fmt(g.r12)}q₁ + ${fmt(g.r22)}q₂. The normalization changes the remainder’s length to 1, while R keeps the original scale.`}
+          : `$a_2=${fmt(g.r12)}q_1+${fmt(g.r22)}q_2$. The normalization changes the remainder’s length to 1, while R keeps the original scale.`}
       </p>
-    </>
+    </>,
   );
 }
 
@@ -538,17 +543,16 @@ function LeastSquaresExplorer() {
   const [observation, setObservation] = useState(1);
   const [shift, setShift] = useState(0);
   const g = leastSquaresGeometry(observation, shift);
-  return (
+  return renderMathProse(
     <>
       <p>
-        Keep A fixed and vary only b₂ in b = (1,b₂,1)ᵀ. The graph is a 2D
-        orthonormal slice through the fitted vector and the residual in ℝ³. The
-        vertical coordinate is along ℓ/√3, where ℓ = (1,−1,1)ᵀ; it can be
-        negative.
+        {
+          'Keep A fixed and vary only $b_{2}$ in $b = (1,b_{2},1)^{\\mathsf T}$. The graph is a 2D orthonormal slice through the fitted vector and the residual in $\\mathbb R^{3}$. The vertical coordinate is along $\\ell /\\sqrt{3}$, where $\\ell  = (1,-1,1)^{\\mathsf T}$; it can be negative.'
+        }
       </p>
       <div className="geometry-controls">
         <Slider
-          label="Observation b₂"
+          label={String.raw`Observation $b_2$`}
           value={observation}
           min={-2}
           max={3}
@@ -567,8 +571,8 @@ function LeastSquaresExplorer() {
       <Metrics
         items={[
           ['Minimum squared error', fmt(g.sse)],
-          ['Original coefficient θ̂', tuple(g.theta)],
-          ['Aᵀe', '(0, 0)'],
+          [String.raw`Original coefficient $\hat\theta$`, tuple(g.theta)],
+          [String.raw`$A^{\mathsf T}e$`, '(0, 0)'],
         ]}
       />
       <Plot
@@ -577,7 +581,7 @@ function LeastSquaresExplorer() {
         yLabel="along ℓ/√3"
         series={[
           {
-            label: 'b̂ · fitted output',
+            label: String.raw`$\hat b$ · fitted output`,
             points: [
               [0, 0],
               [g.sliceFit, 0],
@@ -607,17 +611,21 @@ function LeastSquaresExplorer() {
         ]}
       />
       <p className="geometry-result">
-        b̂ = {tuple(g.fitted)}; e = {tuple(g.residual)}.{' '}
+        {'$\\hat{b} =$ '}
+        {tuple(g.fitted)}
+        {'; $e =$ '}
+        {tuple(g.residual)}.{' '}
         {g.sse < 1e-10
           ? 'This target is reachable, so the fit is exact.'
           : 'The residual is perpendicular even though it is nonzero.'}
       </p>
       <p>
-        With column 2 duplicated, θ(t) = {tuple(g.coefficients)} = θ_min +
-        t(0,1,−1)ᵀ. Changing t preserves the fitted output and squared error; t
-        = 0 selects the smallest coefficient norm.
+        With column 2 duplicated,{' '}
+        {`$\\theta(t)=${tuple(g.coefficients)}=\\theta_{\\min}+t(0,1,-1)^{\\mathsf T}$`}
+        . Changing t preserves the fitted output and squared error; {'$t=0$'}{' '}
+        selects the smallest coefficient norm.
       </p>
-    </>
+    </>,
   );
 }
 
@@ -629,7 +637,7 @@ const explorers = {
 };
 export function ChapterFourExplorer({ kind }: { kind: ExplorerKind }) {
   const Explorer = explorers[kind];
-  return (
+  return renderMathProse(
     <section
       className="geometry-explorer"
       aria-labelledby="geometry-heading"
@@ -640,6 +648,6 @@ export function ChapterFourExplorer({ kind }: { kind: ExplorerKind }) {
         See the geometry respond
       </h2>
       <Explorer />
-    </section>
+    </section>,
   );
 }

@@ -1,3 +1,5 @@
+import { renderMathProse } from '@/components/math-prose';
+import { MathText } from '@/components/math-text';
 import type { Metadata } from 'next';
 import { ArrowRight } from 'lucide-react';
 
@@ -18,28 +20,28 @@ export const dynamic = 'force-static';
 const concepts = [
   [
     'System',
-    'Ax = b',
+    '$Ax = b$',
     'Rows are equations; columns are the directions combined by x.',
   ],
   [
     'Product',
-    'AB = [Ab₁ | ··· | Abₗ]',
+    '$AB = [Ab_{1} | \\cdot \\cdot \\cdot  | Ab_{l}]$',
     'Matrix multiplication repeats one matrix–vector product by columns.',
   ],
   [
     'Elimination',
-    'Rᵢ ← Rᵢ − mRⱼ',
+    String.raw`$R_i\leftarrow R_i-mR_j$`,
     'Choose m so one target entry becomes exactly zero.',
   ],
   [
     'Factorization',
-    'QA = LU',
+    '$QA = LU$',
     'A row order and all elimination multipliers can be stored and reused.',
   ],
 ];
 
 export default function ChapterTwoHome() {
-  return (
+  return renderMathProse(
     <div className="min-h-screen">
       <SiteHeader />
       <main
@@ -62,7 +64,7 @@ export default function ChapterTwoHome() {
           <div className="chapter-question">
             <span>One question</span>
             <p>
-              When, and how, can we solve <em>Ax = b</em>?
+              When, and how, can we solve <em>{'$Ax = b$'}</em>?
             </p>
           </div>
         </header>
@@ -88,7 +90,7 @@ export default function ChapterTwoHome() {
                   {term}
                 </dt>
                 <dd>
-                  <code>{relation}</code>
+                  <MathText>{relation}</MathText>
                   <p>{copy}</p>
                 </dd>
               </div>
@@ -175,7 +177,7 @@ export default function ChapterTwoHome() {
           </div>
           <p className="bridge-conclusion">
             <span>Back-substitution</span>
-            <strong>x = (1, 2, 3)</strong>
+            <strong>{'$x = (1, 2, 3)$'}</strong>
           </p>
         </section>
 
@@ -221,6 +223,6 @@ export default function ChapterTwoHome() {
         </aside>
       </main>
       <SiteFooter />
-    </div>
+    </div>,
   );
 }
