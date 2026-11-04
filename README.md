@@ -49,6 +49,10 @@ Regenerate all four companion notebooks with `node scripts/sync-chapter4-noteboo
 
 Lab 4.4’s [companion notebook](notebooks/Ch4-4%20Least%20Squares.ipynb) is maintained here and shares the page’s code and explanations. Regenerate it with `node scripts/sync-ch44-notebook.mjs`, then run all cells in Python/Colab. Code semantics follow the official [NumPy lstsq](https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html) and [QR](https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html) documentation. The lecture PDF is referenced, not redistributed.
 
+Chapter 5 follows Wooseok Ha’s Lecture 5 notation for the compact SVD. Lab 5.1 uses the exact matrix from Example 5.3 and compares reconstruction with rank-two truncation. Lab 5.2 uses a rectangular, rank-deficient matrix to separate the input and output projectors. Labs 5.3 and 5.4 extend the lecture with floating-point experiments on QR and numerical rank. The chapter overview works through a centered PCA example.
+
+Regenerate the four Chapter 5 companion notebooks with `node scripts/sync-chapter5-notebooks.mjs`. Run all cells in order in Python or Colab. The notebooks include numerical checks and cite the relevant printed lecture slides.
+
 ## Maintainer and questions
 
 Practice materials are prepared and maintained by **Seongchan Lee**. Questions about the materials or code can be sent to `statchan1106 [at] kaist.ac.kr`.

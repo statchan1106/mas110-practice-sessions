@@ -3,6 +3,7 @@ import { leastSquaresNotebook } from '@/lib/chapter-four/least-squares';
 import { innerProductsNotebook } from '@/lib/chapter-four/inner-products';
 import { polynomialsNotebook } from '@/lib/chapter-four/polynomials';
 import { qrNotebook } from '@/lib/chapter-four/qr-decomposition';
+import { chapterFivePrimer, chapterFiveSections } from '@/lib/chapter-five-data';
 
 const repositoryBase = 'https://github.com/kyunghyuncho/Foundations_of_LADS';
 const colabBase =
@@ -77,9 +78,10 @@ export const courseChapters: CourseChapter[] = [
     number: '05',
     title: 'Singular Value Decomposition',
     summary:
-      'Singular directions, low-rank approximation, pseudoinverses, and numerical stability.',
-    sourceNotebooks: 4,
-    status: 'preparing',
+      'Four guided labs on singular directions, low-rank approximation, pseudoinverses, and numerical stability, with a centered PCA example.',
+    sourceNotebooks: chapterFiveSections.length,
+    status: 'available',
+    href: '/chapter-5',
   },
   {
     number: '06',
@@ -293,40 +295,14 @@ export const courseGroups: CourseGroup[] = [
     chapters: 'Chapter 5',
     title: 'SVD and numerical methods',
     idea: 'Separate directions from scales, then keep the structure that matters most.',
-    primer: [
-      {
-        term: 'Singular directions',
-        definition: 'Special input and output directions aligned by a matrix.',
-        relation: '$A = U\\sum V^{\\mathsf T}$',
-        watchFor: 'Rotate, scale, then rotate again.',
-      },
-      {
-        term: 'Projection',
-        definition: 'The closest point in a chosen subspace.',
-        relation: '$P = QQ^{\\mathsf T}$',
-        watchFor: 'The discarded component is perpendicular to the subspace.',
-      },
-      {
-        term: 'Numerical stability',
-        definition:
-          'A method is stable when small round-off errors stay controlled.',
-        relation: 'computed ≈ exact nearby problem',
-        watchFor:
-          'Equivalent formulas can behave differently in floating point.',
-      },
-    ],
-    notebooks: [
-      notebook('SVD — Basic Properties', 'Ch5-1 SVD-Basic Properties.ipynb'),
-      notebook('SVD and Projections', 'Ch5-2 SVD and Projections.ipynb'),
-      notebook(
-        'Numerically Stable QR-Decomposition',
-        'Ch5-3 Numerically Stable QR-Decomposition.ipynb',
-      ),
-      notebook(
-        'Test of Linear Independence',
-        'Ch5-4 Test of Linear Independence.ipynb',
-      ),
-    ],
+    primer: chapterFivePrimer,
+    notebooks: chapterFiveSections.map(({ title, filename, githubUrl, colabUrl }) => ({
+      title,
+      filename,
+      githubUrl,
+      colabUrl,
+      status: 'interactive',
+    })),
   },
   {
     id: 'data-applications',
@@ -345,7 +321,7 @@ export const courseGroups: CourseGroup[] = [
         term: 'Low-rank structure',
         definition:
           'A few directions explain most of the observable variation.',
-        relation: '$A \\approx  U_{k}\\sum _{k}V_{k}^{\\mathsf T}$',
+        relation: '$A \\approx U_k D_k V_k^{\\top}$',
         watchFor: 'Compress while preserving the dominant pattern.',
       },
       {

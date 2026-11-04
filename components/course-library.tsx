@@ -14,6 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { courseGroups, courseNotebookCount } from '@/lib/course-data';
+import { chapterFiveSections } from '@/lib/chapter-five-data';
 import { sitePath } from '@/lib/site-path';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,9 @@ const guidedNotebookRoutes: Record<string, string> = {
     '/chapter-4/inner-products',
   'Ch4-2 Vector Spaces of Polynomials.ipynb': '/chapter-4/polynomials',
   'Ch4-3 QR-Decomposition.ipynb': '/chapter-4/qr-decomposition',
+  ...Object.fromEntries(
+    chapterFiveSections.map(({ filename, slug }) => [filename, '/chapter-5/' + slug]),
+  ),
 };
 
 export function CourseLibrary() {

@@ -8,10 +8,17 @@ const pages = [
   ...['inner-products', 'polynomials', 'qr-decomposition', 'least-squares'].map(
     (slug) => `chapter-4/${slug}.html`,
   ),
+  'chapter-5.html',
+  ...['svd-basics', 'svd-projections', 'stable-qr', 'numerical-rank'].map(
+    (slug) => `chapter-5/${slug}.html`,
+  ),
 ];
 for (const page of pages) {
   const html = fs.readFileSync(path.join(root, page), 'utf8');
-  assert(html.includes('katex-mathml'), `${page}: missing accessible math`);
+  assert(
+    html.includes('<span class="katex-mathml"><math'),
+    `${page}: missing accessible math`,
+  );
   assert(!html.includes('katex-error'), `${page}: invalid math`);
 }
 
