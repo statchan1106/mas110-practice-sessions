@@ -53,6 +53,8 @@ Chapter 5 follows Wooseok Ha’s Lecture 5 notation for the compact SVD. Lab 5.1
 
 Regenerate the four Chapter 5 companion notebooks with `node scripts/sync-chapter5-notebooks.mjs`. Run all cells in order in Python or Colab. The notebooks include numerical checks and cite the relevant printed lecture slides.
 
+Chapter 7 follows Wooseok Ha’s Lecture 7 from quadratic forms through Cholesky factorization, matrix square roots, eigenvalue bounds, and Mahalanobis distance. One worked matrix ties the derivations together, and an interactive explorer compares its ellipsoid with the Euclidean unit circle. The page cites the printed slides and links both Chapter 7 source notebooks.
+
 ## Maintainer and questions
 
 Practice materials are prepared and maintained by **Seongchan Lee**. Questions about the materials or code can be sent to `statchan1106 [at] kaist.ac.kr`.

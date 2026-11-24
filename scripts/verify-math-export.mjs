@@ -12,6 +12,7 @@ const pages = [
   ...['svd-basics', 'svd-projections', 'stable-qr', 'numerical-rank'].map(
     (slug) => `chapter-5/${slug}.html`,
   ),
+  'chapter-7.html',
 ];
 for (const page of pages) {
   const html = fs.readFileSync(path.join(root, page), 'utf8');

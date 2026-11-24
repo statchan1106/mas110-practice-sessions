@@ -95,9 +95,10 @@ export const courseChapters: CourseChapter[] = [
     number: '07',
     title: 'Positive Definite Matrices',
     summary:
-      'Quadratic forms, Cholesky factorization, matrix square roots, and geometry.',
+      'Quadratic forms, Cholesky and square roots, eigenvalue bounds, and ellipsoidal geometry.',
     sourceNotebooks: 2,
-    status: 'preparing',
+    status: 'available',
+    href: '/chapter-7',
   },
   {
     number: '08',
