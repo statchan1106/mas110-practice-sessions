@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { courseGroups, courseNotebookCount } from '@/lib/course-data';
 import { chapterFiveSections } from '@/lib/chapter-five-data';
+import { chapterSevenSections } from '@/lib/chapter-seven-data';
 import { sitePath } from '@/lib/site-path';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +38,9 @@ const guidedNotebookRoutes: Record<string, string> = {
   'Ch4-3 QR-Decomposition.ipynb': '/chapter-4/qr-decomposition',
   ...Object.fromEntries(
     chapterFiveSections.map(({ filename, slug }) => [filename, '/chapter-5/' + slug]),
+  ),
+  ...Object.fromEntries(
+    chapterSevenSections.map(({ filename, slug }) => [filename, '/chapter-7/' + slug]),
   ),
 };
 

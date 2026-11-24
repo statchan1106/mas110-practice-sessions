@@ -13,6 +13,9 @@ const pages = [
     (slug) => `chapter-5/${slug}.html`,
   ),
   'chapter-7.html',
+  'chapter-7/positive-definite.html',
+  'chapter-7/symmetric-eigenvalues.html',
+  'chapter-7/lecture-notes.html',
 ];
 for (const page of pages) {
   const html = fs.readFileSync(path.join(root, page), 'utf8');

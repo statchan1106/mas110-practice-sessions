@@ -4,6 +4,7 @@ import { innerProductsNotebook } from '@/lib/chapter-four/inner-products';
 import { polynomialsNotebook } from '@/lib/chapter-four/polynomials';
 import { qrNotebook } from '@/lib/chapter-four/qr-decomposition';
 import { chapterFivePrimer, chapterFiveSections } from '@/lib/chapter-five-data';
+import { chapterSevenSections } from '@/lib/chapter-seven-data';
 
 const repositoryBase = 'https://github.com/kyunghyuncho/Foundations_of_LADS';
 const colabBase =
@@ -95,8 +96,8 @@ export const courseChapters: CourseChapter[] = [
     number: '07',
     title: 'Positive Definite Matrices',
     summary:
-      'Quadratic forms, Cholesky and square roots, eigenvalue bounds, and ellipsoidal geometry.',
-    sourceNotebooks: 2,
+      'Two guided NumPy labs on quadratic forms, Cholesky, ordered eigenvalues, and rank-one updates.',
+    sourceNotebooks: chapterSevenSections.length,
     status: 'available',
     href: '/chapter-7',
   },
@@ -367,11 +368,13 @@ export const courseGroups: CourseGroup[] = [
       },
     ],
     notebooks: [
-      notebook(
-        'Positive Definite Matrices',
-        'Ch7-1 Positive Definite Matrices.ipynb',
-      ),
-      notebook('Symmetric Eigenvalues', 'Ch7-2 Symmetric Eigenvalues.ipynb'),
+      ...chapterSevenSections.map(({ title, filename, githubUrl, colabUrl }) => ({
+        title,
+        filename,
+        githubUrl,
+        colabUrl,
+        status: 'interactive' as const,
+      })),
       notebook('Determinant', 'Ch8 Determinant.ipynb'),
       notebook('Eigenvalues', 'Ch9 Eigenvalues.ipynb'),
       notebook('Perron–Frobenius', 'Ch10-1 Perron-Frobenius.ipynb'),
